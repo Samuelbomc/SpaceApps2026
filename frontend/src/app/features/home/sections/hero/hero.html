@@ -1,0 +1,80 @@
+<section class="hero section--dark" aria-labelledby="hero-title">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <p class="eyebrow">{{ identity.challenge }} · Field Shift</p>
+      <h1 id="hero-title">{{ identity.tagline }}</h1>
+      <p class="hero__lead">
+        Integramos observaciones de la Tierra de la NASA, información agrícola de Colombia y el
+        conocimiento de quienes trabajan la tierra para explorar las condiciones ambientales y
+        comparar estrategias de rotación de cultivos de forma transparente.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--light" routerLink="/datos">Explorar el portal de datos</a>
+        <a class="btn btn--outline-light" routerLink="/agricultor">Ir al espacio del agricultor</a>
+      </div>
+
+      <ul class="hero__meta">
+        <li>Piloto: {{ territory.department }}, {{ territory.country }}</li>
+        <li>Prototipo en desarrollo</li>
+        <li>Apoyo a la decisión, no reemplazo de la asesoría técnica</li>
+      </ul>
+    </div>
+
+    <figure class="hero__figure">
+      <svg
+        viewBox="0 0 400 360"
+        role="img"
+        aria-labelledby="layers-title layers-desc"
+        class="hero__svg"
+      >
+        <title id="layers-title">Capas de información integradas</title>
+        <desc id="layers-desc">
+          Diagrama conceptual de cuatro capas apiladas: observación satelital, clima y agua, suelo
+          y relieve, y finca y prioridades del agricultor.
+        </desc>
+
+        <!-- Observation rays from a generic satellite to the top layer -->
+        <g class="rays" stroke="#a9c2ab" stroke-width="1" stroke-dasharray="3 4">
+          <line x1="200" y1="22" x2="110" y2="104" />
+          <line x1="200" y1="22" x2="290" y2="104" />
+        </g>
+        <g class="sat" transform="translate(200 18)">
+          <rect x="-5" y="-5" width="10" height="10" rx="2" fill="#f3f1ea" />
+          <rect x="-21" y="-3" width="13" height="6" fill="#7fb0c4" />
+          <rect x="8" y="-3" width="13" height="6" fill="#7fb0c4" />
+        </g>
+
+        @for (layer of layers; track layer.label) {
+          <g>
+            <polygon [attr.points]="layer.left" [attr.fill]="layer.sideFill" />
+            <polygon [attr.points]="layer.right" [attr.fill]="layer.sideFill" opacity="0.85" />
+            <polygon [attr.points]="layer.top" [attr.fill]="layer.topFill" />
+            @for (s of layer.stripes; track $index) {
+              <line
+                [attr.x1]="s.x1"
+                [attr.y1]="s.y1"
+                [attr.x2]="s.x2"
+                [attr.y2]="s.y2"
+                stroke="#5a8f6f"
+                stroke-width="1.5"
+              />
+            }
+          </g>
+        }
+      </svg>
+
+      <figcaption>
+        <ol class="hero__legend">
+          @for (layer of legend; track layer.label) {
+            <li>
+              <span class="swatch" [style.background]="layer.topFill" aria-hidden="true"></span>
+              {{ layer.label }}
+            </li>
+          }
+        </ol>
+        <span class="hero__note">Diagrama conceptual, no representa datos.</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>

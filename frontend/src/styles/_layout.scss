@@ -1,0 +1,70 @@
+// Page-level layout primitives shared by every feature.
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: clamp(var(--sp-7), 5vw, var(--sp-9));
+
+  &--sunken {
+    background: var(--c-surface-sunken);
+  }
+
+  &--sage {
+    background: var(--c-sage-50);
+  }
+
+  &--dark {
+    background: var(--c-forest-900);
+    color: var(--c-ink-inverse);
+  }
+}
+
+// Section heading block: eyebrow + title + lead paragraph.
+.section-head {
+  max-width: 46rem;
+  margin-bottom: var(--sp-6);
+
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-top: var(--sp-2);
+  }
+
+  p {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-md);
+    color: var(--c-ink-muted);
+  }
+}
+
+.section--dark .section-head p {
+  color: var(--c-ink-inverse-muted);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-green-600);
+}
+
+.section--dark .eyebrow {
+  color: var(--c-sage-300);
+}
+
+// Auto-fitting responsive grid. Set --grid-min on the element to tune.
+.grid {
+  display: grid;
+  gap: var(--sp-5);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-min, 16rem)), 1fr));
+}
+
+.stack > * + * {
+  margin-top: var(--sp-3);
+}

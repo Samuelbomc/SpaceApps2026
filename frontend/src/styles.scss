@@ -1,1 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+// Global stylesheet entry point. Order matters: tokens → base → layout → components.
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/layout';
+@use 'styles/components';

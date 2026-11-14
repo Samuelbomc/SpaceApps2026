@@ -1,0 +1,108 @@
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(var(--sp-7), 7vw, var(--sp-9));
+  // Subtle topographic-grid texture, no gradients on content.
+  background-image:
+    linear-gradient(rgb(169 194 171 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(169 194 171 / 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--sp-7);
+  align-items: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+h1 {
+  font-size: var(--fs-3xl);
+  margin-top: var(--sp-3);
+  max-width: 18ch;
+  color: #fff;
+}
+
+.hero__lead {
+  margin-top: var(--sp-5);
+  font-size: var(--fs-md);
+  color: var(--c-ink-inverse-muted);
+  max-width: 38rem;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-6);
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  margin-top: var(--sp-6);
+  list-style: none;
+  font-size: var(--fs-sm);
+  color: var(--c-sage-300);
+
+  li::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: var(--sp-2);
+    border-radius: 50%;
+    background: var(--c-sage-300);
+    vertical-align: middle;
+  }
+}
+
+.hero__figure {
+  margin: 0;
+  justify-self: center;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.hero__svg {
+  width: 100%;
+  height: auto;
+}
+
+figcaption {
+  margin-top: var(--sp-3);
+}
+
+.hero__legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2) var(--sp-4);
+  list-style: none;
+  font-size: var(--fs-sm);
+  color: var(--c-ink-inverse);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+}
+
+.swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+  flex: none;
+}
+
+.hero__note {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--c-ink-inverse-muted);
+}

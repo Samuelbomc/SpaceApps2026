@@ -1,0 +1,63 @@
+<section class="section section--sage" aria-labelledby="pilot-title">
+  <div class="container">
+    <header class="section-head">
+      <span class="eyebrow">Territorio piloto</span>
+      <h2 id="pilot-title">Comenzamos en {{ territory.department }}, pensando en {{ territory.country }}</h2>
+      <p>
+        {{ territory.department }} es el territorio de implementación inicial. La plataforma se
+        diseña para extenderse a otros departamentos mediante datos y configuración, sin cambiar su
+        arquitectura.
+      </p>
+    </header>
+
+    <div class="pilot">
+      <div class="card pilot__regions">
+        <h3>Subregiones de {{ territory.department }}</h3>
+        <ul class="chip-list">
+          @for (s of territory.subregions; track s) {
+            <li class="chip">{{ s }}</li>
+          }
+        </ul>
+
+        <div class="pilot__selection">
+          <h4>Municipios piloto</h4>
+          @if (territory.pilotMunicipalities.length) {
+            <ul class="chip-list">
+              @for (m of territory.pilotMunicipalities; track m) {
+                <li class="chip">{{ m }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="notice notice--info" role="note">
+              <span>
+                <strong>Por definir.</strong> Los municipios se seleccionarán según estos criterios,
+                no por conveniencia:
+              </span>
+            </p>
+            <ul class="check-list">
+              @for (c of territory.selectionCriteria; track c) {
+                <li>{{ c }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+      <div class="levels">
+        <h3>Tres escalas, sin confundirlas</h3>
+        <ol>
+          @for (level of levels; track level.name; let i = $index) {
+            <li class="level" [style.--level]="i">
+              <span class="level__name">{{ level.name }}</span>
+              <p>{{ level.description }}</p>
+              <p class="level__example">Ej.: {{ level.example }}</p>
+            </li>
+          }
+        </ol>
+        <p class="levels__note">
+          Un dato regional o municipal nunca se presenta como una medición de la finca.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

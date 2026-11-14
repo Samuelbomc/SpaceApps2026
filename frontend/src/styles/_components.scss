@@ -1,0 +1,200 @@
+// Global component primitives (buttons, cards, notices, chips, spec lists).
+// Kept global so feature components stay small and visually consistent.
+
+// ---------- Buttons ----------
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 2.75rem;
+  padding: var(--sp-2) var(--sp-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+
+  &--primary {
+    background: var(--c-forest-700);
+    color: var(--c-ink-inverse);
+
+    &:hover {
+      background: var(--c-forest-800);
+      color: var(--c-ink-inverse);
+    }
+  }
+
+  &--secondary {
+    background: var(--c-surface);
+    border-color: var(--c-border-strong);
+    color: var(--c-forest-800);
+
+    &:hover {
+      border-color: var(--c-forest-700);
+      color: var(--c-forest-900);
+    }
+  }
+
+  // For use on dark (forest) backgrounds
+  &--light {
+    background: var(--c-ink-inverse);
+    color: var(--c-forest-900);
+
+    &:hover {
+      background: #fff;
+      color: var(--c-forest-950);
+    }
+  }
+
+  &--outline-light {
+    border-color: rgb(243 241 234 / 0.45);
+    color: var(--c-ink-inverse);
+
+    &:hover {
+      border-color: var(--c-ink-inverse);
+      color: #fff;
+      background: rgb(255 255 255 / 0.06);
+    }
+  }
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-weight: 600;
+  text-decoration: none;
+
+  &::after {
+    content: '→';
+    transition: transform var(--transition-fast);
+  }
+
+  &:hover::after {
+    transform: translateX(3px);
+  }
+}
+
+// ---------- Cards ----------
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+
+  h3 {
+    font-size: var(--fs-md);
+    line-height: var(--lh-snug);
+  }
+
+  p {
+    color: var(--c-ink-muted);
+  }
+}
+
+// ---------- Notices ----------
+.notice {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-border);
+  border-left-width: 4px;
+  background: var(--c-surface);
+  font-size: var(--fs-sm);
+  color: var(--c-ink);
+
+  strong {
+    font-weight: 700;
+  }
+
+  &--info {
+    border-color: var(--c-water-600);
+    background: var(--c-water-100);
+  }
+
+  &--caution {
+    border-color: var(--c-ochre-600);
+    background: var(--c-ochre-100);
+  }
+
+  &--demo {
+    border-color: var(--c-demo-border);
+    background: var(--c-demo-bg);
+    color: var(--c-demo-ink);
+  }
+}
+
+// ---------- Chips / tags ----------
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  font-size: var(--fs-sm);
+  color: var(--c-ink-muted);
+  white-space: nowrap;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  list-style: none;
+}
+
+// ---------- Technical specification list (resolution, units, cadence) ----------
+.spec-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-1) var(--sp-3);
+  margin: 0;
+  font-size: var(--fs-sm);
+
+  dt {
+    color: var(--c-ink-subtle);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--c-ink);
+  }
+}
+
+// ---------- Checklist with custom bullets ----------
+.check-list {
+  list-style: none;
+  display: grid;
+  gap: var(--sp-2);
+
+  li {
+    position: relative;
+    padding-left: 1.5rem;
+    color: var(--c-ink-muted);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0.2rem;
+      top: 0.55em;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 2px;
+      background: var(--c-green-500);
+    }
+  }
+}
