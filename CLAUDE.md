@@ -2,25 +2,29 @@
 
 ## 1. Project Identity
 
-**Project name:** AndesTerra  
-**Challenge:** NASA Space Apps Challenge 2026 — Field Shift: Adapting Farms with NASA Data  
-**Geographic scope:** Andean Region of Colombia  
-**Initial local focus:** Antioquia, Colombia  
-**Institutional context:** Universidad de Antioquia  
+**Project name:** Not yet defined
+
+This project is a web-based agricultural
+data exploration and decision-support platform designed for Colombia.
+**Challenge:** NASA Space Apps Challenge 2026 — Field Shift: Adapting Farms with NASA Data
+**Hackathon implementation scope:** Antioquia, Colombia.
+**Initial pilot territory:** Selected municipalities and agricultural contexts in Antioquia.
+**Long-term expansion scope:** Colombia, with potential coverage of all departments.
+**Institutional context:** Universidad de Antioquia.
 **Target awards:**
 - Best Use of Data
 - Local Impact Award
 
 ### Project concept
 
-AndesTerra is a web-based agricultural data and decision-support platform for the Colombian Andean Region.
+The platform is a web-based agricultural data and decision-support platform for Colombia.
 
 It integrates NASA Earth observations, international agricultural datasets, Colombian institutional information, and farmer-provided data to make agricultural and environmental information accessible and useful.
 
 The platform has two main modules:
 
-1. **AndesTerra Data:** A public agricultural and environmental data portal for exploring, visualizing, filtering, comparing, and downloading datasets for research and characterization.
-2. **AndesTerra Farm:** A private farmer-centered platform where users register their farms, provide information about their soil and agricultural history, explore environmental conditions, and receive explainable crop-rotation scenarios adapted to their priorities and constraints.
+1. **Public Agricultural and Environmental Data Portal:** A public agricultural and environmental data portal for exploring, visualizing, filtering, comparing, and downloading datasets for research and characterization.
+2. **Farmer Decision-Support Workspace:** A private farmer-centered platform where users register their farms, provide information about their soil and agricultural history, explore environmental conditions, and receive explainable crop-rotation scenarios adapted to their priorities and constraints.
 
 The platform must support evidence-based agricultural decisions. It must never present unvalidated predictions or recommendations as guaranteed outcomes.
 
@@ -46,22 +50,33 @@ The project must:
 9. Support, rather than replace, farmers, agronomists, and agricultural extension workers.
 
 ---
-
 ## 3. Geographic Scope
 
-### Regional scope
+### Long-term geographic scope
 
-The long-term geographic scope is the Andean Region of Colombia.
+The long-term geographic scope of the platform is Colombia, with the
+possibility of supporting agricultural and environmental information
+across all departments and municipalities.
 
-The platform should support the exploration of agricultural and environmental information across the region, without assuming that all departments, municipalities, farms, or production systems share the same conditions.
+The platform must be designed to accommodate different geographic,
+environmental, agricultural, and socioeconomic contexts throughout
+the country.
 
-The project must document the geographic definition and boundaries used for the Andean Region.
+National coverage is a long-term objective and must not be presented
+as fully implemented unless the corresponding data and functionality
+are actually available.
 
-### Initial local focus
+### Hackathon implementation scope
 
-Prioritize Antioquia as the initial demonstration territory because of the team's connection to the Universidad de Antioquia and the opportunity to develop a locally relevant solution.
+Antioquia, Colombia, is the initial pilot territory for the NASA
+Space Apps Challenge 2026 implementation.
 
-The first pilot municipality, subregion, and crop system must be selected after examining data availability and agronomic relevance.
+The MVP should prioritize a manageable selection of municipalities,
+agricultural systems, and environmental variables based on data
+availability, relevance, and feasibility.
+
+The first pilot municipality, subregion, and crop system must be
+selected after examining data availability and agronomic relevance.
 
 Do not select a territory or crop solely based on familiarity.
 
@@ -70,16 +85,18 @@ Do not select a territory or crop solely based on familiarity.
 The platform must distinguish three levels:
 
 - **Regional:** broad environmental and agricultural patterns.
-- **Municipal:** agricultural statistics and environmental summaries at municipal scale.
-- **Farm/field:** information associated with an individual farm or field, only when the input data and source resolution support that interpretation.
+- **Municipal:** agricultural statistics and environmental summaries
+  at municipal scale.
+- **Farm/field:** information associated with an individual farm or
+  field, only when the input data and source resolution support that
+  interpretation.
 
-Never present municipal statistics or coarse satellite observations as direct field-level measurements.
-
----
+Never present municipal statistics or coarse satellite observations
+as direct field-level measurements.
 
 ## 4. Main Product Modules
 
-# MODULE A — AndesTerra Data
+# MODULE A — Public Agricultural and Environmental Data Portal
 
 ### Purpose
 
@@ -91,7 +108,7 @@ The portal serves researchers, students, agricultural institutions, extension wo
 
 Users should be able to:
 
-1. Explore an interactive map of the Colombian Andean Region.
+1. Explore an interactive map of Colombia.
 2. Select departments, municipalities, and supported geographic areas.
 3. Explore agricultural production and crop-distribution information.
 4. Visualize environmental variables and historical trends.
@@ -165,7 +182,7 @@ Do not offer arbitrary raster downloads if the data cannot be generated or serve
 
 ---
 
-# MODULE B — AndesTerra Farm
+# MODULE B — Farmer Decision-Support Workspace
 
 ### Purpose
 
@@ -339,7 +356,7 @@ Prioritize data integration according to feasibility, relevance, and scientific 
 
 ### 6.1 NASA POWER — Very High Priority
 
-https://power.larc.nasa.gov/  
+https://power.larc.nasa.gov/
 https://power.larc.nasa.gov/docs/services/api/
 
 Potential variables:
@@ -421,7 +438,7 @@ Limitations:
 
 ### 6.5 Landsat / Harmonized Landsat Sentinel (HLS) — High Priority
 
-https://earthexplorer.usgs.gov/  
+https://earthexplorer.usgs.gov/
 https://hls.gsfc.nasa.gov/
 
 Potential variables:
@@ -514,7 +531,7 @@ Limitations:
 
 ### 6.10 MODIS / VIIRS — Medium Priority
 
-https://lpdaac.usgs.gov/products/  
+https://lpdaac.usgs.gov/products/
 https://search.earthdata.nasa.gov/search?q=VIIRS
 
 Potential variables:
@@ -1081,10 +1098,10 @@ When working with Git:
 
 The full architecture describes the long-term product. The hackathon MVP must remain small enough to implement, integrate, test, and demonstrate reliably.
 
-### Required MVP — AndesTerra Data
+### Required MVP — Public Agricultural and Environmental Data Portal
 
 1. A working public web interface.
-2. A map of the selected Andean pilot territory.
+2. A map of the selected pilot territory in Antioquia.
 3. A small catalog of real, documented datasets.
 4. At least one meaningful NASA-derived environmental analysis.
 5. Colombian agricultural context from an official source.
@@ -1092,7 +1109,7 @@ The full architecture describes the long-term product. The hackathon MVP must re
 7. At least one working data export or download.
 8. A source and metadata panel.
 
-### Required MVP — AndesTerra Farm
+### Required MVP — Farmer Decision-Support Workspace
 
 1. A farmer-facing registration or demonstration login flow.
 2. A farm profile with location and basic agricultural information.
@@ -1141,7 +1158,7 @@ Demonstrate:
 - Adaptation to farm-specific information and priorities.
 - Useful, understandable rotation scenarios.
 - A credible path to validation with local experts and farmers.
-- Potential to expand to other Andean territories.
+- Potential to expand to other Colombian territories.
 
 Never claim community validation or demonstrated improvements in crop yields unless the team has actually established them.
 
@@ -1149,10 +1166,10 @@ Never claim community validation or demonstrated improvements in crop yields unl
 
 ## 16. Definition of Success
 
-AndesTerra succeeds when:
+The platform succeeds when:
 
 ### A data portal user can:
-1. Select a territory in the Colombian Andean Region.
+1. Select a territory in Colombia.
 2. Discover available agricultural and environmental datasets.
 3. Visualize environmental and agricultural variables.
 4. Compare spatial or temporal patterns.
@@ -1169,3 +1186,183 @@ AndesTerra succeeds when:
 7. Identify what should be validated with local agricultural expertise.
 
 The platform must be scientifically responsible, transparent, useful, accessible, and demonstrably connected to NASA Earth observations.
+
+# PROJECT DECISION UPDATE — NOVEMBER 2026
+
+This section contains the latest approved project decisions. If older sections conflict with this update, follow this section.
+
+## 1. Product Identity and Geographic Scope
+
+Product name: Not yet defined.
+
+Positioning:
+"Territorial intelligence for more resilient agriculture."
+
+Agricultural Intelligence Platform is an agricultural intelligence platform that integrates satellite observations, environmental information, agricultural datasets, and local knowledge to support better agricultural decisions.
+
+### Geographic strategy
+
+- Hackathon implementation and demonstration: Antioquia, Colombia.
+- Initial pilot: selected municipalities and agricultural contexts in Antioquia.
+- Long-term expansion: other Colombian departments and agricultural regions.
+- The platform must support geographic expansion without requiring major architectural changes.
+
+IMPORTANT:
+Antioquia is the initial implementation scope, not a permanent product limitation.
+
+Avoid hardcoding municipalities, departments, crop catalogs, or geographic boundaries in frontend components or business logic.
+
+Geographic information must be managed through data and configuration.
+
+## 2. Product Modules
+
+### Public Agricultural and Environmental Data Portal
+
+Public agricultural and environmental data portal.
+
+Main capabilities:
+- Interactive geographic exploration.
+- Municipality selection.
+- Agricultural and crop information.
+- Environmental variable visualization.
+- Historical data exploration.
+- Dataset metadata and provenance.
+- Filtering and downloading datasets when supported.
+
+Target users:
+Researchers, students, institutions, agricultural professionals, and the general public.
+
+### Farmer Decision-Support Workspace
+
+Private farmer-centered workspace.
+
+Main capabilities:
+- User registration and authentication.
+- Farm profile creation.
+- Geographic farm information.
+- Soil and environmental characteristics.
+- Previous crop history.
+- Farmer priorities and constraints.
+- Comparison of crop rotation strategies.
+- Explainable decision-support recommendations.
+
+The platform supports farmer decisions and does not replace professional agronomic advice.
+
+## 3. Official Technical Architecture
+
+The approved architecture is:
+
+- Frontend: Angular.
+- Backend: FastAPI.
+- Database: PostgreSQL with PostGIS.
+- Data ingestion and processing: Python.
+- Geospatial processing: appropriate Python geospatial libraries.
+- Shared contracts: OpenAPI and JSON Schema where appropriate.
+- Infrastructure: Docker and Docker Compose.
+
+Angular is the official web application frontend.
+
+Do not introduce Streamlit as an alternative primary frontend.
+
+The frontend communicates with the backend through documented HTTP API endpoints.
+
+Do not expose NASA credentials, private API keys, database credentials, or secrets in frontend code.
+
+Before introducing new frameworks or dependencies, inspect the existing repository and obtain approval.
+
+## 4. Frontend Ownership and Responsibilities
+
+The primary frontend workstream is responsible for:
+
+- User experience and interface design.
+- Angular application structure.
+- Navigation and routing.
+- Reusable UI components.
+- Responsive layouts.
+- Interactive maps.
+- Data visualization.
+- Forms and validation.
+- Frontend state management.
+- API integration.
+- Accessibility and usability.
+
+The frontend should be developed independently of backend implementation details through clear API contracts and mock services when necessary.
+
+Mock data must be explicitly identified as simulated.
+
+Do not present simulated data as real NASA or Colombian institutional observations.
+
+## 5. Visual Design Direction
+
+The product should communicate scientific credibility, agricultural relevance, and technological innovation.
+
+Visual principles:
+- Modern scientific and geospatial aesthetic.
+- Clean, professional interface.
+- Earth-inspired colors.
+- Consistent typography and spacing.
+- Strong information hierarchy.
+- Clear maps, charts, legends, and metadata.
+- Responsive desktop, tablet, and mobile experiences.
+- Spanish as the default interface language.
+
+Avoid excessive decorative elements and unnecessary complexity.
+
+Prioritize usability for farmers who may not have technical or scientific backgrounds.
+
+## 6. Frontend Module Structure
+
+The proposed Angular feature organization is:
+
+- core/: configuration, authentication, HTTP services.
+- features/map/: geographic visualization.
+- features/crops/: crop information and rotations.
+- features/analysis/: analytical results and charts.
+- features/calendar/: agricultural calendar.
+- shared/: reusable components.
+
+The implementation must follow the actual existing repository structure. This is a logical organization proposal, not permission to reorganize existing files automatically.
+
+## 7. Scientific Communication and Data Integrity
+
+Every displayed dataset or analytical result must clearly communicate its source and limitations.
+
+Distinguish:
+- Satellite observations.
+- Modeled or derived products.
+- Institutional datasets.
+- Ground observations.
+- Farmer-provided information.
+- Simulated demonstration data.
+- Model outputs and assumptions.
+
+Do not imply parcel-level accuracy when the source has coarser spatial resolution.
+
+Do not describe an experimental or unvalidated model as a reliable prediction.
+
+Recommendations should be explainable, evidence-based, and transparent about uncertainty.
+
+## 8. Hosting and Domain Strategy
+
+GoDaddy may be used for domain registration and DNS management, subject to team approval.
+
+Domain registration and application hosting are separate decisions.
+
+The frontend, backend, and database hosting providers must be evaluated independently.
+
+Do not commit credentials, domain administration information, deployment secrets, or private configuration files to GitHub.
+
+## 9. Hackathon MVP Priorities
+
+The first implementation must prioritize:
+
+1. A polished and functional homepage.
+2. A clear public Data module.
+3. A usable geographic exploration experience for Antioquia.
+4. A farmer-centered Farm interface.
+5. Farm profile and crop history forms.
+6. Comparison of at least three rotation scenarios.
+7. Transparent data sources, assumptions, and limitations.
+8. A coherent end-to-end demonstration.
+
+Avoid implementing unnecessary infrastructure or advanced machine learning features before the core demonstration works.
