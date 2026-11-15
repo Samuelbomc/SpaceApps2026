@@ -1,19 +1,23 @@
-# Forecast horizons
+# Daily forecast leads
 
-All five outputs use rolling-origin training at 7, 15, 30 and 60 days. Features end at issue date t minus two days; targets cover t+1 through t+H.
+Every output supports integer lead_days 1 through 60. A lead H predicts only target_date = issue_date + H days.
 
-| Output | Target |
+| Output | Individual-day target |
 |---|---|
-| temperature_mean | Mean daily mean temperature, C |
-| temperature_min | Mean daily minimum temperature, C |
-| temperature_max | Mean daily maximum temperature, C |
-| precipitation | Accumulated rainfall over the complete horizon, mm |
-| moisture | Mean valid SMAP moisture observations during the horizon, m3/m3 |
+| temperature_mean | That day's mean air temperature, C |
+| temperature_min | That day's minimum air temperature, C |
+| temperature_max | That day's maximum air temperature, C |
+| precipitation | That day's total rainfall, mm/day |
+| moisture | Mean of that day's accepted AM/PM SMAP retrievals, m3/m3 |
 
-Temperature minima/maxima are averages of daily extrema, not the coldest/hottest individual observation. Moisture labels can contain as little as one observed day; median target coverage is about 11/15, 20/30 and 34/60 days. Observation counts remain audit metadata.
+Issue date November 15, 2026 therefore forecasts November 16 through January 14, 2027. Models can use any later issue date when fresh, finite features are supplied. The historical training end does not bound forecast target dates.
 
-Datasets are in `data/prepared/expanded/` for seven days and `data/prepared/horizons/<horizon>d/` for longer horizons. Models are in `ml/artifacts/forecasts/<horizon>d/<model_name>/`.
+Weather/rain/SMAP features end at t-2; radiation ends at t-7. Known target-date calendar features and lead_days distinguish future dates. Current inference inputs are in data/prepared/daily/<output>/inference.csv. One model per output serves all leads; there is no recursive feeding of model predictions.
 
-Run `python -m ml.scripts.train_rolling_origin`, then `python -m ml.scripts.validate_rolling_origin` and `python -m ml.scripts.summarize_rolling_origin`. Each command defaults to all horizons.
+The existing ForecastPredictor(output, horizon_days=H) call is supported. When a frame has lead_days, its per-row lead is used; otherwise H supplies the lead. The default remains H=7 for constructor compatibility.
 
-See [rolling-origin-results.md](rolling-origin-results.md) for selection and [model-results.md](model-results.md) for current scores and limitations. Forecasts are period aggregates, not daily trajectories or predictions for the endpoint day.
+All 60 per-lead test scores are in ml/artifacts/forecasts/lead_metrics.csv. Selected leads and pooled results are in [model-results.md](model-results.md). Daily target errors cannot be compared directly against earlier multi-day aggregate errors.
+
+## Previous iterations
+
+Earlier horizons described means/totals across t+1..t+H. That output meaning has been replaced. Old aggregate model directories have been removed; their preparation recipe is retained only as historical documentation.

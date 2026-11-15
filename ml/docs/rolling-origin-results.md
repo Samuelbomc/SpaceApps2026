@@ -1,23 +1,29 @@
-# Rolling-origin training pipeline
+# Rolling-origin daily training
 
-Rolling-origin validation is the default for every output at 7, 15, 30 and 60 days. Run `python -m ml.scripts.train_rolling_origin` from the repository root after preparing the datasets.
+The canonical command is `python -m ml.scripts.train_rolling_origin`. It delegates to train_daily_models.py and consumes data/prepared/daily. Five models share information across lead_days 1-60. Temperature and rainfall predict absolute daily targets; moisture retains baseline-plus-change prediction.
 
-## Splits and selection
+## Chronological protocol
 
-The last 20% of distinct issue dates form the chronological test period, shared across locations. Development rows must precede the first test date and their target end must precede that date minus the two-day observation lag. Splits are derived directly from prepared data.
+Eligible issue dates are derived from valid daily feature/label pairs. The last 20% of distinct issue dates form the holdout, shared across cells and leads. Development pairs require issue_date before the test period and target_date strictly before its first observation cutoff (first test issue minus two days). Unobserved future targets are never training labels.
 
-Four expanding-window folds use validation blocks beginning at 40%, 55%, 70% and 85% of eligible development dates. Each training partition is purged so its targets precede the validation observation cutoff. Three configurations are evaluated: depth/minimum child weight/L2 of (2,10,20), (3,5,10), and (4,10,20). All use learning rate 0.03, L1 0.1, seed 42, two threads, up to 800 rounds and 30-round early stopping.
+Four expanding-window validation blocks begin at 40%, 55%, 70% and 85% of eligible development dates. Training targets must precede the validation observation cutoff. Validation targets must precede the next block's observation cutoff. These target-date conditions apply separately to every lead and prevent repeated target labels leaking across temporal partitions.
 
-The lowest pooled validation MAE selects the configuration. The median best round count across its four folds determines the final tree count. This produces 240 fold fits, 20 evaluation fits on development data and 20 deployment fits on all prepared data. No test labels select configuration or rounds.
+Three depth/minimum-child-weight/L2 candidates are (2,10,20), (3,5,10) and (4,10,20). All use squared-error regression, MAE validation, eta 0.03, alpha 0.1, seed 42, histogram trees, max_bin 256, eight threads, at most 800 rounds and early stopping after 30 rounds. Weighted pooled validation MAE selects the candidate. The median best fold tree count determines the evaluation and final fits. Neither configuration nor tree count is selected on test scores.
 
-## Artifacts and validation
+Quantile matrices reduce training memory; all accepted pairs at all 60 leads are used. There is no row subsampling or lead subsampling. Label repetitions across leads do not increase independent observational information.
 
-Canonical artifacts are `ml/artifacts/forecasts/<horizon>d/<model_name>/`. Output names are temperature_mean, temperature_min, temperature_max, precipitation and moisture. Each directory contains the all-data `model.json`, pre-test `evaluation_model.json`, metadata, fold results and test predictions.
+## Evaluation and deployment fits
 
-Run `python -m ml.scripts.validate_rolling_origin`, then `python -m ml.scripts.summarize_rolling_origin`. Validation checks source identity, temporal purging, candidate selection, test membership, metrics and reloaded predictions. The summary writes the current model index and results. See [model-results.md](model-results.md).
+Each output folder contains evaluation_model.json fitted on all eligible development pairs, model.json refitted on every observed pair, training.json with source hashes and fold metadata, test_predictions.npz and lead_metrics.csv. The default all-data model includes holdout labels and has no independent post-refit score.
 
-Moisture predicts a change from recent observed moisture; the loader adds that baseline. Other outputs predict absolute aggregates. Persistence is the recent seven-day observed value (rainfall scaled to the forecast duration).
+`python -m ml.scripts.validate_rolling_origin` verifies source identity, pair membership, purging, selection, every saved holdout prediction, per-lead scores and current inputs for all 60 leads. `python -m ml.scripts.summarize_rolling_origin` produces the model index and [current results](model-results.md).
+
+Daily persistence uses the latest daily temperature or rainfall feature; moisture persistence uses its recent observed mean. Scores apply to individual days, not period aggregates.
 
 ## Limitations
 
-Overlapping targets and shared source grids create correlated rows. Validation does not test unseen regions. The historical test period has already been inspected during development, so future independent data are needed for a fresh assessment. The all-data refit has no independent score. This workflow saves local forecast artifacts; application registry publication remains a separate lifecycle step.
+Historical holdouts have been inspected during development; they are not prospective confirmation. Spatial dependence, repeated labels across leads, noisy SMAP retrievals, differing LST/UTC day intervals and unverified publication times remain. See [daily-datasets.md](daily-datasets.md) and [model-results.md](model-results.md). Local training does not publish into the API registry.
+
+## Previous iterations
+
+The prior rolling-origin pipeline trained 20 aggregate variants at horizons 7/15/30/60. Those binaries have been replaced. Their scores have different target meanings and are not direct benchmarks for daily performance.

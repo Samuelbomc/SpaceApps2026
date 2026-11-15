@@ -1,37 +1,36 @@
 # ML folder architecture
 
-The default pipeline prepares measurements, selects XGBoost configurations with rolling-origin validation, evaluates a chronological holdout and saves an all-data refit.
+The default workflow is source downloads -> daily preparation -> normalized datasets -> purged rolling-origin training -> output-named artifacts -> validation/reporting -> inference.
 
 ```mermaid
 flowchart TD
-    Raw["data: raw downloads"] --> Prepare["prepare_expanded_datasets.py"]
-    Prepare --> Dataset["data/prepared: datasets and manifests"]
-    Dataset --> Train["train_rolling_origin.py"]
-    Train --> Folds["Four purged expanding-window folds"]
-    Folds --> Fits["Evaluation fit and all-data refit"]
-    Fits --> Artifacts["ml/artifacts/forecasts/horizon/output"]
-    Artifacts --> Validate["validate_rolling_origin.py"]
-    Validate --> Summary["summarize_rolling_origin.py: index and docs"]
-    Artifacts --> Inference["ml/inference/forecast.py"]
+    Raw["data: raw downloads"] --> Prep["prepare_daily_datasets.py"]
+    Prep --> Data["data/prepared/daily: features, labels and lead indexes"]
+    Data --> Loader["ml/datasets/daily.py"]
+    Data --> Train["train_rolling_origin -> train_daily_models"]
+    Train --> CV["Four purged expanding-window folds"]
+    CV --> Fit["Evaluation fit and all-data refit"]
+    Fit --> Artifacts["ml/artifacts/forecasts/output"]
+    Artifacts --> Validation["validate_rolling_origin -> validate_daily_models"]
+    Validation --> Report["summarize_rolling_origin -> summarize_daily_models"]
+    Artifacts --> Prediction["ml/inference/forecast.py"]
 ```
 
-| Folder | Relationship and responsibility |
+| Folder | Responsibility |
 |---|---|
-| ml/scripts | Preparation, rolling-origin training, validation and reporting |
-| ml/configs | Canonical model names, horizons, artifact root and application crop catalogs |
-| ml/artifacts/forecasts | Current models only; models.json indexes 20 output/horizon variants |
-| ml/inference | ForecastPredictor loads by output and horizon and reconstructs moisture |
-| ml/evaluation | Shared numerical metrics and application promotion checks |
-| ml/training | Reusable application training adapters and lifecycle support |
-| ml/docs | Dataset recipes, training protocol, inference, results and limitations |
-| data/prepared | Model inputs and manifests consumed by training |
+| data/prepared/daily | Current source features, daily labels, lead-pair indexes and label-free inference frames |
+| ml/datasets | Bounded-batch joins; no synthetic target observations |
+| ml/scripts | Preparation, fitting, validation and reporting |
+| ml/artifacts/forecasts | Five current output-named model folders; index, pooled and per-lead metrics |
+| ml/inference | Compatible ForecastPredictor API, lead/calendar handling and moisture reconstruction |
+| ml/configs | Canonical names, all 60 leads, daily units and application crop catalogs |
+| ml/training and ml/evaluation | Reusable application lifecycle and numerical evaluation support |
+| ml/docs | Current pipeline, inputs, inference, verified scores and historical iterations |
 
-Each output folder contains `model.json` (all-data refit), `evaluation_model.json` (pre-test fit), metadata and validation predictions. Both models use rolling-origin-selected settings; only the evaluation fit has holdout scores. Output names are temperature_mean, temperature_min, temperature_max, precipitation and moisture.
+Output names are temperature_mean, temperature_min, temperature_max, precipitation and moisture. Each serves leads 1-60. evaluation_model.json reproduces holdout scores; model.json is refitted on all pairs. Source hashes and fold partitions are recorded in training.json, test pairs in test_predictions.npz, and all-lead metrics in lead_metrics.csv.
 
-The application registry and promotion lifecycle remain separate. Local training does not publish models to the API registry.
-
-See [../README.md](../README.md) for commands, [rolling-origin-results.md](rolling-origin-results.md) for selection and [model-results.md](model-results.md) for scores.
+Application registry/promotion modules are separate; local artifact replacement does not publish a model into the API registry.
 
 ## Previous iterations
 
-Short complete-case datasets, single-split selection and an absolute-moisture comparator were used during development. Obsolete trained collections and training entry points have been removed. Current training derives partitions directly from prepared data and has no dependency on older artifacts.
+Prepared aggregate datasets in expanded/ and horizons/ remain historical data. Their trained collections were replaced. The canonical training/validation/report command names are preserved, but now run the direct-daily implementations.

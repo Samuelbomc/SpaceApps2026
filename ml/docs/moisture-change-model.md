@@ -1,21 +1,22 @@
-# Moisture forecast
+# Daily moisture forecast
 
-The canonical name is `moisture` at horizons 7, 15, 30 and 60 days. XGBoost predicts the change from the recent seven-day observed moisture mean, `smap_mean_7d`, to the mean valid SMAP moisture in the future period.
-
-Absolute prediction equals the raw booster change plus the baseline. The default loader reconstructs this automatically:
+The model name remains moisture. A single lead-conditioned XGBoost predicts the difference between target_date's mean accepted SMAP retrieval and the recent observed baseline, smap_mean_7d. The default loader adds the baseline to return absolute m3/m3. Target days with no observed retrieval are omitted; missing labels are never interpolated.
 
 ```python
+import pandas as pd
 from ml.inference.forecast import ForecastPredictor
-predictor = ForecastPredictor("moisture", horizon_days=7)
-absolute_moisture = predictor.predict(feature_frame)
+frame = pd.read_csv("data/prepared/daily/moisture/inference.csv")
+absolute_moisture = ForecastPredictor("moisture").predict(frame)
 ```
 
-Use `evaluation=True` for the pre-test evaluation model. The directory-based MoistureChangePredictor helper also supports these artifacts.
+Current artifacts are ml/artifacts/forecasts/moisture/. model.json is the all-data refit; evaluation_model.json is the pre-test model used for reported scores. Both raw boosters return changes. The directory-based MoistureChangePredictor helper accepts the same complete feature frames.
 
-Training uses `python -m ml.scripts.train_rolling_origin` and the same four purged expanding-window folds as the other outputs. Candidate selection and evaluation use reconstructed absolute moisture. Artifacts are in `ml/artifacts/forecasts/<horizon>d/moisture/`. Metadata records the baseline, ordered predictors, sources, folds, settings and scores. `model.json` is refitted on all rows; `evaluation_model.json` uses eligible development rows only.
+The relaxed source recipe retains attempted, finite 0.02-0.50 retrievals including non-recommended quality, records missing uncertainty and allows input observations up to fourteen days old with explicit age/count features. Past non-recommended counts are predictors; future retrieval quality counts remain label audit metadata.
 
-Quality-screened retrievals supply labels without interpolation. Missing uncertainty is recorded. Recent observation features can retain a value for at most six days, with age/count predictors. Sparse retrievals, six native cells, overlapping windows and shared meteorology limit independence and spatial generalization. See [model-results.md](model-results.md).
+There are 175 current inference cells and 266,283 observed daily labels. Most retained retrievals are non-recommended, so label noise and bias are substantial concerns. Older regridded TIFFs are sampled at native cell centres; newer files are native NetCDF. This does not create new spatial information. Shared meteorology and repeated labels across leads reduce effective independence.
+
+Training uses the same purged four-fold rolling-origin selection as the other daily outputs. Selection/evaluation metrics use reconstructed absolute moisture. See [model-results.md](model-results.md), [daily-datasets.md](daily-datasets.md) and [rolling-origin-results.md](rolling-origin-results.md).
 
 ## Previous iterations
 
-Short complete-case data and an absolute-moisture formulation preceded the current baseline-plus-change pipeline. Their obsolete trained artifacts and training commands have been removed.
+The former absolute-moisture and multi-day mean-moisture models have been replaced. Their binary artifacts are not current models.

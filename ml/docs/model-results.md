@@ -1,96 +1,53 @@
-# Current model results
+# Current daily model results
 
-The default models use rolling-origin selection at 7, 15, 30 and 60 days. Canonical names are temperature_mean, temperature_min, temperature_max, precipitation and moisture. All 20 variants are stored under ml/artifacts/forecasts/<horizon>d/<model_name>/ and indexed in models.json. All validation checks passed.
+Five output-named XGBoost models predict individual future days at leads 1-60. All saved holdout predictions, source hashes, temporal splits and current inference rows passed validation. The canonical collection is ml/artifacts/forecasts/<output>/.
 
-## Test metrics
+## Pooled daily holdout metrics
 
-Scores apply to evaluation_model.json, which is fitted only on eligible pre-test rows. model.json is refitted on every prepared row and has no independent post-refit score. Lower MAE/RMSE are preferred; bias is prediction minus target. Temperature units are C, rainfall mm per complete forecast period, and moisture m3/m3.
+Scores below evaluate evaluation_model.json, fitted on eligible pre-test pairs. The default model.json refits all observed pairs, including test labels, and has no independent post-refit score. Temperature units are C, rainfall mm/day, and moisture m3/m3. Lower MAE/RMSE are preferred; bias is prediction minus observation.
 
-| Horizon | Model | Test rows | MAE | Persistence MAE | RMSE | Bias | R2 |
-|---|---|---:|---:|---:|---:|---:|---:|
-| 7d | moisture | 792 | 0.03311 | 0.03763 | 0.04295 | -0.00921 | -0.37141 |
-| 7d | precipitation | 9612 | 36.91130 | 46.31019 | 50.75572 | -6.10814 | 0.08412 |
-| 7d | temperature_max | 9621 | 0.90807 | 1.00731 | 1.19851 | -0.00283 | 0.88213 |
-| 7d | temperature_mean | 9621 | 0.56377 | 0.63865 | 0.74728 | -0.07729 | 0.94487 |
-| 7d | temperature_min | 9621 | 0.44555 | 0.52017 | 0.56915 | -0.20356 | 0.96624 |
-| 15d | moisture | 810 | 0.03117 | 0.03706 | 0.04031 | -0.00431 | -0.42113 |
-| 15d | precipitation | 9594 | 62.72646 | 89.23447 | 83.47521 | -12.83214 | 0.13222 |
-| 15d | temperature_max | 9621 | 0.82081 | 0.97030 | 1.09515 | 0.01119 | 0.89885 |
-| 15d | temperature_mean | 9621 | 0.50635 | 0.61528 | 0.68048 | -0.09377 | 0.95367 |
-| 15d | temperature_min | 9621 | 0.38851 | 0.48724 | 0.49455 | -0.21847 | 0.97426 |
-| 30d | moisture | 828 | 0.02822 | 0.03519 | 0.03494 | 0.00041 | 0.27995 |
-| 30d | precipitation | 9567 | 100.31199 | 172.66210 | 132.96157 | -27.97578 | 0.20387 |
-| 30d | temperature_max | 9621 | 0.76660 | 0.97171 | 1.03898 | 0.02941 | 0.90714 |
-| 30d | temperature_mean | 9621 | 0.46545 | 0.59741 | 0.63932 | -0.09762 | 0.95870 |
-| 30d | temperature_min | 9621 | 0.33361 | 0.46510 | 0.42563 | -0.20585 | 0.98081 |
-| 60d | moisture | 828 | 0.02952 | 0.03477 | 0.03686 | 0.00912 | 0.23401 |
-| 60d | precipitation | 9513 | 171.73938 | 338.78133 | 222.64094 | -67.70821 | 0.20301 |
-| 60d | temperature_max | 9621 | 0.79105 | 1.08206 | 1.05262 | 0.09734 | 0.90105 |
-| 60d | temperature_mean | 9621 | 0.48302 | 0.63114 | 0.66411 | -0.10243 | 0.95478 |
-| 60d | temperature_min | 9621 | 0.37054 | 0.47708 | 0.45824 | -0.30126 | 0.97761 |
+| Output | Test pairs | MAE | Persistence MAE | RMSE | Bias | R2 | Rounds |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| temperature_mean | 572,130 | 0.82808 | 1.03658 | 1.09829 | -0.06361 | 0.8841 | 196 |
+| temperature_min | 572,130 | 0.70039 | 0.91509 | 0.88736 | -0.25006 | 0.9202 | 163 |
+| temperature_max | 572,130 | 1.47540 | 1.89116 | 1.90652 | 0.15425 | 0.7338 | 263 |
+| precipitation | 571,590 | 9.52472 | 12.36221 | 16.05492 | -1.11187 | 0.0112 | 109 |
+| moisture | 3,239,095 | 0.04584 | 0.04982 | 0.05848 | -0.00230 | 0.4935 | 84 |
 
-## Development cross-validation
+## Selected daily leads
 
-Each model uses four expanding-window validation folds and three candidate configurations. The table reports the selected candidate's pooled validation MAE; fold wins are against persistence. These folds select settings, so their scores are not independent test evidence.
+Each entry is model MAE / persistence MAE for that individual target day. Complete scores for all 60 leads are in ml/artifacts/forecasts/lead_metrics.csv.
 
-| Horizon | Model | CV MAE | CV persistence MAE | Folds beating persistence | Selected rounds |
-|---|---|---:|---:|---:|---:|
-| 7d | moisture | 0.03193 | 0.03625 | 4/4 | 114 |
-| 7d | precipitation | 32.03227 | 41.98890 | 4/4 | 166 |
-| 7d | temperature_max | 0.88860 | 0.95345 | 3/4 | 163 |
-| 7d | temperature_mean | 0.52955 | 0.58782 | 4/4 | 265 |
-| 7d | temperature_min | 0.40946 | 0.50388 | 4/4 | 192 |
-| 15d | moisture | 0.03312 | 0.03728 | 3/4 | 53 |
-| 15d | precipitation | 52.81350 | 81.34795 | 4/4 | 195 |
-| 15d | temperature_max | 0.80409 | 0.94381 | 4/4 | 199 |
-| 15d | temperature_mean | 0.48456 | 0.57673 | 4/4 | 224 |
-| 15d | temperature_min | 0.34455 | 0.47550 | 4/4 | 223 |
-| 30d | moisture | 0.03403 | 0.04015 | 3/4 | 67 |
-| 30d | precipitation | 83.59361 | 158.95307 | 4/4 | 218 |
-| 30d | temperature_max | 0.73062 | 0.95866 | 4/4 | 214 |
-| 30d | temperature_mean | 0.43069 | 0.56548 | 4/4 | 178 |
-| 30d | temperature_min | 0.29173 | 0.45294 | 4/4 | 451 |
-| 60d | moisture | 0.02932 | 0.03501 | 3/4 | 20 |
-| 60d | precipitation | 138.52182 | 319.51389 | 4/4 | 140 |
-| 60d | temperature_max | 0.72951 | 0.99332 | 4/4 | 197 |
-| 60d | temperature_mean | 0.42212 | 0.55685 | 4/4 | 260 |
-| 60d | temperature_min | 0.26321 | 0.46176 | 4/4 | 193 |
+| Output | Day 1 | Day 7 | Day 15 | Day 30 | Day 60 |
+|---|---:|---:|---:|---:|---:|
+| temperature_mean | 0.74859 / 0.77026 | 0.78317 / 0.91679 | 0.79897 / 1.00949 | 0.80960 / 1.06223 | 0.92038 / 1.20272 |
+| temperature_min | 0.68325 / 0.78529 | 0.69868 / 0.87057 | 0.69570 / 0.91092 | 0.69727 / 0.91856 | 0.72710 / 0.99146 |
+| temperature_max | 1.36138 / 1.44787 | 1.41073 / 1.64795 | 1.43184 / 1.80426 | 1.43797 / 1.92432 | 1.62898 / 2.21270 |
+| precipitation | 9.44309 / 11.67151 | 9.46297 / 12.13116 | 9.47571 / 11.88630 | 9.49673 / 12.36485 | 9.67191 / 12.86106 |
+| moisture | 0.04012 / 0.03888 | 0.04288 / 0.04392 | 0.04547 / 0.04821 | 0.04553 / 0.04918 | 0.05039 / 0.05739 |
 
-## Non-overlapping target windows
+## Training and dates
 
-The same evaluation models are scored every H days to reduce overlap; spatial dependence remains. The long-horizon moisture subsets contain very few issue dates.
+Four expanding-window validation blocks start at 40%, 55%, 70% and 85% of pre-test issue dates. Three depth/minimum-child-weight/L2 configurations are compared: (2,10,20), (3,5,10), (4,10,20), with learning rate 0.03, L1 0.1, seed 42, histogram trees, max_bin 256, up to 800 rounds and 30-round early stopping. Pooled validation MAE selects configuration; median best fold rounds selects tree count. Dates are grouped across locations and leads. Training target dates must precede the next observation cutoff; validation targets are also purged before the next block. The final 20% of issue dates form the holdout.
 
-| Horizon | Model | Rows | MAE | Persistence MAE |
-|---|---|---:|---:|---:|
-| 7d | moisture | 114 | 0.03719 | 0.03940 |
-| 7d | precipitation | 1377 | 36.69010 | 45.47589 |
-| 7d | temperature_max | 1377 | 0.89138 | 1.00801 |
-| 7d | temperature_mean | 1377 | 0.55156 | 0.63557 |
-| 7d | temperature_min | 1377 | 0.44000 | 0.50274 |
-| 15d | moisture | 66 | 0.04110 | 0.04704 |
-| 15d | precipitation | 648 | 64.01289 | 88.65604 |
-| 15d | temperature_max | 648 | 0.85403 | 0.98105 |
-| 15d | temperature_mean | 648 | 0.51979 | 0.61788 |
-| 15d | temperature_min | 648 | 0.38583 | 0.48726 |
-| 30d | moisture | 36 | 0.01426 | 0.01990 |
-| 30d | precipitation | 324 | 101.41772 | 178.95345 |
-| 30d | temperature_max | 324 | 0.77247 | 1.03260 |
-| 30d | temperature_mean | 324 | 0.46419 | 0.65675 |
-| 30d | temperature_min | 324 | 0.35131 | 0.53117 |
-| 60d | moisture | 18 | 0.01525 | 0.02431 |
-| 60d | precipitation | 162 | 177.96045 | 302.86222 |
-| 60d | temperature_max | 162 | 0.78804 | 1.33616 |
-| 60d | temperature_mean | 162 | 0.47087 | 0.81610 |
-| 60d | temperature_min | 162 | 0.37892 | 0.59892 |
+Daily persistence uses the last available daily temperature/rainfall input. Moisture retains the recent observed baseline plus a learned correction. Holdout metrics include all 60 leads; source labels recur at multiple leads, so pair counts are not independent sample counts.
 
-## Interpretation and limitations
+| Output | Test issue dates | Latest observed training target |
+|---|---|---|
+| temperature_mean | 2023-11-19 to 2026-11-11 | 2026-11-12 |
+| temperature_min | 2023-11-19 to 2026-11-11 | 2026-11-12 |
+| temperature_max | 2023-11-19 to 2026-11-11 | 2026-11-12 |
+| precipitation | 2023-11-19 to 2026-11-11 | 2026-11-12 |
+| moisture | 2025-07-09 to 2026-11-10 | 2026-11-11 |
 
-All current variants beat persistence on these historical test rows. This does not establish reliable field forecasting. Rainfall error remains substantial and its explained variance is limited. Temperature pooled R2 includes differences between locations. Moisture has sparse, quality-selected and incompletely observed labels with missing uncertainty. Longer aggregates smooth variability; scores across horizons have different target meanings. Forecasts aggregate t+1..t+H, not the state on day H.
+Current prepared inference inputs are issued November 15, 2026 and cover November 16, 2026 through January 14, 2027. Forecasting from a later date requires freshly prepared features with acceptable observation ages; the model can accept any valid issue date, not only the prepared example.
 
-Daily target windows overlap and neighbouring cells share information. No unseen-region, station/gauge or prospective field evaluation is provided. Source publication-time availability remains unverified. Historical test periods have already informed development, so results are exploratory rather than independent confirmation. Further selection based on these test scores would overstate progress. Full-refit artifacts include test rows; their performance must not be represented by evaluation-model metrics.
+## Limitations
 
-See ml/docs/rolling-origin-results.md for the current training pipeline, ml/docs/horizon-results.md for forecast semantics, and ml/docs/moisture-change-model.md for moisture inference. Reproduce the results using the commands in ml/README.md.
+These are historical development holdouts, not prospective field validation. Nearby cells, shared meteorology and repeating labels across leads cause dependence; pooled temperature R2 includes spatial differences. Most accepted SMAP retrievals are non-recommended; sparse daily coverage, approximate static fills and missing uncertainty can bias moisture labels. Daily rainfall is harder than predicting smoothed multi-day totals, and beating persistence does not establish operational usefulness. A missing GPM file is excluded only on its target day, not filled into a label.
+
+POWER uses LST daily intervals and GPM/SMAP use UTC intervals. Weather/rain/SMAP use a two-day observation lag; radiation uses seven days. Causal bounded input filling and observation-age predictors handle gaps, but actual historical publication times are not certified. There are no calibrated prediction intervals, no unseen-region or station/gauge validation, and no joint constraints guaranteeing minimum/mean/maximum temperature ordering. Raw regression outputs are not physically clipped.
 
 ## Previous iterations
 
-Early weekly recipes requiring SMAP everywhere yielded only 94 examples per temperature model, 42 for rainfall and 86 for moisture. The expanded daily recipe removed the climate models' SMAP dependency and used native AM/PM moisture observations. An absolute-moisture model was superseded by baseline-plus-change prediction. The following single-split experiments were superseded by rolling-origin selection, which improved 18 of 20 same-test comparisons. These were exploratory comparisons on previously examined holdouts. Superseded datasets, model binaries, comparison outputs and training commands have been removed; only the current rolling-origin artifacts and pipeline remain.
+Short complete-case datasets, aggregate 7/15/30/60-day targets, single-split selection and earlier rolling-origin aggregate models preceded this daily design. Their old trained collections were replaced. Their scores are not directly comparable with individual-day target scores. Data preparation documentation retains the earlier recipe for context; only the direct-daily output-named binaries are current.

@@ -1,8 +1,8 @@
-"""Expand usable examples without fabricating target observations.
+"""Prepare recent training labels and separate label-free forecast inputs.
 
-Climate models use all available POWER points and daily issue dates without
-requiring SMAP. Moisture uses native SMAP cell centres and recommended AM/PM
-retrievals. Last-observation features are bounded to six days and carry age.
+Use POWER LST and both native SMAP NetCDF and older TIFF observations.
+Relax quality rejection while preserving fill values, causal feature times,
+real observed targets, and explicit coverage/imputation audit columns.
 """
 from io import StringIO
 import argparse
@@ -16,14 +16,35 @@ import pandas as pd
 import rasterio
 
 from ml.scripts.dataset_sources import select_static, smap_dates, samples
+from rasterio.warp import transform
 
 
 ROOT = Path("data")
 OUT = ROOT / "prepared/expanded"
-INDEX = pd.date_range("2011-11-12", "2026-11-12")
+INDEX = pd.DatetimeIndex([])
+FORECAST_DATE = pd.Timestamp("2026-11-10")
+MOISTURE_AUDIT = {}
+STATIC_IMPUTED = None
+
+
+def discover_index(forecast_date):
+    """Use the actual POWER file extent, not a frozen preparation date."""
+    global INDEX, FORECAST_DATE
+    FORECAST_DATE = pd.Timestamp(forecast_date)
+    dates = []
+    for path in (ROOT/"POWER").rglob("*.csv"):
+        lines = path.read_text(encoding="utf-8-sig").splitlines()
+        header = next(i for i,s in enumerate(lines) if s.startswith("YEAR,DOY,"))
+        f = pd.read_csv(StringIO("\n".join(lines[header:])),usecols=["YEAR","DOY"])
+        dates.extend(pd.to_datetime(f.YEAR.astype(str),format="%Y")+pd.to_timedelta(f.DOY-1,unit="D"))
+    if not dates:
+        raise ValueError("No POWER measurements found")
+    INDEX = pd.date_range(min(dates),max(max(dates),FORECAST_DATE))
 
 
 def load_power():
+    if INDEX.empty:
+        discover_index(FORECAST_DATE)
     frames, points, files = [], [], []
     for path in sorted((ROOT/"POWER").rglob("*.csv")):
         text = path.read_text(encoding="utf-8-sig")
@@ -31,8 +52,8 @@ def load_power():
         if not match:
             continue
         lat,lon = map(float,match.groups())
-        if (lon,lat) in points or "in UTC" not in text:
-            raise ValueError(f"Duplicate point/non-UTC POWER: {path}")
+        if (lon,lat) in points or "in LST" not in text:
+            raise ValueError(f"Duplicate point/non-LST POWER: {path}; current recipe requires LST")
         lines = text.splitlines()
         header = next(i for i,s in enumerate(lines) if s.startswith("YEAR,DOY,"))
         frame = pd.read_csv(StringIO("\n".join(lines[header:])))
@@ -87,52 +108,110 @@ def load_rain(points):
 
 
 def load_moisture():
-    paths = smap_dates(ROOT/"SMAP","*AM_soil_moisture_reformatted.tif")
-    first = next(iter(paths.values()))
-    with rasterio.open(first) as ds:
-        grid = ds.shape,ds.transform,ds.crs
-        rr,cc = np.indices(ds.shape)
-        xs,ys = rasterio.transform.xy(ds.transform,rr.ravel(),cc.ravel())
-        xs,ys = np.array(xs),np.array(ys)
-        inside = (xs>=-75.583)&(xs<=-74.6167)&(ys>=5.411)&(ys<=6.5866)
+    """Combine native EASE-grid NetCDF with older regridded TIFF observations.
+
+    Non-recommended but attempted retrievals are accepted; fill values and
+    physically invalid moisture are never promoted into measurements.
+    """
+    global MOISTURE_AUDIT
+    if INDEX.empty:
+        discover_index(FORECAST_DATE)
+    nc_paths = smap_dates(ROOT/"SMAP","*.nc4")
+    tif_paths = smap_dates(ROOT/"SMAP","*AM_soil_moisture_reformatted.tif")
+    if not nc_paths:
+        raise ValueError("Expected the newly downloaded native SMAP NetCDF files")
+    with h5py.File(next(iter(nc_paths.values()))) as ds:
+        x,y = np.meshgrid(ds["x_global"][:],ds["y_global"][:])
+        lons,lats = transform("EPSG:6933","EPSG:4326",x.ravel(),y.ravel())
+        lons,lats = np.array(lons),np.array(lats)
+        inside = (lons>=-75.583)&(lons<=-74.6167)&(lats>=5.411)&(lats<=6.5866)
         positions = np.flatnonzero(inside)
-        points = list(zip(xs[inside],ys[inside]))
+        points = list(zip(lons[inside],lats[inside]))
+        native_x,native_y = ds["x_global"][:],ds["y_global"][:]
     moisture = pd.DataFrame(np.nan,index=INDEX,columns=range(len(points)))
-    counts = moisture.copy()
-    uncertainty_counts = moisture.copy()
+    counts = pd.DataFrame(0.,index=INDEX,columns=moisture.columns)
+    uncertainty_counts = counts.copy()
+    recommended_counts = counts.copy()
     sources = []
-    for day,am_path in paths.items():
-        daily,uncertainty = [],[]
-        for period,suffix in (("AM",""),("PM","_pm")):
-            def path_for(field):
-                return am_path.with_name(am_path.name.replace("AM_soil_moisture_reformatted",f"{period}_{field}{suffix}_reformatted"))
-            def read(field):
-                path = path_for(field)
-                if not path.exists():
-                    return np.full(len(points),np.nan)
-                with rasterio.open(path) as ds:
-                    if (ds.shape,ds.transform,ds.crs)!=grid:
-                        raise ValueError(f"SMAP grids disagree: {path}")
-                    a = ds.read(1,masked=True).astype(float).filled(np.nan).ravel()[positions]
-                sources.append(str(path))
-                return a
-            values,quality,surface,error = (read(field) for field in ("soil_moisture","retrieval_qual_flag","surface_flag","soil_moisture_error"))
-            flags = np.where(np.isfinite(quality),quality,3).astype(np.int64)
-            good = ((flags&3)==0)&np.isfinite(surface)&(values>=0.02)&(values<=0.5)
-            # Error calculation is unpopulated in these files. Retain missing
-            # error, while enforcing published 0..0.2 limits where supplied.
-            good &= np.isnan(error)|((error>=0)&(error<=0.2))
-            daily.append(np.where(good,values,np.nan))
-            uncertainty.append(good&np.isfinite(error))
+    raw_accepted,recommended_accepted = 0,0
+
+    def decoded(var):
+        a = np.asarray(var[:],dtype=float)
+        fill = var.attrs.get("_FillValue",np.nan)
+        a[(a==fill)|~np.isfinite(a)] = np.nan
+        return a.ravel()[positions]
+
+    days = sorted(set(nc_paths)|set(tif_paths))
+    for number,day in enumerate(days):
+        if day not in INDEX:
+            continue
+        daily,uncertainty,recommended = [],[],[]
+        nc = nc_paths.get(day)
+        if nc is not None:
+            sources.append(str(nc))
+            with h5py.File(nc) as ds:
+                if not (np.array_equal(ds["x_global"][:],native_x) and np.array_equal(ds["y_global"][:],native_y)):
+                    raise ValueError(f"Native SMAP grids disagree: {nc}")
+                for period,suffix in (("AM",""),("PM","_pm")):
+                    group = ds["Soil_Moisture_Retrieval_Data_"+period]
+                    values,quality,error = (decoded(group[field+suffix]) for field in ("soil_moisture","retrieval_qual_flag","soil_moisture_error"))
+                    flags = np.where(np.isfinite(quality),quality,65534).astype(np.int64)
+                    # Bit 1 set means retrieval was not attempted. Bit 0 only
+                    # marks not-recommended quality; retain and count it.
+                    good = np.isfinite(values)&(values>=0.02)&(values<=0.5)&np.isfinite(quality)&((flags&2)==0)
+                    daily.append(np.where(good,values,np.nan))
+                    uncertainty.append(good&np.isfinite(error)&(error>=0)&(error<=0.2))
+                    recommended.append(good&((flags&1)==0))
+        else:
+            am_path = tif_paths[day]
+            for period,suffix in (("AM",""),("PM","_pm")):
+                def read(field):
+                    path = am_path.with_name(am_path.name.replace("AM_soil_moisture_reformatted",f"{period}_{field}{suffix}_reformatted"))
+                    if not path.exists():
+                        return np.full(len(points),np.nan)
+                    sources.append(str(path))
+                    with rasterio.open(path) as ds:
+                        xx,yy = transform("EPSG:4326",ds.crs,[p[0] for p in points],[p[1] for p in points])
+                        rr,cc = rasterio.transform.rowcol(ds.transform,xx,yy)
+                        rr,cc = np.array(rr),np.array(cc)
+                        covered = (rr>=0)&(cc>=0)&(rr<ds.height)&(cc<ds.width)
+                        a = ds.read(1,masked=True).astype(float).filled(np.nan)
+                        result = np.full(len(points),np.nan)
+                        result[covered] = a[rr[covered],cc[covered]]
+                        return result
+                values,quality,error = (read(field) for field in ("soil_moisture","retrieval_qual_flag","soil_moisture_error"))
+                flags = np.where(np.isfinite(quality),quality,65534).astype(np.int64)
+                good = np.isfinite(values)&(values>=0.02)&(values<=0.5)&np.isfinite(quality)&((flags&2)==0)
+                daily.append(np.where(good,values,np.nan))
+                uncertainty.append(good&np.isfinite(error)&(error>=0)&(error<=0.2))
+                recommended.append(good&((flags&1)==0))
         a = np.stack(daily)
         count = np.isfinite(a).sum(axis=0)
         moisture.loc[day] = np.divide(np.nansum(a,axis=0),count,out=np.full(len(points),np.nan),where=count>0)
         counts.loc[day] = count
         uncertainty_counts.loc[day] = np.stack(uncertainty).sum(axis=0)
+        recommended_counts.loc[day] = np.stack(recommended).sum(axis=0)
+        raw_accepted += int(count.sum())
+        recommended_accepted += int(np.stack(recommended).sum())
+        if number%500==0:
+            print(f"SMAP {number}/{len(days)}",flush=True)
+    MOISTURE_AUDIT = {
+        "native_cells":len(points),"source_date_count":len(days),
+        "first_source_date":str(min(days).date()),"last_source_date":str(max(days).date()),
+        "first_accepted_date":str(moisture.dropna(how="all").index.min().date()),
+        "last_accepted_date":str(moisture.dropna(how="all").index.max().date()),
+        "accepted_retrievals":raw_accepted,"recommended_retrievals":recommended_accepted,
+        "nonrecommended_retrievals_retained":raw_accepted-recommended_accepted,
+        "native_grid":"EPSG:6933; old TIFFs sampled at native cell centres with nearest-cell sampling",
+    }
+    # Keep the historical return contract; quality counts are also available
+    # to preparation without becoming target-derived predictors.
+    moisture.attrs["recommended_counts"] = recommended_counts
     return points,moisture,counts,uncertainty_counts,sources
 
 
 def static(points):
+    global STATIC_IMPUTED
     values, sources = {},[]
     for name,filename in (("elevation_m","srtmgl1_dem_raw.tif"),("slope_degrees","srtmgl1_slope_degrees.tif")):
         path = select_static(ROOT/"SRTM")/filename
@@ -143,16 +222,32 @@ def static(points):
             a = np.array(samples(path,points)); a[a<0] = np.nan
             values[f"soil_{prop}_{statistic}"] = a*(factor if statistic=="mean" else 1)
             sources.append(str(path))
+    STATIC_IMPUTED = np.zeros(len(points),dtype=int)
+    for key,array in values.items():
+        array = np.array(array,dtype=float)
+        valid = np.flatnonzero(np.isfinite(array))
+        if not len(valid):
+            raise ValueError(f"Entire static layer is missing: {key}")
+        for i in np.flatnonzero(~np.isfinite(array)):
+            closest = valid[np.argmin(np.sum((np.array(points)[valid]-points[i])**2,axis=1))]
+            array[i] = array[closest]
+            STATIC_IMPUTED[i] += 1
+        values[key] = array
     return values,sources
 
 
 def climate_features(power,rain,elevation):
     f = pd.DataFrame(index=INDEX)
+    # Feature-only causal filling: no backfill, future interpolation or label filling.
+    raw_power,raw_rain = power,rain
+    power,rain = power.ffill(limit=7),rain.ffill(limit=3)
     for col in ("T2M","T2M_MIN","T2M_MAX","RH2M","QV2M","WS2M"):
         for days in (7,14,30):
             f[f"{col.lower()}_mean_{days}d"] = power[col].rolling(days,min_periods=days).mean().shift(2)
     f["t2m_last"] = power.T2M.shift(2)
-    f["radiation_sum_7d"] = power.ALLSKY_SFC_SW_DWN.rolling(7,min_periods=7).sum().shift(2)
+    # Radiation is published later than meteorology. Use a seven-day lag
+    # consistently in training and inference rather than assume a two-day feed.
+    f["radiation_sum_7d"] = power.ALLSKY_SFC_SW_DWN.rolling(7,min_periods=7).sum().shift(7)
     for days in (1,3,7,14,30):
         f[f"gpm_late_sum_{days}d_mm"] = rain.rolling(days,min_periods=days).sum().shift(2)
     f["gpm_late_max_daily_7d_mm"] = rain.rolling(7,min_periods=7).max().shift(2)
@@ -161,6 +256,11 @@ def climate_features(power,rain,elevation):
     f["week_of_year"] = INDEX.isocalendar().week.to_numpy(dtype=float)
     f["day_of_year_sin"] = np.sin(2*np.pi*(INDEX.day_of_year-1)/365.2425)
     f["day_of_year_cos"] = np.cos(2*np.pi*(INDEX.day_of_year-1)/365.2425)
+    f.attrs["audit"] = {
+        "input_power_filled_values_30d":(raw_power.isna()&power.notna()).sum(axis=1).rolling(30,min_periods=1).sum().shift(2),
+        "input_rain_filled_days_30d":(raw_rain.isna()&rain.notna()).rolling(30,min_periods=1).sum().shift(2),
+        "radiation_observation_cutoff":pd.Series(INDEX-pd.Timedelta(days=7),index=INDEX).dt.strftime("%Y-%m-%d"),
+    }
     return f
 
 
@@ -169,17 +269,16 @@ def prepare(horizon, output, loaded):
     (pp,powers,power_files), (sp,sm,sm_counts,sm_error,sm_files), rain, gpm_files, terrain, static_files = loaded
     all_points = pp+sp
     manifest, tables, rejected = {},{name:[] for name in ("temperature_mean","temperature_min","temperature_max","precipitation","moisture")},{}
-    features = {}
+    features,inference = {},{name:[] for name in tables}
     target_map = {"temperature_mean":"T2M","temperature_min":"T2M_MIN","temperature_max":"T2M_MAX"}
     def add(name, f, label, point, extra=None):
         names = list(f.columns)
         features[name] = names
         frame = f.copy()
         frame["target"] = label
-        valid = np.isfinite(frame.to_numpy(float)).all(axis=1)
-        valid &= INDEX<=INDEX.max()-pd.Timedelta(days=horizon)
+        feature_valid = np.isfinite(f.to_numpy(float)).all(axis=1)
+        valid = feature_valid&np.isfinite(label.to_numpy(float))
         rejected[name] = rejected.get(name,0)+int((~valid).sum())
-        frame = frame.loc[valid].copy()
         frame["point_id"] = f"{name}_{point}"
         lon,lat = all_points[point]
         frame["longitude"],frame["latitude"] = lon,lat
@@ -189,31 +288,47 @@ def prepare(horizon, output, loaded):
         if extra is not None:
             for col,series in extra.items():
                 frame[col] = series.reindex(frame.index)
-        tables[name].append(frame)
+        for col,series in f.attrs.get("audit",{}).items():
+            frame[col] = series.reindex(frame.index)
+        frame.attrs = {}
+        frame["static_imputed_fields"] = int(STATIC_IMPUTED[point])
+        tables[name].append(frame.loc[valid].copy())
+        # Prediction inputs must never require future target observations.
+        selected = feature_valid&(INDEX==FORECAST_DATE)
+        forecast = frame.loc[selected].drop(columns=[c for c in frame if c=="target" or c.startswith("target_observed") or c.startswith("target_retrieval") or c.startswith("target_uncertainty") or c.startswith("target_recommended")]).copy()
+        inference[name].append(forecast)
     for i,power in enumerate(powers):
         f = climate_features(power,rain[i],terrain["elevation_m"][i])
         for name,col in target_map.items():
-            add(name,f,power[col].rolling(horizon,min_periods=horizon).mean().shift(-horizon),i)
-        add("precipitation",f,rain[i].rolling(horizon,min_periods=horizon).sum().shift(-horizon),i)
+            count = power[col].rolling(horizon,min_periods=1).count().shift(-horizon)
+            label = power[col].rolling(horizon,min_periods=max(1,int(np.ceil(.8*horizon)))).mean().shift(-horizon)
+            label = label.where(INDEX<=power[col].last_valid_index()-pd.Timedelta(days=horizon))
+            add(name,f,label,i,{"target_observed_days":count})
+        label = rain[i].rolling(horizon,min_periods=horizon).sum().shift(-horizon)
+        add("precipitation",f,label,i,{"target_observed_days":rain[i].rolling(horizon,min_periods=1).count().shift(-horizon)})
     for j,point in enumerate(sp):
         i = len(pp)+j
         nearest = int(np.argmin(np.sum((np.array(pp)-point)**2,axis=1)))
         f = climate_features(powers[nearest],rain[i],terrain["elevation_m"][i])
         s = sm[j]
-        f["smap_mean_7d"] = s.rolling(7,min_periods=1).mean().shift(2)
-        f["smap_last_valid_m3_m3"] = s.ffill(limit=6).shift(2)
+        f["smap_mean_7d"] = s.rolling(7,min_periods=1).mean().shift(2).fillna(s.ffill(limit=14).shift(2))
+        f["smap_last_valid_m3_m3"] = s.ffill(limit=14).shift(2)
         observed_date = pd.Series(pd.NaT,index=INDEX,dtype="datetime64[ns]")
         observed_date.loc[s.notna()] = INDEX[s.notna()]
-        last_date = observed_date.ffill(limit=6).shift(2)
+        last_date = observed_date.ffill(limit=14).shift(2)
         f["smap_age_days"] = ((pd.Series(INDEX,index=INDEX)-pd.Timedelta(days=2))-last_date).dt.days
         f["smap_observed_days_7d"] = s.rolling(7,min_periods=1).count().shift(2)
         for key,values in terrain.items():
             f[key] = values[i]
         label = s.rolling(horizon,min_periods=1).mean().shift(-horizon)
+        last_valid = s.last_valid_index()
+        label = label.where(INDEX<=(last_valid-pd.Timedelta(days=horizon) if last_valid is not None else INDEX.min()-pd.Timedelta(days=1)))
         target_count = s.rolling(horizon,min_periods=1).count().shift(-horizon)
         extra = {"target_observed_days":target_count,
                  "target_retrieval_count":sm_counts[j].rolling(horizon,min_periods=1).sum().shift(-horizon),
                  "target_uncertainty_available_count":sm_error[j].rolling(horizon,min_periods=1).sum().shift(-horizon),
+                 "target_recommended_retrieval_count":sm.attrs["recommended_counts"][j].rolling(horizon,min_periods=1).sum().shift(-horizon),
+                 "input_smap_nonrecommended_retrievals_7d":(sm_counts[j]-sm.attrs["recommended_counts"][j]).rolling(7,min_periods=1).sum().shift(2),
                  "smap_latest_observation_date":last_date.dt.strftime("%Y-%m-%d")}
         add("moisture",f,label,i,extra)
     for name,parts in tables.items():
@@ -227,21 +342,45 @@ def prepare(horizon, output, loaded):
         assert not frame.duplicated(["point_id","issue_date"]).any()
         assert np.isfinite(frame[features[name]+["target"]].to_numpy(float)).all()
         manifest[name] = {"path":str(output/f"{name}.csv"),"horizon_days":horizon,"features":features[name],"target":"target","rows":len(frame),"locations":int(frame.point_id.nunique()),"distinct_issue_dates":int(dates.nunique()),"first_issue":str(dates.min().date()),"last_issue":str(dates.max().date()),"excluded":rejected[name]}
+        forecast = pd.concat(inference[name],ignore_index=True).sort_values(["issue_date","point_id"])
+        if forecast.empty:
+            raise ValueError(f"No finite prediction inputs at {FORECAST_DATE.date()} for {name}")
+        forecast.to_csv(output/f"{name}_inference.csv",index=False)
+        manifest[name].update(inference_path=str(output/f"{name}_inference.csv"),inference_rows=len(forecast),inference_issue_date=str(FORECAST_DATE.date()),recipe_version="recent-lst-native-smap-v2")
         print(horizon,"days:",name,manifest[name]["rows"],"rows",manifest[name]["locations"],"locations",flush=True)
     (output/"manifest.json").write_text(json.dumps(manifest,indent=2),encoding="utf-8")
-    policy = {"power_files":power_files,"gpm_files":gpm_files,"smap_files":sm_files,"static_files":static_files,"rules":["Daily issue dates with inputs ending t-2 and targets t+1..t+7","No SMAP dependency in climate models","SMAP native cell centres inside original AOI; quality-screened AM/PM mean per day","Moisture meteorology from nearest downloaded POWER query location; no new climate resolution claimed","No linear interpolation, synthetic target labels or spatial upsampling","Latest SMAP feature carried forward at most six days with explicit observation age","Late Run rainfall targets; missing SMAP error recorded","Daily overlapping horizons and nearby cells are correlated; evaluate chronologically with purging","Strict complete finite predictor rows; no model-based imputation"]}
+    policy = {"power_files":power_files,"gpm_files":gpm_files,"smap_files":sm_files,"static_files":static_files}
     policy["horizon_days"] = horizon
-    policy["rules"][0] = f"Daily issue dates with inputs ending t-2 and targets t+1..t+{horizon}"
+    policy["recipe_version"] = "recent-lst-native-smap-v2"
+    policy["power_time_standard"] = "LST"
+    policy["daily_alignment"] = "POWER uses local-solar calendar days; GPM and SMAP retain UTC calendar dates. Same-date bins are covariates, not identical 24-hour intervals. Weather/rain/SMAP inputs end t-2; radiation ends t-7. No UTC-to-LST rainfall reconstruction is claimed. Publication-time archives are unavailable; historical as-issued availability is not certified."
+    policy["smap_audit"] = MOISTURE_AUDIT
+    policy["forecast_issue_date"] = str(FORECAST_DATE.date())
+    policy["training_status"] = "Prepared only; existing trained artifacts belong to the previous source recipe and were not retrained."
+    policy["rules"] = [
+        "POWER LST; GPM Late and SMAP UTC; two-calendar-day observation lag",
+        "Radiation uses a seven-day publication allowance in both training and inference",
+        "Native EPSG:6933 SMAP NetCDF after 2022 combined with older nearest-sampled TIFFs",
+        "Retain finite SMAP 0.02..0.50 with retrieval attempted; not-recommended flags retained and counted; missing uncertainty/surface metadata do not discard observations",
+        "Causal feature-only forward fill: POWER at most 7 days; rainfall at most 3 days; SMAP at most 14 days with age/count metadata; no backward fill or future interpolation",
+        "Static missing samples use nearest available sampled location; imputed-field counts retained",
+        "Temperature targets require at least 80% observed days and a fully elapsed horizon; rainfall targets require every day; moisture targets average at least one real observation in a fully elapsed horizon",
+        "Targets are never filled; target coverage and quality are audit metadata, never predictors",
+        "Inference files contain finite features and no target; they do not require future observations",
+    ]
+    policy["rules"][0] = f"Daily issue dates; inputs end t-2 except radiation t-7; targets t+1..t+{horizon}"
     (output/"preparation.json").write_text(json.dumps(policy,indent=2),encoding="utf-8")
 
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument("--horizons",type=int,nargs="+",default=[7])
+    parser.add_argument("--horizons",type=int,nargs="+",default=[7,15,30,60])
+    parser.add_argument("--forecast-date",default="2026-11-10")
     parser.add_argument("--output-root",type=Path)
     args = parser.parse_args()
     if any(h<1 or h>60 for h in args.horizons):
         parser.error("Horizons must be between 1 and 60 days")
+    discover_index(args.forecast_date)
     power,moisture = load_power(),load_moisture()
     points = power[0]+moisture[0]
     rain,gpm_files = load_rain(points)

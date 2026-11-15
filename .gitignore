@@ -242,3 +242,12 @@ SOILGRIDS
 SRTM
 .venv-data/
 .venv-data/
+
+prepared
+
+# Local training/evaluation products; retain only runtime models and small reports.
+/ml/artifacts/forecasts/*/evaluation_model.json
+/ml/artifacts/forecasts/*/test_predictions.npz
+/ml/artifacts/forecasts/current_predictions.csv
+/ml/artifacts/*_pending/
+/ml/artifacts/*_pending_removal/

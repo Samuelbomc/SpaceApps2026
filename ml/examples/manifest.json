@@ -1,0 +1,32 @@
+{
+  "recipe_version": "daily-direct-1-60-v1",
+  "issue_date": "2026-11-15",
+  "description": "One public-source example location per output, all 60 leads; static snapshot, not live observations.",
+  "models": {
+    "temperature_mean": {
+      "path": "inputs/temperature_mean.csv",
+      "point_id": "power_0",
+      "rows": 60
+    },
+    "temperature_min": {
+      "path": "inputs/temperature_min.csv",
+      "point_id": "power_0",
+      "rows": 60
+    },
+    "temperature_max": {
+      "path": "inputs/temperature_max.csv",
+      "point_id": "power_0",
+      "rows": 60
+    },
+    "precipitation": {
+      "path": "inputs/precipitation.csv",
+      "point_id": "power_0",
+      "rows": 60
+    },
+    "moisture": {
+      "path": "inputs/moisture.csv",
+      "point_id": "smap_0",
+      "rows": 60
+    }
+  }
+}
