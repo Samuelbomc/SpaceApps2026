@@ -234,3 +234,10 @@ node_modules/
 # El cliente HTTP del frontend no es el directorio lib/ generado de Python.
 !apps/web/src/lib/
 !apps/web/src/lib/**
+
+GPM
+POWER
+SENTINEL2
+SMAP
+SOILGRIDS
+SRTM
