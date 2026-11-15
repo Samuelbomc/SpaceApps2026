@@ -12,7 +12,7 @@ from apps.api.app.config import Settings
 from apps.api.app.db.postgres import Database
 from pipelines.scheduling.runner import next_slot, poll_background
 from scripts.migrate import migrate
-from scripts.runtime import build_jobs
+from scripts.runtime import JOB_NAMES, build_job
 
 LOG = logging.getLogger("fieldshift.worker")
 JOB_KEY = "nasa-weekly"
@@ -121,13 +121,15 @@ def main(argv=None):
     settings = Settings.from_env()
     database = Database(settings.database_url)
     migrate(database)
-    jobs = build_jobs(database, settings)
-    selected = list(jobs) if args.job == "all" else [args.job]
+    jobs = {}
+    selected = JOB_NAMES if args.job == "all" else (args.job,)
 
     def execute():
         states = []
         for name in selected:
             try:
+                if name not in jobs:
+                    jobs[name] = build_job(name, database, settings)
                 if name == "ingestion":
                     status = poll_once(database, jobs[name], force=args.once)
                     if status == "completed":

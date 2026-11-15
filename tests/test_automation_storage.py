@@ -126,8 +126,10 @@ class AutomationAPITests(unittest.TestCase):
         job = CropRecommendationJob(
             observations, results, registry, artifacts, predictor_factory=factory, horizons=(7,)
         )
-        with self.assertRaisesRegex(ValueError, "versión publicada"):
-            job.run()
+        outcome = job.run()
+        self.assertEqual(outcome["status"], "partial")
+        self.assertEqual(outcome["outcomes"][0]["error_type"], "ValueError")
+        self.assertEqual(outcome["failed_tasks"], [{"region_id": "test-only", "horizon_days": 7}])
         results.save_analysis.assert_not_called()
 
     def test_catalog_revision_changes_result_identity_and_missing_version_blocks_publication(self):

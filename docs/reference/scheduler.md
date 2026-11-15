@@ -24,6 +24,19 @@ Sin --once los procesos deben permanecer activos. Compose los ejecuta como
 servicios separados; scripts.dev_stack conserva las bases pero no activa workers.
 No se dispara NASA ni XGBoost al abrir Angular o consultar FastAPI.
 
+El worker construye únicamente el job seleccionado y sus dependencias. En modo
+`all`, un fallo de configuración de un job se informa sin impedir los demás; su
+construcción vuelve a intentarse en el siguiente ciclo. La ingesta no depende de
+configuración de entrenamiento, reglas agronómicas o conexión a resultados ML.
+
+Las recomendaciones aíslan cada región/horizonte. Un error técnico conserva los
+resultados anteriores y permite completar las demás tareas. El job devuelve
+`partial`, con `failed_tasks` y resultados por tarea, y el scheduler guarda ese
+progreso en `job_schedules.last_result` junto al backoff. Tras reiniciar, el
+reintento del mismo día procesa únicamente las tareas fallidas. Al cambiar el día,
+o ejecutar `--once`, se revisan todas las tareas para el periodo actual.
+La integridad de los modelos se verifica por horizonte al inferir.
+
 El runtime normal conecta constructor, trainer, políticas y factory de
 campeones. El entrenamiento consume tablas procesadas, no catálogos CMR ni CSV
 privados. La construcción reciente de toda la receta y la revisión científica de

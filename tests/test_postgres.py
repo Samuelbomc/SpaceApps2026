@@ -5,11 +5,13 @@ import unittest
 import uuid
 from datetime import UTC, date, datetime, timedelta
 from unittest.mock import Mock, patch
+from zoneinfo import ZoneInfo
 
 import psycopg
 from fastapi.testclient import TestClient
 from psycopg import sql
 from psycopg.conninfo import make_conninfo
+from psycopg.types.json import Jsonb
 
 from apps.api.app.db.postgres import Database
 from apps.api.app.main import create_app
@@ -75,6 +77,65 @@ class PostgreSQLTests(unittest.TestCase):
         self.assertEqual(poll_background(self.db, "model-training", success), "not_due")
         self.assertIsNone(self.repo.schedule("model-training")["retry_at"])
         self.assertEqual(self.repo.schedule("model-training")["last_result"]["published"], 1)
+
+    def test_partial_recommendations_keep_failed_tasks_and_resume_after_restart(self):
+        from pipelines.scheduling.runner import poll_background
+
+        today = datetime.now(ZoneInfo("America/Bogota")).date().isoformat()
+        tasks = [{"region_id": "fixture-only", "horizon_days": 7}]
+        partial = Mock()
+        partial.run.return_value = {
+            "status": "partial",
+            "forecast_start_date": today,
+            "failed_tasks": tasks,
+            "outcomes": [
+                {"horizon_days": 7, "status": "failed"},
+                {"horizon_days": 15, "status": "insufficient_data"},
+            ],
+        }
+        self.assertEqual(
+            poll_background(self.db, "crop-recommendations", partial), "retry_scheduled"
+        )
+        state = self.repo.schedule("crop-recommendations")
+        self.assertEqual(state["last_result"]["failed_tasks"], tasks)
+        self.assertIsNotNone(state["retry_at"])
+        self.assertEqual(poll_background(self.db, "crop-recommendations", partial), "not_due")
+        with self.db.connect() as conn:
+            conn.execute(
+                "UPDATE job_schedules SET retry_at=now()-interval '1 second' WHERE job_key='crop-recommendations'"
+            )
+        restarted = Mock()
+        restarted.run.return_value = {
+            "status": "ok",
+            "forecast_start_date": today,
+            "failed_tasks": [],
+            "outcomes": [],
+        }
+        self.assertEqual(poll_background(self.db, "crop-recommendations", restarted), "completed")
+        restarted.run.assert_called_once_with(tasks=tasks)
+        self.assertIsNone(self.repo.schedule("crop-recommendations")["retry_at"])
+
+    def test_previous_day_retry_and_forced_run_refresh_all_recommendation_tasks(self):
+        from pipelines.scheduling.runner import poll_background
+
+        today = datetime.now(ZoneInfo("America/Bogota")).date()
+        for previous_date, force in [(today - timedelta(days=1), False), (today, True)]:
+            previous = {
+                "status": "partial",
+                "forecast_start_date": previous_date.isoformat(),
+                "failed_tasks": [{"region_id": "fixture-only", "horizon_days": 7}],
+            }
+            with self.db.connect() as conn:
+                conn.execute(
+                    "UPDATE job_schedules SET retry_at=now()-interval '1 second',last_result=%s WHERE job_key='crop-recommendations'",
+                    (Jsonb(previous),),
+                )
+            job = Mock()
+            job.run.return_value = {"status": "ok"}
+            self.assertEqual(
+                poll_background(self.db, "crop-recommendations", job, force=force), "completed"
+            )
+            job.run.assert_called_once_with()
 
     def test_local_registry_keeps_champion_on_compare_and_swap_failure(self):
         from apps.api.app.repositories.model_registry import PostgreSQLModelRegistry

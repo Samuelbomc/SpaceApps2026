@@ -59,6 +59,10 @@ class ExpandedModelBundle:
             records[name] = (config, fingerprint(lock[name])[:32])
         return records
 
+    def supports(self, horizon):
+        """Disponibilidad declarada; los hashes se verifican al usar cada horizonte."""
+        return self.root.is_dir() and horizon in HORIZONS
+
     def catalog(self):
         if not self.root.is_dir():
             return ModelCatalog(models=[], supported_horizons=[], limitations=LIMITATIONS)

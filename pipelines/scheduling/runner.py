@@ -2,6 +2,7 @@
 
 import logging
 from datetime import UTC, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from psycopg.types.json import Jsonb
 
@@ -30,20 +31,32 @@ def poll_background(database, key, job, *, force=False, now=None):
                 raise RuntimeError("Falta registrar el job de automatización; ejecuta migraciones.")
             if not force and (state["retry_at"] or state["next_run_at"]) > now:
                 return "not_due"
+            result = None
             try:
-                result = job.run()
+                previous = state["last_result"]
+                retry_tasks = (
+                    previous.get("failed_tasks")
+                    if key == "crop-recommendations"
+                    and state["retry_at"]
+                    and not force
+                    and previous.get("forecast_start_date")
+                    == datetime.now(ZoneInfo("America/Bogota")).date().isoformat()
+                    else None
+                )
+                result = job.run(tasks=retry_tasks) if retry_tasks else job.run()
                 if result["status"] != "ok":
                     raise RuntimeError("El pipeline no completó su ejecución.")
             except Exception as exc:
                 failures = state["consecutive_failures"] + 1
                 delay = min(86400, 3600 * 2 ** min(failures - 1, 5))
                 conn.execute(
-                    """UPDATE job_schedules SET retry_at=%s,consecutive_failures=%s,last_error=%s
+                    """UPDATE job_schedules SET retry_at=%s,consecutive_failures=%s,last_error=%s,last_result=%s
                     WHERE job_key=%s""",
                     (
                         datetime.now(UTC) + timedelta(seconds=delay),
                         failures,
                         f"{key} falló ({type(exc).__name__}); se conserva el estado anterior.",
+                        Jsonb(result if isinstance(result, dict) else state["last_result"]),
                         key,
                     ),
                 )

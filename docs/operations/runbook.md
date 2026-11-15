@@ -44,12 +44,19 @@ Ingesta completada adelanta los jobs ML; publicación adelanta recomendaciones.
 | pending_review | Revisar evidencia científica y política | Aprobación explícita y verificable; no forzar publicación por disponibilidad |
 | Requisitos agronómicos pendientes | Revisar catálogo y reglas por cultivo/horizonte | Umbrales revisados y evaluación completa |
 | MongoDB/PostgreSQL no disponible | Corregir conexión/servicio y permitir reintento | Backend seleccionado responde; no activar fallback silencioso |
+| Recomendaciones parcialmente fallidas | Revisar `failed_tasks` en `last_result` del calendario y el tipo de error; dejar actuar el backoff | Las tareas sanas conservan sus resultados; el reintento del mismo día ejecuta las fallidas |
 | Hash de fuente o modelo inválido | Detener uso e investigar origen | Artefacto íntegro identificado; no recalcular hashes para ocultar corrupción |
 | Conflicto de edición de finca | Recargar ficha y resolver cambios del propietario | Escritura con revisión vigente |
 
 Los reintentos ML usan 1, 2, 4, 8, 16 y hasta 24 horas. La ausencia de reglas o
 etiquetas es un estado de negocio, distinto de un fallo técnico. El catálogo NASA
 puede estar disponible sin valores científicos extraídos.
+
+`--once` fuerza una revisión completa del job para el día actual. Un reintento que
+cruza al siguiente día también revisa todas las tareas; no reutiliza el periodo
+fallido como si correspondiera a la nueva consulta. La configuración de cada job
+se construye por separado, por lo que corregir entrenamiento no requiere detener
+la ingesta.
 
 ## Reinicio y persistencia
 
