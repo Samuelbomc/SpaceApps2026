@@ -1,0 +1,206 @@
+{
+  "access_mode": "public_only",
+  "scientific_extraction_complete": false,
+  "experiments": [
+    {
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-01-31"
+      },
+      "artifact_directory": "data/probes/medellin-10m-2026-01",
+      "sources": {
+        "power": {
+          "status": "ok",
+          "records": 186,
+          "granules_returned": null,
+          "limit_reached": null,
+          "science_values_read": true,
+          "native_resolution": "meteorology 0.5 x 0.625 degree; solar 1 x 1 degree",
+          "head_http": null,
+          "get_http": null
+        },
+        "gpm": {
+          "status": "empty",
+          "records": null,
+          "granules_returned": 0,
+          "limit_reached": false,
+          "science_values_read": false,
+          "native_resolution": "0.1 degree",
+          "head_http": null,
+          "get_http": null
+        },
+        "smap": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 3,
+          "limit_reached": true,
+          "science_values_read": false,
+          "native_resolution": "9 km",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "srtm": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 1,
+          "limit_reached": false,
+          "science_values_read": false,
+          "native_resolution": "1 arc-second (~30 m)",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "grace": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 1,
+          "limit_reached": false,
+          "science_values_read": false,
+          "native_resolution": "3-degree mascons, sampled on 0.5-degree grid",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "ecostress": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 3,
+          "limit_reached": true,
+          "science_values_read": false,
+          "native_resolution": "70 m",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "ecostress-lst": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 3,
+          "limit_reached": true,
+          "science_values_read": false,
+          "native_resolution": "70 m",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "landsat": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 3,
+          "limit_reached": true,
+          "science_values_read": false,
+          "native_resolution": "30 m",
+          "head_http": 200,
+          "get_http": 401
+        }
+      }
+    },
+    {
+      "period": {
+        "start": "2024-01-01",
+        "end": "2024-01-31"
+      },
+      "artifact_directory": "data/probes/medellin-10m-2024-01",
+      "sources": {
+        "power": {
+          "status": "ok",
+          "records": 186,
+          "granules_returned": null,
+          "limit_reached": null,
+          "science_values_read": true,
+          "native_resolution": "meteorology 0.5 x 0.625 degree; solar 1 x 1 degree",
+          "head_http": null,
+          "get_http": null
+        },
+        "gpm": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 3,
+          "limit_reached": true,
+          "science_values_read": false,
+          "native_resolution": "0.1 degree",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "smap": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 3,
+          "limit_reached": true,
+          "science_values_read": false,
+          "native_resolution": "9 km",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "srtm": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 1,
+          "limit_reached": false,
+          "science_values_read": false,
+          "native_resolution": "1 arc-second (~30 m)",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "grace": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 1,
+          "limit_reached": false,
+          "science_values_read": false,
+          "native_resolution": "3-degree mascons, sampled on 0.5-degree grid",
+          "head_http": 200,
+          "get_http": 401
+        },
+        "ecostress": {
+          "status": "empty",
+          "records": null,
+          "granules_returned": 0,
+          "limit_reached": false,
+          "science_values_read": false,
+          "native_resolution": "70 m",
+          "head_http": null,
+          "get_http": null
+        },
+        "ecostress-lst": {
+          "status": "empty",
+          "records": null,
+          "granules_returned": 0,
+          "limit_reached": false,
+          "science_values_read": false,
+          "native_resolution": "70 m",
+          "head_http": null,
+          "get_http": null
+        },
+        "landsat": {
+          "status": "ok",
+          "records": null,
+          "granules_returned": 3,
+          "limit_reached": true,
+          "science_values_read": false,
+          "native_resolution": "30 m",
+          "head_http": 200,
+          "get_http": 401
+        }
+      }
+    }
+  ],
+  "aoi": {
+    "aoi_id": "60c517a977bbaad16f6a1e8eff928b1c79bddee071d44424f3b009a121ea80e9",
+    "crs": "EPSG:4326",
+    "center": {
+      "crs": "EPSG:4326",
+      "latitude": 6.2442,
+      "longitude": -75.5812
+    },
+    "bbox": {
+      "crs": "EPSG:4326",
+      "west": -75.58124518203465,
+      "south": 6.244154786897631,
+      "east": -75.58115481796534,
+      "north": 6.244245213102294
+    },
+    "requested_side_m": 10.0,
+    "east_west_center_m": 10.000000001066114,
+    "north_south_center_m": 9.99999999991839,
+    "area_geodesic_m2": 100.00000000931323,
+    "perimeter_geodesic_m": 40.000000001962825,
+    "method": "WGS84 cardinal offsets; geographic bbox, dimensions verified geodesically"
+  }
+}

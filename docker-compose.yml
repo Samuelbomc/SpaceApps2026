@@ -1,0 +1,95 @@
+services:
+  mongo:
+    image: mongo:8.0
+    # Solo accesible desde los contenedores, sin publicar puertos en el host.
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: fieldshift
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fieldshift_dev}
+      POSTGRES_DB: fieldshift
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fieldshift -d fieldshift"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    environment: &runtime
+      DATABASE_URL: postgresql://fieldshift:${POSTGRES_PASSWORD:-fieldshift_dev}@postgres:5432/fieldshift
+      REGION_ID: ${REGION_ID:-antioquia-reference}
+      REGION_NAME: ${REGION_NAME:-Medellín · referencia técnica}
+      REGION_LATITUDE: ${REGION_LATITUDE:-6.2442}
+      REGION_LONGITUDE: ${REGION_LONGITUDE:--75.5812}
+      RECENT_OBSERVATION_DAYS: ${RECENT_OBSERVATION_DAYS:-90}
+      INGESTION_LAG_DAYS: ${INGESTION_LAG_DAYS:-3}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+      FARM_UPLOAD_DIRECTORY: /app/data/farms
+      RESULTS_BACKEND: ${RESULTS_BACKEND:-mongodb}
+      MONGODB_URI: ${MONGODB_URI:-mongodb://mongo:27017}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-fieldshift}
+      DATASET_DIRECTORY: /app/data/datasets
+      MODEL_DIRECTORY: /app/data/models
+      GEOCODER_URL: ${GEOCODER_URL:-https://photon.komoot.io/reverse}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+  worker: &worker_service
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+      args:
+        PYTHON_EXTRAS: api,storage,geospatial,mongo,ml
+    command: ["python", "-m", "scripts.worker", "--job", "ingestion"]
+    environment: *runtime
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+  training-worker:
+    <<: *worker_service
+    command: ["python", "-m", "scripts.worker", "--job", "training"]
+  recommendation-worker:
+    <<: *worker_service
+    command: ["python", "-m", "scripts.worker", "--job", "recommendations"]
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
+volumes:
+  postgres_data:
+  mongo_data:

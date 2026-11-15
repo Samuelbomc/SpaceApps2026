@@ -1,0 +1,1388 @@
+{
+  "schema_version": "ecocrop_catalog_v1",
+  "normalizer_version": "ecocrop_tsv_v1",
+  "version": "ecocrop-v1-ea2f7c8d59a4c49f",
+  "source_sha256": "213e70630260e0ed9bf31a82047d8cfc67b877fe7dd612b34623cb3d395da4a8",
+  "review_status": "format_validated_agronomic_review_pending",
+  "crops": [
+    {
+      "crop_id": "238663-maiz-maiz",
+      "chain": "Maíz",
+      "crop_name": "Maíz",
+      "scientific_name": "Zea mays ssp. mays",
+      "ecocrop_code": 238663,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=238663",
+      "temperature": {
+        "optimal": {
+          "minimum": 18.0,
+          "maximum": 33.0
+        },
+        "absolute": {
+          "minimum": 10.0,
+          "maximum": 47.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 600.0,
+          "maximum": 1200.0
+        },
+        "absolute": {
+          "minimum": 400.0,
+          "maximum": 1800.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 5.0,
+          "maximum": 7.0
+        },
+        "absolute": {
+          "minimum": 4.5,
+          "maximum": 8.5
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 4000.0,
+      "cycle_days": {
+        "minimum": 65.0,
+        "maximum": 365.0
+      },
+      "lethal_temperature_rest_c": null,
+      "lethal_temperature_early_growth_c": null,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "shallow (20-50 cm)"
+        },
+        "textura": {
+          "optimal": "medium, organic",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "high",
+          "absolute": "low"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "medium (4-10 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well, excessive"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Maíz",
+        "Cultivo": "Maíz",
+        "Especie_ECOCROP": "Zea mays ssp. mays",
+        "Codigo_ECOCROP": "238663",
+        "Categoria": "cereals & pseudocereals, forage/pasture, vegetables, materials, environmental",
+        "Forma_de_vida": "grass",
+        "Habito": "erect",
+        "Duracion_de_vida": "annual",
+        "Temp_Optima_Min_(°C)": "18",
+        "Temp_Optima_Max_(°C)": "33",
+        "Temp_Absoluta_Min_(°C)": "10",
+        "Temp_Absoluta_Max_(°C)": "47",
+        "Precipitacion_Optima_Min_(mm/año)": "600",
+        "Precipitacion_Optima_Max_(mm/año)": "1200",
+        "Precipitacion_Absoluta_Min_(mm/año)": "400",
+        "Precipitacion_Absoluta_Max_(mm/año)": "1800",
+        "Altitud_Absoluta_Max_(msnm)": "4000",
+        "pH_Optimo_Min": "5",
+        "pH_Optimo_Max": "7",
+        "pH_Absoluto_Min": "4,5",
+        "pH_Absoluto_Max": "8,5",
+        "Intensidad_Luz_Optima": "very bright",
+        "Intensidad_Luz_Absoluta": "very bright - clear skies",
+        "Latitud_Absoluta_Min": "40",
+        "Latitud_Absoluta_Max": "48",
+        "Zona_Climatica_Koppen": "Aw, Bs, Cf, Cs, Cw, Do, Dc, Df, Dw",
+        "Fotoperiodo": "short day (<12 h), neutral day (12-14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "no input",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "no input",
+        "Ciclo_Cultivo_Min_(dias)": "65",
+        "Ciclo_Cultivo_Max_(dias)": "365",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / shallow (20-50 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, organic / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "high / low",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / medium (4-10 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well, excessive",
+        "Usos_principales": "Alimento (almidón, proteína, aceite del grano); forraje; materiales; combustible (alcohol). Susceptible a granizo; el monocultivo puede causar erosión.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=238663"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "1574-arroz-arroz",
+      "chain": "Arroz",
+      "crop_name": "Arroz",
+      "scientific_name": "Oryza sativa",
+      "ecocrop_code": 1574,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1574",
+      "temperature": {
+        "optimal": {
+          "minimum": 20.0,
+          "maximum": 30.0
+        },
+        "absolute": {
+          "minimum": 10.0,
+          "maximum": 36.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 1500.0,
+          "maximum": 2000.0
+        },
+        "absolute": {
+          "minimum": 1000.0,
+          "maximum": 4000.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 5.5,
+          "maximum": 7.0
+        },
+        "absolute": {
+          "minimum": 4.5,
+          "maximum": 9.0
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 2500.0,
+      "cycle_days": {
+        "minimum": 80.0,
+        "maximum": 180.0
+      },
+      "lethal_temperature_rest_c": null,
+      "lethal_temperature_early_growth_c": null,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "shallow (20-50 cm)"
+        },
+        "textura": {
+          "optimal": "wide",
+          "absolute": "wide"
+        },
+        "fertilidad": {
+          "optimal": "high",
+          "absolute": "moderate"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "poorly (saturated >50% of year)",
+          "absolute": "poorly"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Arroz",
+        "Cultivo": "Arroz",
+        "Especie_ECOCROP": "Oryza sativa",
+        "Codigo_ECOCROP": "1574",
+        "Categoria": "cereals & pseudocereals",
+        "Forma_de_vida": "grass",
+        "Habito": "erect",
+        "Duracion_de_vida": "annual",
+        "Temp_Optima_Min_(°C)": "20",
+        "Temp_Optima_Max_(°C)": "30",
+        "Temp_Absoluta_Min_(°C)": "10",
+        "Temp_Absoluta_Max_(°C)": "36",
+        "Precipitacion_Optima_Min_(mm/año)": "1500",
+        "Precipitacion_Optima_Max_(mm/año)": "2000",
+        "Precipitacion_Absoluta_Min_(mm/año)": "1000",
+        "Precipitacion_Absoluta_Max_(mm/año)": "4000",
+        "Altitud_Absoluta_Max_(msnm)": "2500",
+        "pH_Optimo_Min": "5,5",
+        "pH_Optimo_Max": "7",
+        "pH_Absoluto_Min": "4,5",
+        "pH_Absoluto_Max": "9",
+        "Intensidad_Luz_Optima": "very bright",
+        "Intensidad_Luz_Absoluta": "cloudy skies - very bright",
+        "Latitud_Absoluta_Min": "36",
+        "Latitud_Absoluta_Max": "55",
+        "Zona_Climatica_Koppen": "Aw, Ar, Cf, Cs, Cw",
+        "Fotoperiodo": "neutral day (12-14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "no input",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "no input",
+        "Ciclo_Cultivo_Min_(dias)": "80",
+        "Ciclo_Cultivo_Max_(dias)": "180",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / shallow (20-50 cm)",
+        "Suelo_Textura (optima / absoluta)": "wide / wide",
+        "Suelo_Fertilidad (optima / absoluta)": "high / moderate",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "poorly (saturated >50% of year) / poorly",
+        "Usos_principales": "Alimento (almidón, vitaminas del grano); fibras y papel (hojas); combustible.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1574"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "1668-frijol-arbustivo-frijol",
+      "chain": "Frijol arbustivo",
+      "crop_name": "Fríjol",
+      "scientific_name": "Phaseolus vulgaris",
+      "ecocrop_code": 1668,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1668",
+      "temperature": {
+        "optimal": {
+          "minimum": 16.0,
+          "maximum": 25.0
+        },
+        "absolute": {
+          "minimum": 7.0,
+          "maximum": 32.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 500.0,
+          "maximum": 2000.0
+        },
+        "absolute": {
+          "minimum": 300.0,
+          "maximum": 4300.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 5.5,
+          "maximum": 7.5
+        },
+        "absolute": {
+          "minimum": 4.0,
+          "maximum": 9.0
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 3000.0,
+      "cycle_days": {
+        "minimum": 50.0,
+        "maximum": 270.0
+      },
+      "lethal_temperature_rest_c": null,
+      "lethal_temperature_early_growth_c": null,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "shallow (20-50 cm)"
+        },
+        "textura": {
+          "optimal": "medium, organic",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "moderate",
+          "absolute": "low"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Frijol arbustivo",
+        "Cultivo": "Fríjol",
+        "Especie_ECOCROP": "Phaseolus vulgaris",
+        "Codigo_ECOCROP": "1668",
+        "Categoria": "pulses (grain legumes), forage/pasture, vegetables, medicinals & aromatic",
+        "Forma_de_vida": "herb",
+        "Habito": "prostrate/procumbent/semi-erect",
+        "Duracion_de_vida": "annual",
+        "Temp_Optima_Min_(°C)": "16",
+        "Temp_Optima_Max_(°C)": "25",
+        "Temp_Absoluta_Min_(°C)": "7",
+        "Temp_Absoluta_Max_(°C)": "32",
+        "Precipitacion_Optima_Min_(mm/año)": "500",
+        "Precipitacion_Optima_Max_(mm/año)": "2000",
+        "Precipitacion_Absoluta_Min_(mm/año)": "300",
+        "Precipitacion_Absoluta_Max_(mm/año)": "4300",
+        "Altitud_Absoluta_Max_(msnm)": "3000",
+        "pH_Optimo_Min": "5,5",
+        "pH_Optimo_Max": "7,5",
+        "pH_Absoluto_Min": "4",
+        "pH_Absoluto_Max": "9",
+        "Intensidad_Luz_Optima": "very bright - clear skies",
+        "Intensidad_Luz_Absoluta": "very bright - cloudy skies",
+        "Latitud_Absoluta_Min": "20",
+        "Latitud_Absoluta_Max": "60",
+        "Zona_Climatica_Koppen": "Aw, Bs, Cf, Cs, Cw, Do, Dc, Df, Dw",
+        "Fotoperiodo": "short day (<12 h), neutral day (12-14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "no input",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "no input",
+        "Ciclo_Cultivo_Min_(dias)": "50",
+        "Ciclo_Cultivo_Max_(dias)": "270",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / shallow (20-50 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, organic / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "moderate / low",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento (proteína, vitaminas, minerales de semillas, vainas y hojas); forraje; medicinal.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1668"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending",
+        "shared_species_requirements_not_variety_specific"
+      ]
+    },
+    {
+      "crop_id": "1668-frijol-voluble-frijol",
+      "chain": "Frijol voluble",
+      "crop_name": "Fríjol",
+      "scientific_name": "Phaseolus vulgaris",
+      "ecocrop_code": 1668,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1668",
+      "temperature": {
+        "optimal": {
+          "minimum": 16.0,
+          "maximum": 25.0
+        },
+        "absolute": {
+          "minimum": 7.0,
+          "maximum": 32.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 500.0,
+          "maximum": 2000.0
+        },
+        "absolute": {
+          "minimum": 300.0,
+          "maximum": 4300.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 5.5,
+          "maximum": 7.5
+        },
+        "absolute": {
+          "minimum": 4.0,
+          "maximum": 9.0
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 3000.0,
+      "cycle_days": {
+        "minimum": 50.0,
+        "maximum": 270.0
+      },
+      "lethal_temperature_rest_c": null,
+      "lethal_temperature_early_growth_c": null,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "shallow (20-50 cm)"
+        },
+        "textura": {
+          "optimal": "medium, organic",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "moderate",
+          "absolute": "low"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Frijol voluble",
+        "Cultivo": "Fríjol",
+        "Especie_ECOCROP": "Phaseolus vulgaris",
+        "Codigo_ECOCROP": "1668",
+        "Categoria": "pulses (grain legumes), forage/pasture, vegetables, medicinals & aromatic",
+        "Forma_de_vida": "herb",
+        "Habito": "prostrate/procumbent/semi-erect",
+        "Duracion_de_vida": "annual",
+        "Temp_Optima_Min_(°C)": "16",
+        "Temp_Optima_Max_(°C)": "25",
+        "Temp_Absoluta_Min_(°C)": "7",
+        "Temp_Absoluta_Max_(°C)": "32",
+        "Precipitacion_Optima_Min_(mm/año)": "500",
+        "Precipitacion_Optima_Max_(mm/año)": "2000",
+        "Precipitacion_Absoluta_Min_(mm/año)": "300",
+        "Precipitacion_Absoluta_Max_(mm/año)": "4300",
+        "Altitud_Absoluta_Max_(msnm)": "3000",
+        "pH_Optimo_Min": "5,5",
+        "pH_Optimo_Max": "7,5",
+        "pH_Absoluto_Min": "4",
+        "pH_Absoluto_Max": "9",
+        "Intensidad_Luz_Optima": "very bright - clear skies",
+        "Intensidad_Luz_Absoluta": "very bright - cloudy skies",
+        "Latitud_Absoluta_Min": "20",
+        "Latitud_Absoluta_Max": "60",
+        "Zona_Climatica_Koppen": "Aw, Bs, Cf, Cs, Cw, Do, Dc, Df, Dw",
+        "Fotoperiodo": "short day (<12 h), neutral day (12-14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "no input",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "no input",
+        "Ciclo_Cultivo_Min_(dias)": "50",
+        "Ciclo_Cultivo_Max_(dias)": "270",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / shallow (20-50 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, organic / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "moderate / low",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento (proteína, vitaminas, minerales de semillas, vainas y hojas); forraje; medicinal. ECOCROP no separa arbustivo y voluble.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1668"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending",
+        "shared_species_requirements_not_variety_specific"
+      ]
+    },
+    {
+      "crop_id": "1420-yuca-yuca",
+      "chain": "Yuca",
+      "crop_name": "Yuca",
+      "scientific_name": "Manihot esculenta",
+      "ecocrop_code": 1420,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1420",
+      "temperature": {
+        "optimal": {
+          "minimum": 20.0,
+          "maximum": 29.0
+        },
+        "absolute": {
+          "minimum": 10.0,
+          "maximum": 35.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 1000.0,
+          "maximum": 1500.0
+        },
+        "absolute": {
+          "minimum": 500.0,
+          "maximum": 5000.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 5.5,
+          "maximum": 8.0
+        },
+        "absolute": {
+          "minimum": 4.0,
+          "maximum": 9.0
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 2000.0,
+      "cycle_days": {
+        "minimum": 180.0,
+        "maximum": 365.0
+      },
+      "lethal_temperature_rest_c": 7.0,
+      "lethal_temperature_early_growth_c": 0.0,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "medium (50-150 cm)"
+        },
+        "textura": {
+          "optimal": "medium, light",
+          "absolute": "heavy, medium, light, organic"
+        },
+        "fertilidad": {
+          "optimal": "moderate",
+          "absolute": "low"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well, excessive"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Yuca",
+        "Cultivo": "Yuca",
+        "Especie_ECOCROP": "Manihot esculenta",
+        "Codigo_ECOCROP": "1420",
+        "Categoria": "roots/tubers",
+        "Forma_de_vida": "shrub",
+        "Habito": "erect",
+        "Duracion_de_vida": "perennial",
+        "Temp_Optima_Min_(°C)": "20",
+        "Temp_Optima_Max_(°C)": "29",
+        "Temp_Absoluta_Min_(°C)": "10",
+        "Temp_Absoluta_Max_(°C)": "35",
+        "Precipitacion_Optima_Min_(mm/año)": "1000",
+        "Precipitacion_Optima_Max_(mm/año)": "1500",
+        "Precipitacion_Absoluta_Min_(mm/año)": "500",
+        "Precipitacion_Absoluta_Max_(mm/año)": "5000",
+        "Altitud_Absoluta_Max_(msnm)": "2000",
+        "pH_Optimo_Min": "5,5",
+        "pH_Optimo_Max": "8",
+        "pH_Absoluto_Min": "4",
+        "pH_Absoluto_Max": "9",
+        "Intensidad_Luz_Optima": "very bright",
+        "Intensidad_Luz_Absoluta": "very bright - cloudy skies",
+        "Latitud_Absoluta_Min": "25",
+        "Latitud_Absoluta_Max": "30",
+        "Zona_Climatica_Koppen": "Aw, Ar, Bs",
+        "Fotoperiodo": "short day (<12 h), neutral day (12-14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "7",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "0",
+        "Ciclo_Cultivo_Min_(dias)": "180",
+        "Ciclo_Cultivo_Max_(dias)": "365",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / medium (50-150 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, light / heavy, medium, light, organic",
+        "Suelo_Fertilidad (optima / absoluta)": "moderate / low",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well, excessive",
+        "Usos_principales": "Alimento (almidón de la raíz, proteína de hojas); forraje; combustible (alcohol).",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1420"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "936-name-name-criollo",
+      "chain": "Ñame",
+      "crop_name": "Ñame criollo",
+      "scientific_name": "Dioscorea alata",
+      "ecocrop_code": 936,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=936",
+      "temperature": {
+        "optimal": {
+          "minimum": 20.0,
+          "maximum": 32.0
+        },
+        "absolute": {
+          "minimum": 14.0,
+          "maximum": 40.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 1200.0,
+          "maximum": 4000.0
+        },
+        "absolute": {
+          "minimum": 700.0,
+          "maximum": 8000.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 5.5,
+          "maximum": 6.5
+        },
+        "absolute": {
+          "minimum": 4.8,
+          "maximum": 8.5
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 2500.0,
+      "cycle_days": {
+        "minimum": 220.0,
+        "maximum": 300.0
+      },
+      "lethal_temperature_rest_c": -2.0,
+      "lethal_temperature_early_growth_c": 9.0,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "deep (>>150 cm)",
+          "absolute": "medium (50-150 cm)"
+        },
+        "textura": {
+          "optimal": "medium, light",
+          "absolute": "medium, light"
+        },
+        "fertilidad": {
+          "optimal": "high",
+          "absolute": "moderate"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Ñame",
+        "Cultivo": "Ñame criollo",
+        "Especie_ECOCROP": "Dioscorea alata",
+        "Codigo_ECOCROP": "936",
+        "Categoria": "roots/tubers, environmental",
+        "Forma_de_vida": "vine",
+        "Habito": "climber/scrambler/scadent",
+        "Duracion_de_vida": "perennial",
+        "Temp_Optima_Min_(°C)": "20",
+        "Temp_Optima_Max_(°C)": "32",
+        "Temp_Absoluta_Min_(°C)": "14",
+        "Temp_Absoluta_Max_(°C)": "40",
+        "Precipitacion_Optima_Min_(mm/año)": "1200",
+        "Precipitacion_Optima_Max_(mm/año)": "4000",
+        "Precipitacion_Absoluta_Min_(mm/año)": "700",
+        "Precipitacion_Absoluta_Max_(mm/año)": "8000",
+        "Altitud_Absoluta_Max_(msnm)": "2500",
+        "pH_Optimo_Min": "5,5",
+        "pH_Optimo_Max": "6,5",
+        "pH_Absoluto_Min": "4,8",
+        "pH_Absoluto_Max": "8,5",
+        "Intensidad_Luz_Optima": "very bright - clear skies",
+        "Intensidad_Luz_Absoluta": "very bright - light shade",
+        "Latitud_Absoluta_Min": "30",
+        "Latitud_Absoluta_Max": "40",
+        "Zona_Climatica_Koppen": "Aw, Ar, Cf, Cs",
+        "Fotoperiodo": "short day (<12 h)",
+        "Temp_Letal_en_Reposo_(°C)": "-2",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "9",
+        "Ciclo_Cultivo_Min_(dias)": "220",
+        "Ciclo_Cultivo_Max_(dias)": "300",
+        "Suelo_Profundidad (optima / absoluta)": "deep (>>150 cm) / medium (50-150 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, light / medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "high / moderate",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento y forraje (almidón, proteína de la raíz); agroforestería.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=936"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "942-name-name-espino",
+      "chain": "Ñame",
+      "crop_name": "Ñame espino",
+      "scientific_name": "Dioscorea rotundata",
+      "ecocrop_code": 942,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=942",
+      "temperature": {
+        "optimal": {
+          "minimum": 25.0,
+          "maximum": 32.0
+        },
+        "absolute": {
+          "minimum": 15.0,
+          "maximum": 38.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 1000.0,
+          "maximum": 1500.0
+        },
+        "absolute": {
+          "minimum": 800.0,
+          "maximum": 3000.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 6.4,
+          "maximum": 6.7
+        },
+        "absolute": {
+          "minimum": 5.8,
+          "maximum": 8.5
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": null,
+      "cycle_days": {
+        "minimum": 180.0,
+        "maximum": 300.0
+      },
+      "lethal_temperature_rest_c": 9.0,
+      "lethal_temperature_early_growth_c": 9.0,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "deep (>>150 cm)",
+          "absolute": "medium (50-150 cm)"
+        },
+        "textura": {
+          "optimal": "heavy",
+          "absolute": "heavy, medium"
+        },
+        "fertilidad": {
+          "optimal": "high",
+          "absolute": "moderate"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "poorly, well"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Ñame",
+        "Cultivo": "Ñame espino",
+        "Especie_ECOCROP": "Dioscorea rotundata",
+        "Codigo_ECOCROP": "942",
+        "Categoria": "roots/tubers",
+        "Forma_de_vida": "vine",
+        "Habito": "climber/scrambler/scadent",
+        "Duracion_de_vida": "perennial",
+        "Temp_Optima_Min_(°C)": "25",
+        "Temp_Optima_Max_(°C)": "32",
+        "Temp_Absoluta_Min_(°C)": "15",
+        "Temp_Absoluta_Max_(°C)": "38",
+        "Precipitacion_Optima_Min_(mm/año)": "1000",
+        "Precipitacion_Optima_Max_(mm/año)": "1500",
+        "Precipitacion_Absoluta_Min_(mm/año)": "800",
+        "Precipitacion_Absoluta_Max_(mm/año)": "3000",
+        "Altitud_Absoluta_Max_(msnm)": "sin dato",
+        "pH_Optimo_Min": "6,4",
+        "pH_Optimo_Max": "6,7",
+        "pH_Absoluto_Min": "5,8",
+        "pH_Absoluto_Max": "8,5",
+        "Intensidad_Luz_Optima": "very bright - clear skies",
+        "Intensidad_Luz_Absoluta": "very bright - cloudy skies",
+        "Latitud_Absoluta_Min": "20",
+        "Latitud_Absoluta_Max": "20",
+        "Zona_Climatica_Koppen": "Aw",
+        "Fotoperiodo": "short day (<12 h)",
+        "Temp_Letal_en_Reposo_(°C)": "9",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "9",
+        "Ciclo_Cultivo_Min_(dias)": "180",
+        "Ciclo_Cultivo_Max_(dias)": "300",
+        "Suelo_Profundidad (optima / absoluta)": "deep (>>150 cm) / medium (50-150 cm)",
+        "Suelo_Textura (optima / absoluta)": "heavy / heavy, medium",
+        "Suelo_Fertilidad (optima / absoluta)": "high / moderate",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / poorly, well",
+        "Usos_principales": "Alimento (vitaminas, minerales de la raíz); agroforestería.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=942"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending",
+        "altitude_max_missing"
+      ]
+    },
+    {
+      "crop_id": "365-cebolla-junca-cebolla-junca",
+      "chain": "Cebolla junca",
+      "crop_name": "Cebolla junca",
+      "scientific_name": "Allium fistulosum",
+      "ecocrop_code": 365,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=365",
+      "temperature": {
+        "optimal": {
+          "minimum": 12.0,
+          "maximum": 25.0
+        },
+        "absolute": {
+          "minimum": 6.0,
+          "maximum": 30.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 850.0,
+          "maximum": 1600.0
+        },
+        "absolute": {
+          "minimum": 700.0,
+          "maximum": 2500.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 6.6,
+          "maximum": 7.4
+        },
+        "absolute": {
+          "minimum": 5.5,
+          "maximum": 8.5
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 2000.0,
+      "cycle_days": {
+        "minimum": 60.0,
+        "maximum": 160.0
+      },
+      "lethal_temperature_rest_c": null,
+      "lethal_temperature_early_growth_c": null,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "shallow (20-50 cm)"
+        },
+        "textura": {
+          "optimal": "medium, organic",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "high",
+          "absolute": "low"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Cebolla junca",
+        "Cultivo": "Cebolla junca",
+        "Especie_ECOCROP": "Allium fistulosum",
+        "Codigo_ECOCROP": "365",
+        "Categoria": "vegetables",
+        "Forma_de_vida": "herb",
+        "Habito": "erect",
+        "Duracion_de_vida": "annual, perennial",
+        "Temp_Optima_Min_(°C)": "12",
+        "Temp_Optima_Max_(°C)": "25",
+        "Temp_Absoluta_Min_(°C)": "6",
+        "Temp_Absoluta_Max_(°C)": "30",
+        "Precipitacion_Optima_Min_(mm/año)": "850",
+        "Precipitacion_Optima_Max_(mm/año)": "1600",
+        "Precipitacion_Absoluta_Min_(mm/año)": "700",
+        "Precipitacion_Absoluta_Max_(mm/año)": "2500",
+        "Altitud_Absoluta_Max_(msnm)": "2000",
+        "pH_Optimo_Min": "6,6",
+        "pH_Optimo_Max": "7,4",
+        "pH_Absoluto_Min": "5,5",
+        "pH_Absoluto_Max": "8,5",
+        "Intensidad_Luz_Optima": "clear skies",
+        "Intensidad_Luz_Absoluta": "very bright - cloudy skies",
+        "Latitud_Absoluta_Min": "60",
+        "Latitud_Absoluta_Max": "60",
+        "Zona_Climatica_Koppen": "Aw, Ar, Cf, Do, Dc",
+        "Fotoperiodo": "short day (<12 h), neutral day (12-14 h), long day (>14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "no input",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "no input",
+        "Ciclo_Cultivo_Min_(dias)": "60",
+        "Ciclo_Cultivo_Max_(dias)": "160",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / shallow (20-50 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, organic / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "high / low",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento (planta entera).",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=365"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "556-hortalizas-clima-frio-brocoli",
+      "chain": "Hortalizas clima frio",
+      "crop_name": "Brócoli",
+      "scientific_name": "Brassica oleracea var. italica",
+      "ecocrop_code": 556,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=556",
+      "temperature": {
+        "optimal": {
+          "minimum": 15.0,
+          "maximum": 24.0
+        },
+        "absolute": {
+          "minimum": 3.0,
+          "maximum": 35.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 900.0,
+          "maximum": 1500.0
+        },
+        "absolute": {
+          "minimum": 350.0,
+          "maximum": 2000.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 6.0,
+          "maximum": 6.8
+        },
+        "absolute": {
+          "minimum": 5.5,
+          "maximum": 8.5
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 2000.0,
+      "cycle_days": {
+        "minimum": 80.0,
+        "maximum": 120.0
+      },
+      "lethal_temperature_rest_c": -5.0,
+      "lethal_temperature_early_growth_c": -1.0,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "medium (50-150 cm)"
+        },
+        "textura": {
+          "optimal": "medium, organic",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "high",
+          "absolute": "moderate"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Hortalizas clima frio",
+        "Cultivo": "Brócoli",
+        "Especie_ECOCROP": "Brassica oleracea var. italica",
+        "Codigo_ECOCROP": "556",
+        "Categoria": "vegetables",
+        "Forma_de_vida": "herb",
+        "Habito": "erect",
+        "Duracion_de_vida": "biennial",
+        "Temp_Optima_Min_(°C)": "15",
+        "Temp_Optima_Max_(°C)": "24",
+        "Temp_Absoluta_Min_(°C)": "3",
+        "Temp_Absoluta_Max_(°C)": "35",
+        "Precipitacion_Optima_Min_(mm/año)": "900",
+        "Precipitacion_Optima_Max_(mm/año)": "1500",
+        "Precipitacion_Absoluta_Min_(mm/año)": "350",
+        "Precipitacion_Absoluta_Max_(mm/año)": "2000",
+        "Altitud_Absoluta_Max_(msnm)": "2000",
+        "pH_Optimo_Min": "6",
+        "pH_Optimo_Max": "6,8",
+        "pH_Absoluto_Min": "5,5",
+        "pH_Absoluto_Max": "8,5",
+        "Intensidad_Luz_Optima": "cloudy skies",
+        "Intensidad_Luz_Absoluta": "clear skies - light shade",
+        "Latitud_Absoluta_Min": "55",
+        "Latitud_Absoluta_Max": "60",
+        "Zona_Climatica_Koppen": "Aw, Ar, Bs, Cf, Cs, Cw, Do, Dc, Df, Dw",
+        "Fotoperiodo": "short day (<12 h), neutral day (12-14 h), long day (>14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "-5",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "-1",
+        "Ciclo_Cultivo_Min_(dias)": "80",
+        "Ciclo_Cultivo_Max_(dias)": "120",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / medium (50-150 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, organic / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "high / moderate",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento (flores).",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=556"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "554-hortalizas-clima-frio-repollo",
+      "chain": "Hortalizas clima frio",
+      "crop_name": "Repollo",
+      "scientific_name": "Brassica oleracea var. capitata",
+      "ecocrop_code": 554,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=554",
+      "temperature": {
+        "optimal": {
+          "minimum": 15.0,
+          "maximum": 24.0
+        },
+        "absolute": {
+          "minimum": 7.0,
+          "maximum": 32.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 500.0,
+          "maximum": 1000.0
+        },
+        "absolute": {
+          "minimum": 300.0,
+          "maximum": 2500.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 6.0,
+          "maximum": 7.5
+        },
+        "absolute": {
+          "minimum": 5.0,
+          "maximum": 8.3
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 2000.0,
+      "cycle_days": {
+        "minimum": 60.0,
+        "maximum": 200.0
+      },
+      "lethal_temperature_rest_c": -10.0,
+      "lethal_temperature_early_growth_c": -1.0,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "shallow (20-50 cm)",
+          "absolute": "shallow (20-50 cm)"
+        },
+        "textura": {
+          "optimal": "medium, organic",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "high",
+          "absolute": "moderate"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Hortalizas clima frio",
+        "Cultivo": "Repollo",
+        "Especie_ECOCROP": "Brassica oleracea var. capitata",
+        "Codigo_ECOCROP": "554",
+        "Categoria": "vegetables",
+        "Forma_de_vida": "herb",
+        "Habito": "acaulescent (or rosette plants)",
+        "Duracion_de_vida": "biennial",
+        "Temp_Optima_Min_(°C)": "15",
+        "Temp_Optima_Max_(°C)": "24",
+        "Temp_Absoluta_Min_(°C)": "7",
+        "Temp_Absoluta_Max_(°C)": "32",
+        "Precipitacion_Optima_Min_(mm/año)": "500",
+        "Precipitacion_Optima_Max_(mm/año)": "1000",
+        "Precipitacion_Absoluta_Min_(mm/año)": "300",
+        "Precipitacion_Absoluta_Max_(mm/año)": "2500",
+        "Altitud_Absoluta_Max_(msnm)": "2000",
+        "pH_Optimo_Min": "6",
+        "pH_Optimo_Max": "7,5",
+        "pH_Absoluto_Min": "5",
+        "pH_Absoluto_Max": "8,3",
+        "Intensidad_Luz_Optima": "clear skies",
+        "Intensidad_Luz_Absoluta": "very bright - light shade",
+        "Latitud_Absoluta_Min": "55",
+        "Latitud_Absoluta_Max": "60",
+        "Zona_Climatica_Koppen": "Aw, Ar, Bw, Bs, Cf, Cs, Cw, Do, Dc, Df, Dw",
+        "Fotoperiodo": "neutral day (12-14 h), long day (>14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "-10",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "-1",
+        "Ciclo_Cultivo_Min_(dias)": "60",
+        "Ciclo_Cultivo_Max_(dias)": "200",
+        "Suelo_Profundidad (optima / absoluta)": "shallow (20-50 cm) / shallow (20-50 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, organic / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "high / moderate",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento (hojas).",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=554"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "871-hortalizas-clima-frio-zanahoria",
+      "chain": "Hortalizas clima frio",
+      "crop_name": "Zanahoria",
+      "scientific_name": "Daucus carota",
+      "ecocrop_code": 871,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=871",
+      "temperature": {
+        "optimal": {
+          "minimum": 15.0,
+          "maximum": 24.0
+        },
+        "absolute": {
+          "minimum": 3.0,
+          "maximum": 30.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 600.0,
+          "maximum": 1200.0
+        },
+        "absolute": {
+          "minimum": 400.0,
+          "maximum": 4000.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 5.8,
+          "maximum": 6.8
+        },
+        "absolute": {
+          "minimum": 4.2,
+          "maximum": 8.7
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 2600.0,
+      "cycle_days": {
+        "minimum": 40.0,
+        "maximum": 150.0
+      },
+      "lethal_temperature_rest_c": -1.0,
+      "lethal_temperature_early_growth_c": 0.0,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "medium (50-150 cm)",
+          "absolute": "medium (50-150 cm)"
+        },
+        "textura": {
+          "optimal": "medium, organic",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "moderate",
+          "absolute": "moderate"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Hortalizas clima frio",
+        "Cultivo": "Zanahoria",
+        "Especie_ECOCROP": "Daucus carota",
+        "Codigo_ECOCROP": "871",
+        "Categoria": "roots/tubers, forage/pasture, vegetables, materials, medicinals & aromatic",
+        "Forma_de_vida": "herb",
+        "Habito": "erect",
+        "Duracion_de_vida": "biennial",
+        "Temp_Optima_Min_(°C)": "15",
+        "Temp_Optima_Max_(°C)": "24",
+        "Temp_Absoluta_Min_(°C)": "3",
+        "Temp_Absoluta_Max_(°C)": "30",
+        "Precipitacion_Optima_Min_(mm/año)": "600",
+        "Precipitacion_Optima_Max_(mm/año)": "1200",
+        "Precipitacion_Absoluta_Min_(mm/año)": "400",
+        "Precipitacion_Absoluta_Max_(mm/año)": "4000",
+        "Altitud_Absoluta_Max_(msnm)": "2600",
+        "pH_Optimo_Min": "5,8",
+        "pH_Optimo_Max": "6,8",
+        "pH_Absoluto_Min": "4,2",
+        "pH_Absoluto_Max": "8,7",
+        "Intensidad_Luz_Optima": "clear skies - cloudy skies",
+        "Intensidad_Luz_Absoluta": "very bright - cloudy skies",
+        "Latitud_Absoluta_Min": "55",
+        "Latitud_Absoluta_Max": "63",
+        "Zona_Climatica_Koppen": "Aw, Bs, Cs, Do, Dc, Df, Dw",
+        "Fotoperiodo": "long day (>14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "-1",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "0",
+        "Ciclo_Cultivo_Min_(dias)": "40",
+        "Ciclo_Cultivo_Max_(dias)": "150",
+        "Suelo_Profundidad (optima / absoluta)": "medium (50-150 cm) / medium (50-150 cm)",
+        "Suelo_Textura (optima / absoluta)": "medium, organic / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "moderate / moderate",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento (raíz, hojas, semillas); forraje; medicinal; aceites esenciales.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=871"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    },
+    {
+      "crop_id": "1313-hortalizas-clima-frio-lechuga",
+      "chain": "Hortalizas clima frio",
+      "crop_name": "Lechuga",
+      "scientific_name": "Lactuca sativa var. capitata",
+      "ecocrop_code": 1313,
+      "source_url": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1313",
+      "temperature": {
+        "optimal": {
+          "minimum": 12.0,
+          "maximum": 21.0
+        },
+        "absolute": {
+          "minimum": 5.0,
+          "maximum": 30.0
+        },
+        "unit": "C"
+      },
+      "annual_rainfall": {
+        "optimal": {
+          "minimum": 1100.0,
+          "maximum": 1400.0
+        },
+        "absolute": {
+          "minimum": 900.0,
+          "maximum": 4100.0
+        },
+        "unit": "mm/year"
+      },
+      "soil_ph": {
+        "optimal": {
+          "minimum": 6.0,
+          "maximum": 7.0
+        },
+        "absolute": {
+          "minimum": 4.2,
+          "maximum": 7.5
+        },
+        "unit": "pH"
+      },
+      "altitude_max_m": 3000.0,
+      "cycle_days": {
+        "minimum": 35.0,
+        "maximum": 85.0
+      },
+      "lethal_temperature_rest_c": -1.0,
+      "lethal_temperature_early_growth_c": 0.0,
+      "qualitative_soil": {
+        "profundidad": {
+          "optimal": "shallow (20-50 cm)",
+          "absolute": null
+        },
+        "textura": {
+          "optimal": "medium, light",
+          "absolute": "heavy, medium, light"
+        },
+        "fertilidad": {
+          "optimal": "moderate",
+          "absolute": "low"
+        },
+        "salinidad": {
+          "optimal": "low (<4 dS/m)",
+          "absolute": "low (<4 dS/m)"
+        },
+        "drenaje": {
+          "optimal": "well (dry spells)",
+          "absolute": "well (dry spells)"
+        }
+      },
+      "source_attributes": {
+        "Cadena": "Hortalizas clima frio",
+        "Cultivo": "Lechuga",
+        "Especie_ECOCROP": "Lactuca sativa var. capitata",
+        "Codigo_ECOCROP": "1313",
+        "Categoria": "vegetables",
+        "Forma_de_vida": "herb",
+        "Habito": "acaulescent (or rosette plants)",
+        "Duracion_de_vida": "annual, biennial",
+        "Temp_Optima_Min_(°C)": "12",
+        "Temp_Optima_Max_(°C)": "21",
+        "Temp_Absoluta_Min_(°C)": "5",
+        "Temp_Absoluta_Max_(°C)": "30",
+        "Precipitacion_Optima_Min_(mm/año)": "1100",
+        "Precipitacion_Optima_Max_(mm/año)": "1400",
+        "Precipitacion_Absoluta_Min_(mm/año)": "900",
+        "Precipitacion_Absoluta_Max_(mm/año)": "4100",
+        "Altitud_Absoluta_Max_(msnm)": "3000",
+        "pH_Optimo_Min": "6",
+        "pH_Optimo_Max": "7",
+        "pH_Absoluto_Min": "4,2",
+        "pH_Absoluto_Max": "7,5",
+        "Intensidad_Luz_Optima": "clear skies",
+        "Intensidad_Luz_Absoluta": "very bright - cloudy skies",
+        "Latitud_Absoluta_Min": "60",
+        "Latitud_Absoluta_Max": "60",
+        "Zona_Climatica_Koppen": "Aw, Ar, Cf, Cs, Cw, Do, Dc, Df, Dw",
+        "Fotoperiodo": "short day (<12 h), neutral day (12-14 h)",
+        "Temp_Letal_en_Reposo_(°C)": "-1",
+        "Temp_Letal_Crecimiento_Temprano_(°C)": "0",
+        "Ciclo_Cultivo_Min_(dias)": "35",
+        "Ciclo_Cultivo_Max_(dias)": "85",
+        "Suelo_Profundidad (optima / absoluta)": "shallow (20-50 cm) / -",
+        "Suelo_Textura (optima / absoluta)": "medium, light / heavy, medium, light",
+        "Suelo_Fertilidad (optima / absoluta)": "moderate / low",
+        "Suelo_Salinidad (optima / absoluta)": "low (<4 dS/m) / low (<4 dS/m)",
+        "Suelo_Drenaje (optimo / absoluto)": "well (dry spells) / well (dry spells)",
+        "Usos_principales": "Alimento (hojas); medicinal.",
+        "Fuente": "https://ecocrop.apps.fao.org/ecocrop/srv/en/dataSheet?id=1313"
+      },
+      "quality_flags": [
+        "latitude_hemispheres_unresolved",
+        "regional_agronomic_validation_pending"
+      ]
+    }
+  ],
+  "limitations": [
+    "El catálogo describe requisitos generales de especies; requiere validación local y de variedad antes de recomendar siembras.",
+    "La precipitación es anual: no se compara con acumulados de 7/15/30/60 días ni se anualizan esos pronósticos.",
+    "Un total anual no caracteriza la distribución estacional de la lluvia, el balance hídrico ni el aporte del riego.",
+    "Las latitudes originales carecen de hemisferio explícito; no se usan como filtro geográfico.",
+    "Textura, drenaje, profundidad, fertilidad, salinidad, luz, Köppen y fotoperiodo se conservan sin convertirlos en umbrales inventados.",
+    "No hay reglas de familias, sucesión, plagas o descansos suficientes para evaluar rotaciones."
+  ]
+}

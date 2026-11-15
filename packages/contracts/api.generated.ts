@@ -1,0 +1,42 @@
+// Generado por python -m scripts.export_openapi. No editar manualmente.
+export interface components {
+  schemas: {
+    "AnalysisRequest": { "region_id": string; "reference_date": string; "horizon_days"?: number; "forecast_start_date"?: (string | null); };
+    "AnalysisResult": { "status": "pending_model" | "pending_run" | "insufficient_data" | "pending_recommendations" | "ready"; "request": components['schemas']["AnalysisRequest"]; "analysis_id"?: (string | null); "input_snapshot_id"?: (string | null); "climate"?: (components['schemas']["Forecast"] | null); "soil"?: (components['schemas']["Forecast"] | null); "recommendations"?: (components['schemas']["Recommendations"] | null); "messages"?: Array<string>; };
+    "AutomationStatus": { "results_backend": "postgresql" | "mongodb"; "schedules": Array<components['schemas']["Schedule"]>; "published_models": Array<components['schemas']["ModelRelease"]>; "recent_training": Array<components['schemas']["TrainingOutcome"]>; "limitations": Array<string>; };
+    "Body_upload_api_v1_farms__farm_id__datasets_post": { "file": string; };
+    "CatalogOption": { "value": string; "label": string; };
+    "CropCatalog": { "schema_version"?: "ecocrop_catalog_v1"; "normalizer_version"?: "ecocrop_tsv_v1"; "version": string; "source_sha256": string; "review_status"?: "format_validated_agronomic_review_pending"; "crops": Array<components['schemas']["CropProfile"]>; "limitations": Array<string>; };
+    "CropProfile": { "crop_id": string; "chain": string; "crop_name": string; "scientific_name": string; "ecocrop_code": number; "source_url": string; "temperature": components['schemas']["EcologicalRequirement"]; "annual_rainfall": components['schemas']["EcologicalRequirement"]; "soil_ph": components['schemas']["EcologicalRequirement"]; "altitude_max_m"?: (number | null); "cycle_days": components['schemas']["NumericRange"]; "lethal_temperature_rest_c"?: (number | null); "lethal_temperature_early_growth_c"?: (number | null); "qualitative_soil": Record<string, components['schemas']["QualitativeRequirement"]>; "source_attributes": Record<string, string>; "quality_flags": Array<string>; };
+    "DatasetUploadResult": { "dataset": components['schemas']["FarmDataset"]; "duplicate": boolean; };
+    "EcologicalRequirement": { "optimal": components['schemas']["NumericRange"]; "absolute": components['schemas']["NumericRange"]; "unit": "C" | "mm/year" | "pH"; };
+    "Farm": { "name": string; "municipality"?: string; "latitude": number; "longitude": number; "area_ha": number; "boundary"?: (components['schemas']["FarmBoundary"] | null); "altitude_m"?: (number | null); "soil_texture"?: "unknown" | "sandy" | "clay" | "loam" | "silty"; "soil_ph"?: (number | null); "irrigation"?: "unknown" | "rainfed" | "drip" | "sprinkler" | "flood" | "other"; "current_crops"?: Array<string>; "notes"?: string; "farm_id": string; "revision": number; "created_at": string; "updated_at": string; };
+    "FarmBoundary": { "west": number; "south": number; "east": number; "north": number; };
+    "FarmCatalog": { "soil_textures": Array<components['schemas']["CatalogOption"]>; "irrigation_types": Array<components['schemas']["CatalogOption"]>; "variables": Array<components['schemas']["LocalVariable"]>; "max_file_bytes": number; "max_rows": number; "required_columns": Array<string>; "optional_columns": Array<string>; };
+    "FarmDataset": { "dataset_id": string; "farm_id": string; "original_filename": string; "sha256": string; "row_count": number; "first_date": string; "last_date": string; "variables": Array<string>; "created_at": string; "quality"?: "format_validated_unverified"; "date_basis"?: "America/Bogota local calendar"; };
+    "FarmModelContext": { "farm": components['schemas']["Farm"]; "dataset_ids": Array<string>; "dataset_versions"?: Array<components['schemas']["FarmDataset"]>; "observation_count": number; "available_through": (string | null); "conflict_count": number; "snapshot_id": string; "model_ready"?: false; "nasa_status"?: "not_ingested_for_farm"; "limitations": Array<string>; };
+    "FarmWrite": { "name": string; "municipality"?: string; "latitude": number; "longitude": number; "area_ha": number; "boundary"?: (components['schemas']["FarmBoundary"] | null); "altitude_m"?: (number | null); "soil_texture"?: "unknown" | "sandy" | "clay" | "loam" | "silty"; "soil_ph"?: (number | null); "irrigation"?: "unknown" | "rainfed" | "drip" | "sprinkler" | "flood" | "other"; "current_crops"?: Array<string>; "notes"?: string; };
+    "FarmerSession": { "user": components['schemas']["FarmerUser"]; "csrf_token": string; "expires_at": string; };
+    "FarmerUser": { "user_id": string; "email": string; "display_name": string; "created_at": string; };
+    "Forecast": { "model_kind": "climate" | "soil"; "model_version": string; "region_id": string; "reference_date": string; "forecast_start_date"?: (string | null); "horizon_days": number; "values": Array<components['schemas']["ForecastValue"]>; "limitations"?: Array<string>; };
+    "ForecastValue": { "variable": string; "value": number; "unit": string; "aggregation": string; };
+    "HTTPValidationError": { "detail"?: Array<components['schemas']["ValidationError"]>; };
+    "IngestionRun": { "run_id": string; "region_id": string; "started_at": string; "finished_at"?: (string | null); "status": "running" | "ok" | "partial" | "failed"; "summary"?: Record<string, unknown>; };
+    "LocalVariable": { "variable": string; "label": string; "unit": string; "aggregation": string; "minimum"?: (number | null); "maximum"?: (number | null); };
+    "LoginRequest": { "email": string; "password": string; };
+    "MapPlace": { "latitude": number; "longitude": number; "label"?: (string | null); "source"?: "Photon/OpenStreetMap"; };
+    "ModelRelease": { "slot": string; "version": string; "model_kind": "climate" | "soil"; "region_id": string; "horizon_days": number; "dataset_id": string; "training_fingerprint": string; "recipe_version": string; "policy_version": string; "trained_through": string; "feature_names": Array<string>; "target_units": Record<string, string>; "artifact_sha256": Record<string, string>; "metrics": Record<string, unknown>; "created_at": string; };
+    "NumericRange": { "minimum": number; "maximum": number; };
+    "Observation": { "source": string; "date": string; "variable": string; "value": (number | null); "unit": string; "quality": string; "resolution": string; };
+    "ObservationPage": { "region_id": string; "items": Array<components['schemas']["Observation"]>; "limit": number; "offset"?: number; "total"?: (number | null); "first_date"?: (string | null); "last_date"?: (string | null); "last_updated_at"?: (string | null); };
+    "QualitativeRequirement": { "optimal": (string | null); "absolute": (string | null); };
+    "Recommendations": { "engine_version": string; "catalog_version"?: (string | null); "alternatives": Array<components['schemas']["Rotation"]>; };
+    "Region": { "region_id": string; "name": string; "latitude": number; "longitude": number; };
+    "RegisterRequest": { "email": string; "display_name": string; "password": string; };
+    "Rotation": { "name": string; "crops": Array<string>; "reasons": Array<string>; "risks"?: Array<string>; };
+    "Schedule": { "job_key": string; "interval_seconds": number; "next_run_at": string; "last_success_at"?: (string | null); "last_error"?: (string | null); "retry_at"?: (string | null); "consecutive_failures"?: number; "pending_sources"?: Array<string>; "last_result"?: Record<string, unknown>; };
+    "StatusResponse": { "database"?: "postgresql"; "climate_model": "not_configured" | "configured"; "soil_model": "not_configured" | "configured"; "recommendations": "not_configured" | "configured"; "schedule": (components['schemas']["Schedule"] | null); "recent_runs": Array<components['schemas']["IngestionRun"]>; };
+    "TrainingOutcome": { "slot": string; "status": "published" | "rejected" | "unchanged" | "insufficient_labels" | "pending_configuration"; "message": string; "dataset_id"?: (string | null); "version"?: (string | null); };
+    "ValidationError": { "loc": Array<(string | number)>; "msg": string; "type": string; "input"?: unknown; "ctx"?: Record<string, unknown>; };
+  };
+}

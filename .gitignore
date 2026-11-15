@@ -219,3 +219,18 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 /.vs
+
+# Ingesta local: credenciales, caché y productos satelitales
+.DS_Store
+data/
+.env.*
+!.env.example
+
+# Frontend y artefactos locales
+node_modules/
+.next/
+*.tsbuildinfo
+
+# El cliente HTTP del frontend no es el directorio lib/ generado de Python.
+!apps/web/src/lib/
+!apps/web/src/lib/**
