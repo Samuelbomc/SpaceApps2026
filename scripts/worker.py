@@ -134,7 +134,7 @@ def main(argv=None):
                     status = poll_once(database, jobs[name], force=args.once)
                     if status == "completed":
                         with database.connect() as conn:
-                            conn.execute("""UPDATE job_schedules SET next_run_at=LEAST(next_run_at,now())
+                            conn.execute("""UPDATE job_schedules SET next_run_at=LEAST(next_run_at,now()),retry_at=NULL
                                 WHERE job_key IN ('model-training','crop-recommendations')""")
                 else:
                     key = "model-training" if name == "training" else "crop-recommendations"

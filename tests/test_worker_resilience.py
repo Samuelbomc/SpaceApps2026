@@ -73,6 +73,31 @@ class JobConstructionTests(unittest.TestCase):
         )
         self.assertEqual(background.call_args.args[1], "crop-recommendations")
 
+    def test_periodic_worker_retries_failed_construction_and_keeps_healthy_instances(self):
+        attempts = {"ingestion": 0, "training": 0, "recommendations": 0}
+
+        def build(name, *args):
+            attempts[name] += 1
+            if name == "training" and attempts[name] == 1:
+                raise FileNotFoundError("fixture configuration awaiting correction")
+            return Mock()
+
+        stop = Mock()
+        stop.is_set.side_effect = [False, False, True]
+        with (
+            patch("scripts.worker.Database", return_value=MagicMock()),
+            patch("scripts.worker.migrate"),
+            patch("scripts.worker.build_job", side_effect=build),
+            patch("scripts.worker.poll_once", return_value="completed") as ingestion,
+            patch("scripts.worker.poll_background", return_value="completed") as background,
+            patch("scripts.worker.threading.Event", return_value=stop),
+            patch("scripts.worker.signal.signal"),
+        ):
+            self.assertEqual(main(["--job", "all"]), 0)
+        self.assertEqual(attempts, {"ingestion": 1, "training": 2, "recommendations": 1})
+        self.assertEqual(ingestion.call_count, 2)
+        self.assertEqual(background.call_count, 3)
+
 
 class RecommendationResilienceTests(unittest.TestCase):
     def test_failed_horizon_keeps_other_regions_and_retries_only_failed_task(self):

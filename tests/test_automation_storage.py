@@ -1,10 +1,13 @@
 """Contratos de lectura y persistencia ML. MongoDB real se habilita con TEST_MONGODB_URI."""
 
 import os
+import shutil
+import tempfile
 import unittest
 import uuid
 from concurrent.futures import ThreadPoolExecutor
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 from fastapi.testclient import TestClient
@@ -204,6 +207,87 @@ class MongoIntegrationTests(unittest.TestCase):
         self.addCleanup(self.client.close)
         self.addCleanup(lambda: self.client.drop_database(self.name))
         self.store = MongoResultsRepository(os.environ["TEST_MONGODB_URI"], self.name)
+
+    def test_real_models_survive_corrupt_horizon_and_restart_without_duplicate_results(self):
+        from ml.features.expanded import ExpandedFeatureStore, snapshot_from_csv
+        from ml.inference.expanded import ExpandedModelBundle
+        from ml.recommendations.rotation import ForecastRotationEngine
+        from pipelines.recommendations.job import CropRecommendationJob
+
+        repository = Path(__file__).resolve().parents[1]
+        original = repository / "ml/artifacts"
+        clean = ExpandedModelBundle(original)
+        catalog = clean.catalog()
+        with tempfile.TemporaryDirectory(prefix="fieldshift-real-model-recovery-") as directory:
+            root = Path(directory)
+            artifacts = root / "models"
+            for name in ("model.json", "training.json"):
+                for source in original.rglob(name):
+                    target = artifacts / source.relative_to(original)
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(source, target)
+            snapshot = snapshot_from_csv(
+                repository / "samples/xgboost/moisture_99_20220108.csv",
+                region_id="historical-test-only",
+                point_id="moisture_99",
+                issue_date=date(2022, 1, 8),
+                climate_features=next(
+                    m.features for m in catalog.models if m.model_kind == "climate"
+                ),
+                soil_features=next(m.features for m in catalog.models if m.model_kind == "soil"),
+            )
+            features = ExpandedFeatureStore(root / "features")
+            features.save(snapshot)
+            observations = Mock()
+            observations.regions.return_value = [
+                {
+                    "region_id": snapshot.region_id,
+                    "longitude": snapshot.longitude,
+                    "latitude": snapshot.latitude,
+                }
+            ]
+            target_start = snapshot.issue_date + timedelta(days=1)
+
+            def restart():
+                return CropRecommendationJob(
+                    observations,
+                    self.store,
+                    self.store,
+                    Mock(),
+                    bundled_models=ExpandedModelBundle(artifacts),
+                    feature_store=ExpandedFeatureStore(root / "features"),
+                    rotation_engine=ForecastRotationEngine(),
+                )
+
+            damaged = artifacts / "environmental_conditions/temperature_mean/model.json"
+            damaged.write_text("{}")
+            first = restart().run(as_of=target_start)
+            self.assertEqual(first["status"], "partial")
+            self.assertEqual(
+                first["failed_tasks"], [{"region_id": snapshot.region_id, "horizon_days": 7}]
+            )
+            healthy = {r["analysis_id"] for r in self.store.analyses(snapshot.region_id)}
+            self.assertEqual(len(healthy), 3)
+            shutil.copyfile(original / damaged.relative_to(artifacts), damaged)
+            recovered = restart().run(as_of=target_start, tasks=first["failed_tasks"])
+            self.assertEqual(recovered["status"], "ok")
+            self.assertEqual(len(recovered["outcomes"]), 1)
+            self.assertEqual(restart().run(as_of=target_start)["status"], "ok")
+            rows = self.store.analyses(snapshot.region_id)
+            self.assertEqual(len(rows), 4)
+            self.assertTrue(healthy <= {r["analysis_id"] for r in rows})
+            for horizon in (7, 15, 30, 60):
+                saved = self.store.analysis_for_period(snapshot.region_id, horizon, target_start)
+                self.assertEqual(saved["status"], "pending_recommendations")
+                self.assertEqual(saved["climate"]["validation_status"], "experimental")
+                self.assertIsNotNone(saved["rotation_assessment"])
+                self.assertIsNone(saved["recommendations"])
+            self.assertIsNone(
+                self.store.analysis_for_period(
+                    snapshot.region_id, 7, target_start + timedelta(days=1)
+                )
+            )
+            self.assertEqual(self.store.published_models(), [])
 
     def test_model_publication_is_atomic_and_compares_expected_champion(self):
         first = fixture_release()

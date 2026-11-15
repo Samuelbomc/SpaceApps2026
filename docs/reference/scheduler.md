@@ -14,6 +14,11 @@ Una ingesta completada adelanta los jobs ML. Una publicación adelanta las
 recomendaciones. La llegada de observaciones no garantiza etiquetas nuevas,
 y una revisión programada no implica una publicación.
 
+La señal de datos nuevos o de publicación cancela la espera de reintento previa
+del job dependiente. Su siguiente ejecución revisa todas las tareas con las
+entradas/versiones disponibles. Sin una señal nueva se conserva el backoff y,
+para recomendaciones del mismo día, la selección de tareas fallidas.
+
 ```bash
 python -m scripts.worker --job ingestion --once
 python -m scripts.worker --job training --once

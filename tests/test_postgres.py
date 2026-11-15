@@ -137,6 +137,58 @@ class PostgreSQLTests(unittest.TestCase):
             )
             job.run.assert_called_once_with()
 
+    def test_model_publication_wakes_full_recommendations_even_during_backoff(self):
+        from pipelines.scheduling.runner import poll_background
+
+        with self.db.connect() as conn:
+            conn.execute(
+                "UPDATE job_schedules SET retry_at=now()+interval '24 hours' WHERE job_key='crop-recommendations'"
+            )
+        training = Mock()
+        training.run.return_value = {"status": "ok", "published": 1}
+        self.assertEqual(poll_background(self.db, "model-training", training), "completed")
+        self.assertIsNone(self.repo.schedule("crop-recommendations")["retry_at"])
+        recommendations = Mock()
+        recommendations.run.return_value = {"status": "ok"}
+        self.assertEqual(
+            poll_background(self.db, "crop-recommendations", recommendations), "completed"
+        )
+        recommendations.run.assert_called_once_with()
+
+    def test_new_ingestion_wakes_ml_jobs_even_during_backoff(self):
+        from scripts.worker import main
+
+        with self.db.connect() as conn:
+            conn.execute(
+                "UPDATE job_schedules SET retry_at=now()+interval '24 hours' WHERE job_key IN ('model-training','crop-recommendations')"
+            )
+        with (
+            patch("scripts.worker.Database", return_value=self.db),
+            patch("scripts.worker.migrate"),
+            patch("scripts.worker.build_job", return_value=Mock()),
+            patch("scripts.worker.poll_once", return_value="completed"),
+        ):
+            self.assertEqual(main(["--job", "ingestion", "--once"]), 0)
+        for key in ("model-training", "crop-recommendations"):
+            self.assertIsNone(self.repo.schedule(key)["retry_at"])
+
+    def test_ml_backoff_grows_to_24_hours_without_exposing_error_payload(self):
+        from pipelines.scheduling.runner import poll_background
+
+        job = Mock()
+        job.run.side_effect = RuntimeError("fixture-secret-must-not-be-stored")
+        for attempt, hours in enumerate((1, 2, 4, 8, 16, 24, 24), start=1):
+            before = datetime.now(UTC)
+            self.assertEqual(
+                poll_background(self.db, "model-training", job, force=True), "retry_scheduled"
+            )
+            after = datetime.now(UTC)
+            state = self.repo.schedule("model-training")
+            self.assertEqual(state["consecutive_failures"], attempt)
+            self.assertGreaterEqual(state["retry_at"], before + timedelta(hours=hours))
+            self.assertLessEqual(state["retry_at"], after + timedelta(hours=hours))
+            self.assertNotIn("fixture-secret", state["last_error"])
+
     def test_local_registry_keeps_champion_on_compare_and_swap_failure(self):
         from apps.api.app.repositories.model_registry import PostgreSQLModelRegistry
         from tests.test_automation_storage import fixture_release

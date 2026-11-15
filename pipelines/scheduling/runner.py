@@ -75,7 +75,7 @@ def poll_background(database, key, job, *, force=False, now=None):
             )
             if key == "model-training" and result.get("published", 0):
                 conn.execute(
-                    "UPDATE job_schedules SET next_run_at=LEAST(next_run_at,now()) WHERE job_key='crop-recommendations'"
+                    "UPDATE job_schedules SET next_run_at=LEAST(next_run_at,now()),retry_at=NULL WHERE job_key='crop-recommendations'"
                 )
             return "completed"
         finally:
