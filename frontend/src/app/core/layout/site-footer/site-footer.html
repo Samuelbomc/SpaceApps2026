@@ -8,14 +8,20 @@
           <span class="footer__placeholder">Nombre provisional</span>
         }
       </div>
-      <p>{{ identity.tagline }}. Prototipo de plataforma de datos agroambientales y apoyo a la decisión para Colombia.</p>
+      <p>{{ identity.tagline }}. Prototipo de plataforma de inteligencia agrícola para Colombia, con región piloto en el Oriente Antioqueño.</p>
     </div>
 
     <nav aria-label="Navegación del pie de página">
-      <h2 class="footer__heading">Explorar</h2>
+      <h2 class="footer__heading">Plataforma</h2>
       <ul class="footer__links">
-        @for (item of navItems; track item.label) {
-          <li><a [routerLink]="item.path" [fragment]="item.fragment">{{ item.label }}</a></li>
+        <li><a routerLink="/">Inicio</a></li>
+        <li><a routerLink="/explorar">Explorar el mapa</a></li>
+        <li><a routerLink="/" fragment="como-funciona">Cómo funciona</a></li>
+        <li><a routerLink="/" fragment="fuentes">Fuentes y métodos</a></li>
+        @if (auth.isAuthenticated()) {
+          <li><a routerLink="/panel">Mi panel</a></li>
+        } @else {
+          <li><a routerLink="/acceso">Iniciar sesión</a></li>
         }
       </ul>
     </nav>

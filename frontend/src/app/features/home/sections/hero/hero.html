@@ -4,18 +4,23 @@
       <p class="eyebrow">{{ identity.challenge }} · Field Shift</p>
       <h1 id="hero-title">{{ identity.tagline }}</h1>
       <p class="hero__lead">
-        Integramos observaciones de la Tierra de la NASA, información agrícola de Colombia y el
-        conocimiento de quienes trabajan la tierra para explorar las condiciones ambientales y
-        comparar estrategias de rotación de cultivos de forma transparente.
+        Ubica tu finca, delimita tu lote y cuéntanos cómo lo trabajas. Combinamos observaciones de
+        la Tierra de la NASA con información agrícola de Colombia para ayudarte a entender sus
+        condiciones y orientar la rotación de cultivos y el manejo del suelo.
       </p>
 
       <div class="hero__actions">
-        <a class="btn btn--light" routerLink="/datos">Explorar el portal de datos</a>
-        <a class="btn btn--outline-light" routerLink="/agricultor">Ir al espacio del agricultor</a>
+        @if (auth.isAuthenticated()) {
+          <a class="btn btn--light" routerLink="/panel">Ir a mi panel</a>
+          <a class="btn btn--outline-light" routerLink="/explorar">Analizar un lote nuevo</a>
+        } @else {
+          <a class="btn btn--light" routerLink="/registro">Crear cuenta</a>
+          <a class="btn btn--outline-light" routerLink="/explorar">Explorar el mapa</a>
+        }
       </div>
 
       <ul class="hero__meta">
-        <li>Piloto: {{ territory.department }}, {{ territory.country }}</li>
+        <li>Región piloto: {{ territory.pilotRegion.name }}, {{ territory.department }}</li>
         <li>Prototipo en desarrollo</li>
         <li>Apoyo a la decisión, no reemplazo de la asesoría técnica</li>
       </ul>

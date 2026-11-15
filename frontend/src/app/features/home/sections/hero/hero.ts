@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { APP_IDENTITY } from '../../../../core/config/app-identity';
 import { PILOT_TERRITORY } from '../../../../core/catalog/pilot-territory';
 
@@ -62,6 +63,7 @@ function slab(y: number, label: string, topFill: string, sideFill: string, strip
 export class HomeHero {
   protected readonly identity = APP_IDENTITY;
   protected readonly territory = PILOT_TERRITORY;
+  protected readonly auth = inject(AuthService);
 
   /** Drawn bottom-to-top so upper layers overlap lower ones. */
   protected readonly layers: LayerShape[] = [

@@ -1,0 +1,69 @@
+{
+  "source": {
+    "institution": "Departamento Administrativo Nacional de Estadística (DANE)",
+    "product": "Marco Geoestadístico Nacional (MGN 2025)",
+    "service": "https://geoportal.dane.gov.co/mparcgis/rest/services/MGN2025/Serv_CapasMGN_2025/FeatureServer",
+    "layers": {
+      "departments": 319,
+      "municipalities": 317
+    },
+    "officialLimitsNote": "DANE indicates MGN department and municipal limits follow official IGAC limits.",
+    "citation": "Fuente: Departamento Administrativo Nacional de Estadística: www.dane.gov.co",
+    "termsUrl": "https://www.dane.gov.co/index.php/terrminos-y-condiciones-dane"
+  },
+  "retrievedAt": "2026-11-14T22:29:16+00:00",
+  "processing": {
+    "sourceCrs": "EPSG:3857 (Web Mercator)",
+    "outputCrs": "EPSG:4326 (WGS84), reprojected server-side by ArcGIS (outSR=4326)",
+    "simplification": {
+      "method": "ArcGIS maxAllowableOffset (server-side generalisation)",
+      "departmentsToleranceDeg": 0.01,
+      "municipalitiesToleranceDeg": 0.002,
+      "departmentsPrecisionDecimals": 4,
+      "municipalitiesPrecisionDecimals": 5,
+      "caveat": "Generalised boundaries for visualisation only; not for cadastral or legal use."
+    },
+    "labelPoints": "Approximate pole of inaccessibility (grid search) of the largest part.",
+    "script": "pipelines/ingestion/sources/colombia/dane_mgn.py"
+  },
+  "files": {
+    "colombia-departamentos.geojson": {
+      "features": 33,
+      "bytes": 134021
+    },
+    "municipios-05.geojson": {
+      "features": 125,
+      "bytes": 248560
+    }
+  },
+  "quality": {
+    "departments": {
+      "count": 33,
+      "expected": 33,
+      "errors": [],
+      "warnings": [
+        "Some features changed area by more than 2% after simplification."
+      ],
+      "areaDeviationPct": {
+        "max": 17.797,
+        "maxCode": "88",
+        "mean": 0.994,
+        "note": "Simplified-geometry spherical area vs. DANE official area field."
+      }
+    },
+    "municipalities": {
+      "count": 125,
+      "expected": 125,
+      "errors": [],
+      "warnings": [
+        "Some features changed area by more than 2% after simplification."
+      ],
+      "areaDeviationPct": {
+        "max": 2.163,
+        "maxCode": "05576",
+        "mean": 0.445,
+        "note": "Simplified-geometry spherical area vs. DANE official area field."
+      }
+    }
+  }
+}

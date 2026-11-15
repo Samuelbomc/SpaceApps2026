@@ -1,0 +1,38 @@
+<section id="como-funciona" class="section section--sunken" aria-labelledby="how-title">
+  <div class="container">
+    <header class="section-head">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2 id="how-title">Del globo a tu lote, en un solo recorrido</h2>
+      <p>
+        Una sola plataforma: exploras el territorio, ubicas tu finca, describes tu lote y recibes
+        una propuesta explicada. Tus fincas y análisis quedan en tu panel para actualizarlos cuando
+        quieras.
+      </p>
+    </header>
+
+    <ol class="journey">
+      @for (step of steps; track step.id; let i = $index) {
+        <li class="journey__step">
+          <span class="journey__num" aria-hidden="true">{{ i + 1 }}</span>
+          <h3>{{ step.label }}</h3>
+          <p>{{ step.summary }}</p>
+        </li>
+      }
+    </ol>
+
+    <div class="journey__after">
+      <div>
+        <h3>Y después, tu panel</h3>
+        <p>
+          Vuelve a tus fincas guardadas, revisa análisis anteriores, actualiza la información de un
+          lote y solicita un análisis nuevo sin repetir todo el recorrido.
+        </p>
+      </div>
+      @if (auth.isAuthenticated()) {
+        <a class="btn btn--primary" routerLink="/panel">Ir a mi panel</a>
+      } @else {
+        <a class="btn btn--primary" routerLink="/registro">Crear cuenta</a>
+      }
+    </div>
+  </div>
+</section>

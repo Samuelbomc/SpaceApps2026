@@ -1,0 +1,29 @@
+<section class="auth">
+  <div class="container auth__grid">
+    <aside class="auth__brand" aria-label="Sobre la plataforma">
+      <span class="eyebrow">{{ identity.name }}</span>
+      <p class="auth__tagline">{{ identity.tagline }}</p>
+      <ol class="auth__steps">
+        <li><b>1</b> Ubica tu finca y dibuja tu lote sobre imagen satelital.</li>
+        <li><b>2</b> Cuéntanos sobre el suelo, el agua y tus cultivos.</li>
+        <li><b>3</b> Consulta una propuesta de rotación explicada, con sus fuentes y límites.</li>
+      </ol>
+      <p class="auth__region">Región piloto: {{ region }}, Antioquia.</p>
+    </aside>
+
+    <div class="auth__card card">
+      <h1>{{ heading() }}</h1>
+      @if (lead()) {
+        <p class="auth__lead">{{ lead() }}</p>
+      }
+      <ng-content />
+      <p class="notice notice--demo auth__demo" role="note">
+        <span>
+          <strong>Modo demostración.</strong> Aún no existe un sistema real de cuentas: no se crea
+          ninguna cuenta, no se envían correos y tu contraseña no se guarda ni se envía a ningún
+          lugar. La sesión de prueba se borra al cerrar esta pestaña.
+        </span>
+      </p>
+    </div>
+  </div>
+</section>

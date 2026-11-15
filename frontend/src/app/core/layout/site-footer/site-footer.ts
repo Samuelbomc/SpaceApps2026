@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { APP_IDENTITY } from '../../config/app-identity';
-import { PRIMARY_NAV } from '../navigation';
+import { AuthService } from '../../auth/auth.service';
 import { BrandMark } from '../../../shared/ui/brand-mark/brand-mark';
 
 /** Site footer: navigation, project context, and the non-endorsement / decision-support disclaimer. */
@@ -14,5 +14,5 @@ import { BrandMark } from '../../../shared/ui/brand-mark/brand-mark';
 })
 export class SiteFooter {
   protected readonly identity = APP_IDENTITY;
-  protected readonly navItems = PRIMARY_NAV;
+  protected readonly auth = inject(AuthService);
 }

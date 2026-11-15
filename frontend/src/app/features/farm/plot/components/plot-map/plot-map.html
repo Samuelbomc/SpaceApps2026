@@ -1,0 +1,63 @@
+<div class="shell">
+  <div #mapContainer class="canvas" role="region" aria-label="Mapa satelital para delimitar el lote" aria-describedby="plot-map-help"></div>
+  <p id="plot-map-help" class="sr-only">
+    Puedes dibujar con el ratón o el dedo, o sin ellos: mueve el mapa con las flechas para poner la
+    mira sobre cada esquina del lote y pulsa «Añadir punto en la mira».
+  </p>
+
+  @if (editor.mode() === 'drawing') {
+    <div class="crosshair" aria-hidden="true"></div>
+  }
+
+  <div class="toolbar" role="toolbar" aria-label="Herramientas para dibujar el lote">
+    @switch (editor.mode()) {
+      @case ('idle') {
+        <button type="button" class="tool tool--primary" [disabled]="!ready()" (click)="startDrawing()">Dibujar lote</button>
+      }
+      @case ('drawing') {
+        <button type="button" class="tool" (click)="addAtCenter()">Añadir punto en la mira</button>
+        <button type="button" class="tool" [disabled]="!editor.count()" (click)="undo()">Deshacer punto</button>
+        <button type="button" class="tool tool--primary" [disabled]="!editor.canFinish()" (click)="finish()">Terminar contorno</button>
+        <button type="button" class="tool tool--ghost" (click)="deletePlot()">Cancelar</button>
+      }
+      @case ('editing') {
+        <button type="button" class="tool" [disabled]="!editor.canRemoveSelected()" (click)="removeSelected()">Eliminar punto</button>
+        <button type="button" class="tool" (click)="redraw()">Redibujar</button>
+        <button type="button" class="tool tool--danger" (click)="deletePlot()">Borrar lote</button>
+      }
+    }
+  </div>
+
+  <p class="instructions" aria-live="polite">{{ instructions() }}</p>
+
+  @if (ready()) {
+    <div class="legend">
+      <span><i class="legend__plot"></i>Tu lote</span>
+      <span><i class="legend__boundary"></i>Límite de {{ municipality().name }}</span>
+    </div>
+  }
+
+  <div class="notes" aria-live="polite">
+    @if (overzoomed()) {
+      <p class="note">Imagen ampliada más allá de su resolución ({{ imagery.resolution }}).</p>
+    }
+    @if (imageryFailed()) {
+      <p class="note note--warn">
+        La imagen satelital no está disponible ahora. Puedes seguir dibujando sobre el límite
+        municipal, pero será más difícil ubicar tu finca.
+      </p>
+    }
+  </div>
+
+  @switch (state()) {
+    @case ('loading') {
+      <div class="overlay" role="status"><span class="spinner" aria-hidden="true"></span>Cargando imagen satelital…</div>
+    }
+    @case ('error') {
+      <div class="overlay" role="alert">
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="btn btn--light" (click)="init()">Reintentar</button>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,109 @@
+:host {
+  position: relative;
+  display: block;
+}
+
+.dropdown__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--c-ink-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover,
+  &--open {
+    color: var(--c-forest-900);
+    background: var(--c-sage-100);
+  }
+}
+
+.dropdown__caret {
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: -0.2rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--transition-fast);
+}
+
+.dropdown__trigger--open .dropdown__caret {
+  margin-top: 0.15rem;
+  transform: rotate(-135deg);
+}
+
+.dropdown__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60;
+  display: none;
+  min-width: 13rem;
+  padding: var(--sp-1);
+  list-style: none;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-md);
+
+  // Invisible bridge so moving the mouse from the button to the menu keeps it open.
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    right: 0;
+    height: 8px;
+  }
+
+  &--open { display: block; }
+}
+
+.dropdown__link {
+  display: block;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  color: var(--c-ink);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--c-sage-100);
+    color: var(--c-forest-900);
+  }
+}
+
+// Mobile menu: the list is shown inline, indented under its button.
+@media (max-width: 900px) {
+  .dropdown__trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: var(--sp-3);
+    font-size: var(--fs-base);
+  }
+
+  .dropdown__menu {
+    position: static;
+    min-width: 0;
+    margin: 0 0 var(--sp-2) var(--sp-4);
+    border: 0;
+    border-left: 2px solid var(--c-border-strong);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .dropdown__link {
+    padding: var(--sp-3);
+    font-size: var(--fs-base);
+  }
+}

@@ -1,0 +1,21 @@
+<nav class="steps" aria-label="Progreso del análisis de tu lote">
+  <ol>
+    @for (step of steps(); track step.id) {
+      <li [class]="'step step--' + step.status">
+        <a
+          [routerLink]="step.path"
+          [attr.aria-current]="step.status === 'current' ? 'step' : null"
+          [attr.title]="step.summary"
+        >
+          <span class="step__dot" aria-hidden="true">
+            @if (step.status === 'done') { ✓ } @else { {{ step.index }} }
+          </span>
+          <span class="step__label">{{ step.label }}</span>
+          @if (step.status === 'done') {
+            <span class="sr-only">(completado)</span>
+          }
+        </a>
+      </li>
+    }
+  </ol>
+</nav>

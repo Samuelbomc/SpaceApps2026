@@ -51,26 +51,26 @@ export class HomeRoadmap {
     {
       status: 'available',
       items: [
-        'Estructura de la aplicación y navegación',
-        'Página de inicio y descripción del proyecto',
-        'Catálogo descriptivo de fuentes previstas',
+        'Recorrido unificado y navegación de la plataforma',
+        'Pantallas de acceso, registro y recuperación (modo demostración)',
+        'Globo interactivo con límites oficiales del DANE y búsqueda geográfica',
+        'Región piloto del Oriente Antioqueño verificada con fuente oficial',
+        'Delimitación del lote sobre imagen satelital (Sentinel-2, 10 m)',
       ],
     },
     {
       status: 'in-development',
       items: [
-        'Portal de datos con selección municipal y gráficos',
-        'Espacio del agricultor: perfil, historial y prioridades',
-        'Comparador de tres estrategias de rotación',
+        'Cuestionario de caracterización del lote',
+        'Panel de análisis: rotación de cultivos, series ambientales y recomendaciones',
       ],
     },
     {
       status: 'planned',
       items: [
-        'Integración real de datos NASA y fuentes colombianas',
-        'API y base de datos geoespacial',
-        'Cuentas de usuario y almacenamiento seguro de fincas',
-        'Descargas de datos con metadatos',
+        'Cuentas reales y almacenamiento seguro de fincas y análisis',
+        'Integración de datos NASA y fuentes colombianas',
+        'Motor de análisis con metodología documentada y validación local',
       ],
     },
   ];

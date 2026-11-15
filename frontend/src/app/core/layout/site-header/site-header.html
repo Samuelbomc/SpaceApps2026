@@ -1,10 +1,10 @@
 <header class="header" [class.header--open]="menuOpen()">
   <div class="container header__bar">
-    <a class="brand" routerLink="/" (click)="closeMenu()">
+    <a class="brand" [routerLink]="auth.isAuthenticated() ? '/panel' : '/'" (click)="closeMenu()">
       <app-brand-mark />
       <span class="brand__text">
         <span class="brand__name">{{ identity.name }}</span>
-        <span class="brand__tag">Prototipo · Piloto Antioquia</span>
+        <span class="brand__tag">Prototipo · Oriente Antioqueño</span>
       </span>
     </a>
 
@@ -21,21 +21,46 @@
 
     <nav id="primary-nav" class="nav" aria-label="Navegación principal">
       <ul class="nav__list">
-        @for (item of navItems; track item.label) {
+        @for (item of navItems(); track item.label) {
           <li>
-            <a
-              class="nav__link"
-              [routerLink]="item.path"
-              [fragment]="item.fragment"
-              routerLinkActive="nav__link--active"
-              [routerLinkActiveOptions]="activeOptions"
-              ariaCurrentWhenActive="page"
-              (click)="closeMenu()"
-              >{{ item.label }}</a
-            >
+            @if (item.kind === 'group') {
+              <app-nav-dropdown [group]="item" (navigated)="closeMenu()" />
+            } @else {
+              <a
+                class="nav__link"
+                [routerLink]="item.path"
+                routerLinkActive="nav__link--active"
+                [routerLinkActiveOptions]="activeOptions"
+                ariaCurrentWhenActive="page"
+                (click)="closeMenu()"
+                >{{ item.label }}</a
+              >
+            }
           </li>
         }
       </ul>
+
+      <div class="account">
+        @if (auth.user(); as user) {
+          <a
+            class="account__user"
+            routerLink="/perfil"
+            routerLinkActive="account__user--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+            <span class="account__name">{{ user.name }}</span>
+            @if (auth.isDemo()) {
+              <span class="demo-chip">Demo</span>
+            }
+          </a>
+          <button type="button" class="btn btn--secondary account__btn" (click)="logout()">Cerrar sesión</button>
+        } @else {
+          <a class="nav__link" routerLink="/acceso" (click)="closeMenu()">Iniciar sesión</a>
+          <a class="btn btn--primary account__btn" routerLink="/registro" (click)="closeMenu()">Crear cuenta</a>
+        }
+      </div>
     </nav>
   </div>
 </header>

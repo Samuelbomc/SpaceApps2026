@@ -1,0 +1,109 @@
+<app-auth-layout
+  heading="Crear cuenta"
+  lead="Guarda tus fincas y lotes para actualizar sus análisis con el tiempo."
+>
+  <form #formEl class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (error()) {
+      <p class="form-alert" role="alert">{{ error() }}</p>
+    }
+
+    <div class="field">
+      <label for="reg-name">Nombre</label>
+      <input
+        id="reg-name"
+        class="input"
+        type="text"
+        formControlName="name"
+        autocomplete="name"
+        [attr.aria-invalid]="showError(form.controls.name)"
+        aria-describedby="reg-name-error"
+      />
+      @if (showError(form.controls.name)) {
+        <p id="reg-name-error" class="field-error">Escribe tu nombre.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="reg-email">Correo electrónico</label>
+      <input
+        id="reg-email"
+        class="input"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        inputmode="email"
+        [attr.aria-invalid]="showError(form.controls.email)"
+        aria-describedby="reg-email-error"
+      />
+      @if (showError(form.controls.email)) {
+        <p id="reg-email-error" class="field-error">Escribe un correo válido (ejemplo: nombre@correo.com).</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="reg-password">Contraseña</label>
+      <div class="input-group">
+        <input
+          id="reg-password"
+          class="input"
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="new-password"
+          [attr.aria-invalid]="showError(form.controls.password)"
+          aria-describedby="reg-password-hint reg-password-error"
+        />
+        <button type="button" (click)="showPassword.set(!showPassword())" [attr.aria-pressed]="showPassword()">
+          {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      <p id="reg-password-hint" class="field-hint">Mínimo {{ minLength }} caracteres.</p>
+      @if (showError(form.controls.password)) {
+        <p id="reg-password-error" class="field-error">
+          La contraseña debe tener al menos {{ minLength }} caracteres.
+        </p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="reg-confirm">Confirmar contraseña</label>
+      <input
+        id="reg-confirm"
+        class="input"
+        [type]="showPassword() ? 'text' : 'password'"
+        formControlName="confirm"
+        autocomplete="new-password"
+        [attr.aria-invalid]="showError(form.controls.confirm) || mismatch()"
+        aria-describedby="reg-confirm-error"
+      />
+      @if (showError(form.controls.confirm)) {
+        <p id="reg-confirm-error" class="field-error">Repite la contraseña.</p>
+      } @else if (mismatch()) {
+        <p id="reg-confirm-error" class="field-error">Las contraseñas no coinciden.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="checkbox">
+        <input
+          type="checkbox"
+          formControlName="acknowledge"
+          [attr.aria-invalid]="showError(form.controls.acknowledge)"
+          aria-describedby="reg-ack-error"
+        />
+        <span>
+          Entiendo que esta es una versión de demostración: no se crea una cuenta real y mis datos no
+          se guardan en una base de datos.
+        </span>
+      </label>
+      @if (showError(form.controls.acknowledge)) {
+        <p id="reg-ack-error" class="field-error">Marca esta casilla para continuar.</p>
+      }
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--block" [disabled]="submitting()">
+      {{ submitting() ? 'Creando cuenta…' : 'Crear cuenta' }}
+    </button>
+  </form>
+
+  <p>¿Ya tienes cuenta? <a routerLink="/acceso">Iniciar sesión</a></p>
+</app-auth-layout>

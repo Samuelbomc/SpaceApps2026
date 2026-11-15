@@ -1,0 +1,54 @@
+<article class="card details" aria-labelledby="plot-details-title" aria-live="polite">
+  <header class="details__head">
+    <h2 id="plot-details-title">Tu lote</h2>
+    <app-data-nature-badge nature="farmer" />
+  </header>
+
+  @if (summary(); as s) {
+    <dl class="figures">
+      <div>
+        <dt>Área aproximada</dt>
+        <dd class="figures__big">{{ area() }}</dd>
+      </div>
+      <div>
+        <dt>Perímetro</dt>
+        <dd>{{ perimeter() }}</dd>
+      </div>
+      <div>
+        <dt>Vértices</dt>
+        <dd>{{ s.vertexCount }}</dd>
+      </div>
+    </dl>
+    <dl class="spec-list">
+      <dt>Centro aprox.</dt>
+      <dd>{{ formatLngLat(s.centroid) }}</dd>
+      <dt>Municipio</dt>
+      <dd>{{ withinLabel() }}</dd>
+      <dt>Sistema</dt>
+      <dd>WGS84 (EPSG:4326)</dd>
+    </dl>
+
+    @for (issue of s.issues; track issue.message) {
+      <p class="issue" [class.issue--error]="issue.level === 'error'" [attr.role]="issue.level === 'error' ? 'alert' : null">
+        <strong>{{ issue.level === 'error' ? 'Corrige:' : 'Atención:' }}</strong> {{ issue.message }}
+      </p>
+    }
+
+    <details class="coords">
+      <summary>Coordenadas de los vértices</summary>
+      <ol>
+        @for (p of s.ring; track $index) {
+          <li>{{ formatLngLat(p) }}</li>
+        }
+      </ol>
+    </details>
+    <p class="method">
+      Área y perímetro calculados sobre la esfera terrestre (radio medio 6 371 km) a partir de
+      coordenadas geográficas; no sobre grados como si fueran metros.
+    </p>
+  } @else if (drawing()) {
+    <p class="empty">Marca al menos tres esquinas y cierra el contorno para ver el área y las coordenadas.</p>
+  } @else {
+    <p class="empty">Aún no has dibujado el lote.</p>
+  }
+</article>

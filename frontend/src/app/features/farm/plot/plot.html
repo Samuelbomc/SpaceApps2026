@@ -1,0 +1,126 @@
+<section class="plot-page" aria-labelledby="plot-title">
+  <div class="container">
+    <app-journey-steps current="lote" />
+  </div>
+
+  <header class="container head">
+    <div>
+      <span class="eyebrow">Paso 3 de 5 · Municipio y lote</span>
+      <h1 id="plot-title">
+        @if (municipality(); as m) { Delimita tu lote en {{ m.name }} } @else { Municipio y lote }
+      </h1>
+      <p>Ubica tu finca en la imagen satelital y dibuja el contorno del terreno que deseas analizar.</p>
+    </div>
+
+    @if (state() === 'ready' && pilotOptions().length) {
+      <div class="switcher">
+        <label for="plot-municipio">Municipio ({{ region.name }})</label>
+        <select id="plot-municipio" class="input" (change)="requestSwitch($event)">
+          @for (m of pilotOptions(); track m.code) {
+            <option [value]="m.code" [selected]="m.code === municipality()?.code">{{ m.name }}</option>
+          }
+        </select>
+      </div>
+    }
+  </header>
+
+  @if (pendingSwitch()) {
+    <div class="container">
+      <div class="notice notice--caution switch-confirm" role="alertdialog" aria-labelledby="switch-msg">
+        <span id="switch-msg">
+          Cambiar a <strong>{{ pendingName() }}</strong> borrará el lote que dibujaste en
+          {{ municipality()?.name }}.
+        </span>
+        <span class="switch-confirm__actions">
+          <button type="button" class="btn btn--primary" (click)="confirmSwitch()">Cambiar y borrar lote</button>
+          <button type="button" class="btn btn--secondary" (click)="pendingSwitch.set(null)">Cancelar</button>
+        </span>
+      </div>
+    </div>
+  }
+
+  @switch (state()) {
+    @case ('ready') {
+      <div class="container body">
+        <div class="map">
+          <app-plot-map [municipality]="municipality()!" [initialRing]="initialRing()" (shapeChange)="onShape($event)" />
+        </div>
+
+        <aside class="side" aria-label="Resumen y confirmación del lote">
+          <app-plot-details
+            [summary]="summary()"
+            [municipalityName]="municipality()!.name"
+            [drawing]="!!shape() && !shape()!.closed"
+          />
+
+          <div class="card confirm">
+            @if (journey.plotConfirmed()) {
+              <p class="confirm__done" role="status">✓ Lote confirmado. Puedes seguir ajustándolo; tendrás que confirmarlo de nuevo.</p>
+              <a class="btn btn--primary btn--block" routerLink="/finca/caracterizacion">Continuar a la caracterización</a>
+            } @else {
+              <button type="button" class="btn btn--primary btn--block" [disabled]="!canConfirm()" (click)="confirmPlot()">
+                Confirmar lote y continuar
+              </button>
+              @if (!summary()) {
+                <p class="confirm__hint">Dibuja y cierra el contorno del lote para poder confirmarlo.</p>
+              } @else if (!summary()!.valid) {
+                <p class="confirm__hint">Corrige lo indicado arriba para poder confirmar.</p>
+              }
+            }
+            <p class="confirm__hint">El lote se guarda solo en esta sesión del navegador.</p>
+          </div>
+
+          <div class="card limits">
+            <h2>Sobre este lote</h2>
+            <ul class="check-list">
+              <li>Lo delimitas tú, de forma manual y aproximada.</li>
+              <li>No es un límite catastral ni un lindero oficial, y no prueba propiedad.</li>
+              <li>Su precisión depende de la imagen ({{ imagery.resolution }}) y de tu trazo.</li>
+              <li>Aún no ha sido analizado: el análisis llegará en los siguientes pasos.</li>
+            </ul>
+            <p class="limits__source">
+              Imagen: {{ imagery.name }} · {{ imagery.temporal }}. Licencia {{ imagery.license }}.
+            </p>
+          </div>
+        </aside>
+      </div>
+    }
+    @case ('loading') {
+      <div class="container"><p class="status" role="status">Cargando el municipio…</p></div>
+    }
+    @case ('choose') {
+      <div class="container">
+        <div class="card choose">
+          <h2>¿En qué municipio está tu finca?</h2>
+          <p>Elige uno de los {{ region.municipalityCodes.length }} municipios del {{ region.name }}, o búscalo en el mapa.</p>
+          <label for="plot-choose" class="sr-only">Municipio</label>
+          <select id="plot-choose" class="input" (change)="chooseFromList($event)">
+            <option value="">Elige un municipio…</option>
+            @for (m of pilotOptions(); track m.code) {
+              <option [value]="m.code">{{ m.name }}</option>
+            }
+          </select>
+          <a class="link-arrow" routerLink="/explorar">Buscar en el mapa</a>
+        </div>
+      </div>
+    }
+    @case ('unsupported') {
+      <div class="container">
+        <div class="notice notice--caution" role="alert">
+          <span>
+            <strong>{{ unsupportedName() }}</strong> no forma parte de la región piloto ({{ region.name }}),
+            así que aún no es posible delimitar ni analizar lotes allí.
+            <a routerLink="/explorar">Volver al mapa</a>
+          </span>
+        </div>
+      </div>
+    }
+    @case ('error') {
+      <div class="container">
+        <p class="notice notice--caution" role="alert">
+          <span>No fue posible cargar los límites del municipio. <a routerLink="/explorar">Volver al mapa</a></span>
+        </p>
+      </div>
+    }
+  }
+</section>

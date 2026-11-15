@@ -1,0 +1,57 @@
+<div class="search">
+  <label for="geo-search-input" class="sr-only">Buscar departamento, región o municipio</label>
+  <span class="search__icon" aria-hidden="true">⌕</span>
+  <input
+    #inputEl
+    id="geo-search-input"
+    class="search__input"
+    type="search"
+    role="combobox"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="Busca un municipio, región o departamento…"
+    aria-autocomplete="list"
+    aria-controls="geo-search-list"
+    aria-describedby="geo-search-hint"
+    [attr.aria-expanded]="showList()"
+    [attr.aria-activedescendant]="activeId()"
+    [value]="query()"
+    (input)="onInput(inputEl.value)"
+    (keydown)="onKeydown($event)"
+    (focus)="open.set(true)"
+    (blur)="onBlur()"
+  />
+  @if (query()) {
+    <button type="button" class="search__clear" (click)="clear(inputEl)" aria-label="Borrar búsqueda">×</button>
+  }
+  <p id="geo-search-hint" class="sr-only">Escribe al menos dos letras. Usa las flechas para recorrer los resultados y Enter para elegir.</p>
+
+  <ul id="geo-search-list" class="results" role="listbox" aria-label="Resultados" [hidden]="!showList()">
+    @for (r of results(); track r.kind + r.id; let i = $index) {
+      <li
+        [id]="'geo-opt-' + i"
+        role="option"
+        class="result"
+        [class.result--active]="i === active()"
+        [attr.aria-selected]="i === active()"
+        [attr.data-status]="r.status"
+        (mousedown)="$event.preventDefault()"
+        (click)="choose(r)"
+        (mouseenter)="active.set(i)"
+      >
+        <span class="result__main">
+          <span class="result__name">{{ r.name }}</span>
+          <span class="result__context">{{ r.context }}</span>
+        </span>
+        <span class="result__status">{{ statusLabel[r.status] }}</span>
+      </li>
+    } @empty {
+      <li class="result result--empty" role="presentation">Sin resultados en Colombia ni en Antioquia.</li>
+    }
+  </ul>
+  <p class="sr-only" aria-live="polite">
+    @if (showList()) {
+      {{ results().length }} resultados
+    }
+  </p>
+</div>
