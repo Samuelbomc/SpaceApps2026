@@ -1,5 +1,34 @@
+<div class="square-tools">
+  <label
+    >Superficie del cuadrado<input
+      class="input"
+      type="number"
+      min="0"
+      step="any"
+      [(ngModel)]="squareValue"
+  /></label>
+  <label
+    >Unidad<select class="input" [ngModel]="squareUnit" (ngModelChange)="changeSquareUnit($event)">
+      <option value="m2">m²</option>
+      <option value="km2">km²</option>
+      <option value="ha">ha</option>
+    </select></label
+  >
+  <button type="button" class="btn btn--secondary" [disabled]="!ready()" (click)="placeSquare()">
+    Colocar cuadrado en el centro
+  </button>
+</div>
+@if (squareError()) {
+  <p role="alert" class="notice">{{ squareError() }}</p>
+}
 <div class="shell">
-  <div #mapContainer class="canvas" role="region" aria-label="Mapa satelital para delimitar el lote" aria-describedby="plot-map-help"></div>
+  <div
+    #mapContainer
+    class="canvas"
+    role="region"
+    aria-label="Mapa satelital para delimitar el lote"
+    aria-describedby="plot-map-help"
+  ></div>
   <p id="plot-map-help" class="sr-only">
     Puedes dibujar con el ratón o el dedo, o sin ellos: mueve el mapa con las flechas para poner la
     mira sobre cada esquina del lote y pulsa «Añadir punto en la mira».
@@ -12,16 +41,39 @@
   <div class="toolbar" role="toolbar" aria-label="Herramientas para dibujar el lote">
     @switch (editor.mode()) {
       @case ('idle') {
-        <button type="button" class="tool tool--primary" [disabled]="!ready()" (click)="startDrawing()">Dibujar lote</button>
+        <button
+          type="button"
+          class="tool tool--primary"
+          [disabled]="!ready()"
+          (click)="startDrawing()"
+        >
+          Dibujar lote
+        </button>
       }
       @case ('drawing') {
         <button type="button" class="tool" (click)="addAtCenter()">Añadir punto en la mira</button>
-        <button type="button" class="tool" [disabled]="!editor.count()" (click)="undo()">Deshacer punto</button>
-        <button type="button" class="tool tool--primary" [disabled]="!editor.canFinish()" (click)="finish()">Terminar contorno</button>
+        <button type="button" class="tool" [disabled]="!editor.count()" (click)="undo()">
+          Deshacer punto
+        </button>
+        <button
+          type="button"
+          class="tool tool--primary"
+          [disabled]="!editor.canFinish()"
+          (click)="finish()"
+        >
+          Terminar contorno
+        </button>
         <button type="button" class="tool tool--ghost" (click)="deletePlot()">Cancelar</button>
       }
       @case ('editing') {
-        <button type="button" class="tool" [disabled]="!editor.canRemoveSelected()" (click)="removeSelected()">Eliminar punto</button>
+        <button
+          type="button"
+          class="tool"
+          [disabled]="!editor.canRemoveSelected()"
+          (click)="removeSelected()"
+        >
+          Eliminar punto
+        </button>
         <button type="button" class="tool" (click)="redraw()">Redibujar</button>
         <button type="button" class="tool tool--danger" (click)="deletePlot()">Borrar lote</button>
       }
@@ -51,7 +103,9 @@
 
   @switch (state()) {
     @case ('loading') {
-      <div class="overlay" role="status"><span class="spinner" aria-hidden="true"></span>Cargando imagen satelital…</div>
+      <div class="overlay" role="status">
+        <span class="spinner" aria-hidden="true"></span>Cargando imagen satelital…
+      </div>
     }
     @case ('error') {
       <div class="overlay" role="alert">

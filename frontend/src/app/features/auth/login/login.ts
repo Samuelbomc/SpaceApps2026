@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -21,7 +28,7 @@ export class Login {
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(MIN_PASSWORD_LENGTH)]],
+    password: ['', [Validators.required, Validators.minLength(1)]],
   });
   protected readonly submitting = signal(false);
   protected readonly error = signal('');
@@ -44,17 +51,13 @@ export class Login {
       await this.auth.login(this.form.getRawValue());
       // The password is not kept anywhere after this point.
       this.form.controls.password.reset();
-      await this.router.navigateByUrl(safeReturnUrl(this.route.snapshot.queryParamMap.get('volver')));
+      await this.router.navigateByUrl(
+        safeReturnUrl(this.route.snapshot.queryParamMap.get('volver')),
+      );
     } catch (err) {
       this.error.set(messageFor(err));
     } finally {
       this.submitting.set(false);
     }
-  }
-
-  /** One-click access for demonstrations. */
-  protected useDemoAccount(): void {
-    this.form.setValue({ email: 'demo@ejemplo.co', password: 'demostracion' });
-    void this.submit();
   }
 }

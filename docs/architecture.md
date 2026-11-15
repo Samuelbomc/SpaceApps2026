@@ -1,8 +1,11 @@
+> Frontend vigente: Angular en `frontend/`; Next.js fue retirado en la migración.
+> Contratos y estado de integración: [frontend-migration.md](frontend-migration.md).
+
 # Arquitectura de Field Shift
 
 El flujo operativo se ejecuta fuera de las peticiones HTTP. La ingesta, el
 reentrenamiento y las recomendaciones son tres jobs independientes con estado
-persistente. Next.js consulta resultados ya calculados mediante FastAPI.
+persistente. Angular consulta resultados ya calculados mediante FastAPI.
 
 ```mermaid
 flowchart TD
@@ -24,7 +27,7 @@ flowchart TD
     GATE --> METRICS[(MongoDB: métricas, candidatos y versiones)]
     RESULTS --> API[FastAPI: consulta]
     METRICS --> API
-    API --> WEB[Next.js]
+    API --> WEB[Angular]
     USERS[Login, fincas y CSV privados] --> PRIVATE[(PostgreSQL y archivos privados)]
     PRIVATE -. requiere validación y autorización .-> LABELS
 ```

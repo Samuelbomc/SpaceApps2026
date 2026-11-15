@@ -36,7 +36,9 @@
         aria-describedby="reg-email-error"
       />
       @if (showError(form.controls.email)) {
-        <p id="reg-email-error" class="field-error">Escribe un correo válido (ejemplo: nombre@correo.com).</p>
+        <p id="reg-email-error" class="field-error">
+          Escribe un correo válido (ejemplo: nombre@correo.com).
+        </p>
       }
     </div>
 
@@ -52,7 +54,11 @@
           [attr.aria-invalid]="showError(form.controls.password)"
           aria-describedby="reg-password-hint reg-password-error"
         />
-        <button type="button" (click)="showPassword.set(!showPassword())" [attr.aria-pressed]="showPassword()">
+        <button
+          type="button"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-pressed]="showPassword()"
+        >
           {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
         </button>
       </div>
@@ -91,8 +97,7 @@
           aria-describedby="reg-ack-error"
         />
         <span>
-          Entiendo que esta es una versión de demostración: no se crea una cuenta real y mis datos no
-          se guardan en una base de datos.
+          Acepto crear una cuenta para guardar de forma privada la información de mis fincas.
         </span>
       </label>
       @if (showError(form.controls.acknowledge)) {

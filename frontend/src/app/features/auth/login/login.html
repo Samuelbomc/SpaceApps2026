@@ -1,7 +1,4 @@
-<app-auth-layout
-  heading="Iniciar sesión"
-  lead="Accede a tus fincas, lotes y análisis anteriores."
->
+<app-auth-layout heading="Iniciar sesión" lead="Accede a tus fincas, lotes y análisis anteriores.">
   @if (redirected) {
     <p class="notice notice--info" role="status">
       <span>Inicia sesión para continuar con el análisis de tu lote.</span>
@@ -27,7 +24,11 @@
       />
       @if (showError(form.controls.email)) {
         <p id="login-email-error" class="field-error">
-          {{ form.controls.email.hasError('required') ? 'Escribe tu correo.' : 'Revisa el formato del correo (ejemplo: nombre@correo.com).' }}
+          {{
+            form.controls.email.hasError('required')
+              ? 'Escribe tu correo.'
+              : 'Revisa el formato del correo (ejemplo: nombre@correo.com).'
+          }}
         </p>
       }
     </div>
@@ -44,7 +45,11 @@
           [attr.aria-invalid]="showError(form.controls.password)"
           aria-describedby="login-password-error"
         />
-        <button type="button" (click)="showPassword.set(!showPassword())" [attr.aria-pressed]="showPassword()">
+        <button
+          type="button"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-pressed]="showPassword()"
+        >
           {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
         </button>
       </div>
@@ -58,9 +63,6 @@
 
     <button type="submit" class="btn btn--primary btn--block" [disabled]="submitting()">
       {{ submitting() ? 'Ingresando…' : 'Iniciar sesión' }}
-    </button>
-    <button type="button" class="btn btn--secondary btn--block" [disabled]="submitting()" (click)="useDemoAccount()">
-      Entrar con la cuenta de demostración
     </button>
   </form>
 

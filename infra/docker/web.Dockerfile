@@ -1,12 +1,16 @@
-FROM node:22-alpine AS build
-WORKDIR /app/apps/web
-COPY apps/web/package*.json ./
+FROM node:26-alpine AS build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
 RUN npm ci --no-audit --no-fund
-COPY apps/web ./
+COPY frontend ./
 COPY packages/contracts /app/packages/contracts
 COPY packages/api-client /app/packages/api-client
 ENV API_INTERNAL_URL=http://api:8000
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV NG_CLI_ANALYTICS=false
+ENV NG_BUILD_MAX_WORKERS=2
 RUN npm run build
+FROM nginx:alpine
+COPY --from=build /app/frontend/dist/frontend/browser /usr/share/nginx/html
+COPY infra/docker/frontend.conf /etc/nginx/conf.d/default.conf
+COPY infra/docker/frontend-api.conf /etc/nginx/frontend-api.conf
 EXPOSE 3000
-CMD ["node", "node_modules/next/dist/bin/next", "start", "-H", "0.0.0.0"]

@@ -1,4 +1,7 @@
-:host { display: block; height: 100%; }
+:host {
+  display: block;
+  height: 100%;
+}
 
 .shell {
   position: relative;
@@ -10,7 +13,10 @@
   color: var(--c-ink-inverse);
 }
 
-.canvas { position: absolute; inset: 0; }
+.canvas {
+  position: absolute;
+  inset: 0;
+}
 
 .toolbar {
   position: absolute;
@@ -34,10 +40,22 @@
   cursor: pointer;
   backdrop-filter: blur(4px);
 
-  &:disabled { opacity: 0.45; cursor: default; }
-  &--primary { background: #ffcf6b; border-color: #ffcf6b; color: #1b231f; }
-  &--danger { border-color: #f0a08a; color: #ffd6cc; }
-  &--ghost { background: rgb(11 29 23 / 0.6); }
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  &--primary {
+    background: #ffcf6b;
+    border-color: #ffcf6b;
+    color: #1b231f;
+  }
+  &--danger {
+    border-color: #f0a08a;
+    color: #ffd6cc;
+  }
+  &--ghost {
+    background: rgb(11 29 23 / 0.6);
+  }
 }
 
 .instructions {
@@ -61,14 +79,27 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
 
-  &::before, &::after {
+  &::before,
+  &::after {
     content: '';
     position: absolute;
     background: #ffcf6b;
     box-shadow: 0 0 0 1px #1b231f;
   }
-  &::before { top: 50%; left: 0; right: 0; height: 2px; transform: translateY(-50%); }
-  &::after { left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); }
+  &::before {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+  &::after {
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    transform: translateX(-50%);
+  }
 }
 
 .legend {
@@ -82,12 +113,25 @@
   background: rgb(11 29 23 / 0.82);
   font-size: var(--fs-xs);
 
-  span { display: flex; align-items: center; gap: var(--sp-2); }
-  i { display: inline-block; width: 1.1rem; }
+  span {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+  i {
+    display: inline-block;
+    width: 1.1rem;
+  }
 }
 
-.legend__plot { height: 0.75rem; background: rgb(255 207 107 / 0.4); border: 2px solid #ffcf6b; }
-.legend__boundary { border-top: 2px dashed #f3f1ea; }
+.legend__plot {
+  height: 0.75rem;
+  background: rgb(255 207 107 / 0.4);
+  border: 2px solid #ffcf6b;
+}
+.legend__boundary {
+  border-top: 2px dashed #f3f1ea;
+}
 
 .notes {
   position: absolute;
@@ -106,7 +150,9 @@
   background: rgb(11 29 23 / 0.85);
   font-size: var(--fs-xs);
 
-  &--warn { background: #6b4a12; }
+  &--warn {
+    background: #6b4a12;
+  }
 }
 
 .overlay {
@@ -130,4 +176,22 @@
   animation: spin 0.9s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.square-tools {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+.square-tools label {
+  display: grid;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 120px;
+}

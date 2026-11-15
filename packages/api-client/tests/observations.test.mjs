@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { dailySegments, latestFor, summarizeObservations } from './observation-summary.ts';
+import { dailySegments, latestFor, summarizeObservations } from '../src/observations.ts';
 
 const row = (date, value = 20, extra = {}) => ({ date, value, source: 'NASA_POWER', variable: 'T2M', unit: 'C', resolution: 'native', quality: 'provider_value_unvalidated', ...extra });
 

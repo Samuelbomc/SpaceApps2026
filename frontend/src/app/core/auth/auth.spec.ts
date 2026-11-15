@@ -45,13 +45,15 @@ describe('Demo authentication', () => {
     const run = (guard: typeof requireSession, url: string) =>
       TestBed.runInInjectionContext(() => guard({} as never, { url } as never));
 
-    const redirect = run(requireSession, '/finca/lote') as UrlTree;
+    const redirect = (await run(requireSession, '/finca/lote')) as UrlTree;
     expect(TestBed.inject(Router).serializeUrl(redirect)).toBe('/acceso?volver=%2Ffinca%2Flote');
-    expect(run(requireGuest, '/acceso')).toBe(true);
+    expect(await run(requireGuest, '/acceso')).toBe(true);
 
     await auth.login({ email: 'ana@correo.co', password: '12345678' });
-    expect(run(requireSession, '/panel')).toBe(true);
-    expect(TestBed.inject(Router).serializeUrl(run(requireGuest, '/acceso') as UrlTree)).toBe('/panel');
+    expect(await run(requireSession, '/panel')).toBe(true);
+    expect(
+      TestBed.inject(Router).serializeUrl((await run(requireGuest, '/acceso')) as UrlTree),
+    ).toBe('/panel');
   });
 
   it('only accepts internal return URLs', () => {

@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
-  "scripts": { "test": "node --test tests/*.test.mjs" }
+  "exports": {
+    ".": "./src/index.ts",
+    "./observations": "./src/observations.ts",
+    "./area": "./src/area.ts"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
 }

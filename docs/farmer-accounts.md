@@ -1,3 +1,6 @@
+> Frontend vigente: Angular en `frontend/`; Next.js fue retirado en la migración.
+> Contratos y estado de integración: [frontend-migration.md](frontend-migration.md).
+
 # Cuentas, fincas y datasets privados
 
 Field Shift permite crear una cuenta, iniciar/cerrar sesión, registrar varias
@@ -24,7 +27,7 @@ Sin Docker, el entorno de desarrollo persistente utiliza PostgreSQL local:
 
 ```bash
 python -m pip install '.[api,storage,geospatial,local]'
-cd apps/web
+cd frontend
 npm ci
 cd ../..
 python -m scripts.dev_stack --seed-reference
@@ -176,7 +179,7 @@ versiones anteriores. OpenAPI y los tipos TypeScript se regeneran desde estos DT
 Se comprobaron registro, hashes, cookies, revocación, caducidad, CSRF, límites,
 aislamiento entre cuentas, edición con revisión, idempotencia, validación CSV,
 archivos privados y contexto de modelos contra PostgreSQL real. El recorrido
-Next.js → FastAPI → PostgreSQL también se probó por HTTP con una cuenta de prueba
+Angular → FastAPI → PostgreSQL también se probó por HTTP con una cuenta de prueba
 que fue eliminada, junto a sus archivos. Una prueba aislada de detener y reabrir
 PostgreSQL conservó cuenta, sesión, finca, dataset y la misma huella de entradas.
 

@@ -86,6 +86,21 @@ class FarmerAccountTests(unittest.TestCase):
         login = self.client.post('/api/v1/auth/login', json={'email':'farmer@example.com','password':PASSWORD})
         self.assertEqual(login.status_code, 200)
 
+    def test_polygon_vertices_survive_private_create_reload_and_edit(self):
+        session, _ = self.register()
+        geometry={'type':'Polygon','coordinates':[[[-75.41,6.19],[-75.39,6.19],[-75.395,6.21],[-75.41,6.19]]]}
+        response=self.client.post('/api/v1/farms',json={**FARM,'geometry':geometry},headers={'X-CSRF-Token':session['csrf_token']})
+        self.assertEqual(response.status_code,201,response.text)
+        saved=response.json()
+        self.assertEqual(saved['geometry'],geometry)
+        loaded=self.client.get(f"/api/v1/farms/{saved['farm_id']}").json()
+        self.assertEqual(loaded['geometry'],geometry)
+        edited=self.client.put(f"/api/v1/farms/{saved['farm_id']}?revision=1",json={**FARM,'geometry':geometry,'name':'Nuevo nombre'},headers={'X-CSRF-Token':session['csrf_token']})
+        self.assertEqual(edited.status_code,200,edited.text)
+        self.assertEqual(edited.json()['geometry'],geometry)
+        broken={'type':'Polygon','coordinates':[[[-75.41,6.19],[-75.39,6.21],[-75.41,6.21],[-75.39,6.19],[-75.41,6.19]]]}
+        self.assertEqual(self.client.post('/api/v1/farms',json={**FARM,'geometry':broken},headers={'X-CSRF-Token':session['csrf_token']}).status_code,422)
+
     def test_csrf_cross_origin_and_expired_sessions_are_rejected(self):
         session, _ = self.register()
         self.assertEqual(self.client.post('/api/v1/farms', json=FARM).status_code, 403)

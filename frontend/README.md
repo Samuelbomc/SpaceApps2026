@@ -1,59 +1,35 @@
-# Frontend
+# AndesTerra — frontend Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.7.
-
-## Development server
-
-To start a local development server, run:
+Frontend activo de Field Shift, integrado con FastAPI y el cliente compartido
+`packages/api-client`. El frontend Next.js anterior fue eliminado.
 
 ```bash
-ng serve
+npm ci --prefix frontend
+python -m scripts.dev_stack --with-mongo
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Desde esta carpeta, `npm start` escucha en 3000. El proxy de desarrollo reescribe
+`/backend/*` a `/api/v1/*` en `API_INTERNAL_URL` (por defecto 127.0.0.1:8000).
 
-## Code scaffolding
+Rutas: `/explorar`, `/acceso` (`/login` redirige), `/registro`, `/panel`, `/perfil`,
+`/fincas`, `/finca/lote`, `/finca/caracterizacion` y `/analisis`.
+Las sesiones son reales con cookie HttpOnly; los guards esperan su restauración.
+Los archivos de finca son privados. Recuperación de contraseña y modificación
+del nombre de cuenta todavía no tienen endpoint y se muestran como no disponibles.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+El nuevo mapa usa MapLibre; conserva su diseño, límites municipales y polígonos.
+También permite colocar cuadrados por superficie en m², km² y ha. La geometría
+GeoJSON se guarda completa junto al bbox; los registros antiguos siguen siendo
+compatibles. Las condiciones y análisis se consultan por región con datos
+disponibles; seleccionar un municipio no produce una inferencia por lote.
+
+En Docker se sirve el build con Nginx y fallback SPA, y se conserva el proxy
+`/backend/`. No se incluyen datos privados en el build.
 
 ```bash
-ng generate component component-name
+npm run build --prefix frontend
+npm test --prefix frontend -- --watch=false
+npm test --prefix packages/api-client
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Ver [la guía de migración](../docs/frontend-migration.md).

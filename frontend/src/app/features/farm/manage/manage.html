@@ -1,0 +1,226 @@
+<section class="section">
+  <div class="container farm-layout">
+    <header>
+      <span class="eyebrow">Datos privados</span>
+      <h1>Mis fincas y datos</h1>
+      <p>Guarda la información de tu finca y las mediciones que conoces.</p>
+    </header>
+    @if (error()) {
+      <p class="form-alert" role="alert">{{ error() }}</p>
+    }
+    @if (notice()) {
+      <p class="notice farm-message" role="status">{{ notice() }}</p>
+    }
+    @if (loading()) {
+      <p role="status">Consultando tus fincas…</p>
+    }
+    @if (catalog(); as catalog) {
+      <div class="farm-list">
+        <button class="btn btn--secondary" type="button" (click)="newFarm()" [disabled]="busy()">
+          Nueva finca
+        </button>
+        @for (farm of farms(); track farm.farm_id) {
+          <button
+            class="btn btn--secondary"
+            type="button"
+            (click)="choose(farm)"
+            [disabled]="busy()"
+          >
+            {{ farm.name }}
+          </button>
+        }
+      </div>
+      <form (ngSubmit)="save()" #form="ngForm" class="card">
+        <h2>{{ selected() ? 'Editar finca' : 'Registrar finca' }}</h2>
+        <fieldset [disabled]="busy()" class="farm-form">
+          <label class="field"
+            >Nombre<input
+              class="input"
+              name="name"
+              [(ngModel)]="draft.name"
+              required
+              maxlength="120"
+          /></label>
+          <label class="field"
+            >Municipio<input
+              class="input"
+              name="municipality"
+              [(ngModel)]="draft.municipality"
+              maxlength="120"
+          /></label>
+          <div class="full">
+            <a class="btn btn--secondary" routerLink="/finca/lote">Delimitar en el mapa</a>
+            @if (draft.geometry) {
+              <p>Se conservará el polígono completo del lote.</p>
+            }
+          </div>
+          <label class="field"
+            >Latitud<input
+              class="input"
+              name="latitude"
+              type="number"
+              step="any"
+              min="-80"
+              max="80"
+              [(ngModel)]="draft.latitude"
+              (ngModelChange)="clearBoundary()"
+              required
+          /></label>
+          <label class="field"
+            >Longitud<input
+              class="input"
+              name="longitude"
+              type="number"
+              step="any"
+              min="-180"
+              max="180"
+              [(ngModel)]="draft.longitude"
+              (ngModelChange)="clearBoundary()"
+              required
+          /></label>
+          <label class="field"
+            >Superficie (ha)<input
+              class="input"
+              name="area"
+              type="number"
+              step="any"
+              min="0.0001"
+              max="1000000"
+              [(ngModel)]="draft.area_ha"
+              required
+          /></label>
+          <label class="field"
+            >Altitud (m), opcional<input
+              class="input"
+              name="altitude"
+              type="number"
+              min="-500"
+              max="9000"
+              [(ngModel)]="draft.altitude_m"
+          /></label>
+          <label class="field"
+            >Tipo de suelo<select class="input" name="soil" [(ngModel)]="draft.soil_texture">
+              @for (option of catalog.soil_textures; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select></label
+          >
+          <label class="field"
+            >pH, opcional<input
+              class="input"
+              name="ph"
+              type="number"
+              step="any"
+              min="0"
+              max="14"
+              [(ngModel)]="draft.soil_ph"
+          /></label>
+          <label class="field"
+            >Riego<select class="input" name="irrigation" [(ngModel)]="draft.irrigation">
+              @for (option of catalog.irrigation_types; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select></label
+          >
+          <label class="field"
+            >Cultivos, separados por comas<input
+              class="input"
+              name="crops"
+              [ngModel]="draft.current_crops?.join(', ')"
+              (ngModelChange)="crops($event)"
+          /></label>
+          <label class="field full"
+            >Notas<textarea
+              class="input"
+              name="notes"
+              rows="3"
+              maxlength="2000"
+              [(ngModel)]="draft.notes"
+            ></textarea>
+          </label>
+        </fieldset>
+        <div class="actions">
+          <button class="btn btn--primary" [disabled]="busy() || form.invalid">
+            {{ busy() ? 'Guardando…' : 'Guardar finca' }}
+          </button>
+          @if (selected(); as farm) {
+            <button
+              class="btn btn--secondary"
+              type="button"
+              (click)="choose(farm)"
+              [disabled]="busy()"
+            >
+              Recargar ficha
+            </button>
+          }
+        </div>
+      </form>
+      @if (selected(); as farm) {
+        <section class="card">
+          <h2>Mediciones de {{ farm.name }}</h2>
+          <p>
+            CSV UTF-8, hasta 5 MiB. Las mediciones se conservan como datos reportados, pendientes de
+            validación científica.
+          </p>
+          <div class="actions">
+            <button type="button" class="btn btn--secondary" (click)="template()">
+              Descargar plantilla CSV</button
+            ><input
+              #file
+              type="file"
+              accept=".csv,text/csv"
+              [disabled]="busy()"
+              aria-label="Archivo de mediciones CSV"
+            /><button
+              class="btn btn--primary"
+              type="button"
+              (click)="upload(file)"
+              [disabled]="busy()"
+            >
+              Subir CSV
+            </button>
+          </div>
+          <details>
+            <summary>Variables y unidades admitidas</summary>
+            @for (variable of catalog.variables; track variable.variable) {
+              <p>{{ variable.variable }} · {{ variable.unit }}</p>
+            }
+          </details>
+          @for (dataset of datasets(); track dataset.dataset_id) {
+            <article class="dataset">
+              <h3>{{ dataset.original_filename }}</h3>
+              <p>
+                {{ dataset.row_count }} observaciones · {{ dataset.first_date }} a
+                {{ dataset.last_date }}
+              </p>
+              <div class="actions">
+                <button class="btn btn--secondary" type="button" (click)="download(dataset)">
+                  Descargar</button
+                ><button
+                  class="btn btn--secondary"
+                  type="button"
+                  (click)="remove(dataset)"
+                  [disabled]="busy()"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </article>
+          }
+          @if (context(); as context) {
+            <p>
+              {{ context.observation_count }} observaciones locales. Entradas identificadas para
+              preparar el modelo; todavía no están habilitadas para inferencias.
+            </p>
+            @for (note of context.limitations; track note) {
+              <p>{{ note }}</p>
+            }
+          }
+        </section>
+      }
+      <a class="btn btn--secondary" routerLink="/finca/analisis"
+        >Ver datos y análisis disponibles</a
+      >
+    }
+  </div>
+</section>

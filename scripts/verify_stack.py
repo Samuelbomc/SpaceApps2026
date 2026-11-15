@@ -37,13 +37,13 @@ def main():
             migrate(database)
             repository = OperationalRepository(database)
             repository.store_recent("antioquia-reference", rows, period.start)
-            environment = {**os.environ, "DATABASE_URL": pg.get_uri(), "NEXT_TELEMETRY_DISABLED": "1"}
+            environment = {**os.environ, "DATABASE_URL": pg.get_uri()}
             with (Path(folder) / "servers.log").open("w") as log:
                 try:
                     processes.append(subprocess.Popen([sys.executable, "-m", "uvicorn", "apps.api.app.main:app",
                                                        "--host", "127.0.0.1", "--port", "8000"],
                                                       env=environment, stdout=log, stderr=log, start_new_session=True))
-                    processes.append(subprocess.Popen(["npm", "run", "start"], cwd="apps/web", env=environment,
+                    processes.append(subprocess.Popen(["npm", "run", "start"], cwd="frontend", env=environment,
                                                       stdout=log, stderr=log, start_new_session=True))
                     for url in ("http://127.0.0.1:8000/api/v1/health", "http://127.0.0.1:3000/"):
                         for attempt in range(50):

@@ -23,6 +23,8 @@ def typescript_type(schema):
     if isinstance(kind, list):
         return "(" + " | ".join(typescript_type({**schema, "type": item}) for item in kind) + ")"
     if kind == "array":
+        if "prefixItems" in schema and schema.get("maxItems") == len(schema["prefixItems"]):
+            return "[" + ", ".join(typescript_type(item) for item in schema["prefixItems"]) + "]"
         return f"Array<{typescript_type(schema.get('items', {}))}>"
     if kind == "object":
         properties = schema.get("properties", {})

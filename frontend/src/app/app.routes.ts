@@ -6,7 +6,7 @@ import { requireGuest, requireSession } from './core/auth/auth.guards';
  * One integrated platform, organised around the user journey:
  *   cuenta → explorar/municipio → lote → caracterización → análisis, plus panel and perfil.
  * Every screen is lazy-loaded. Guards here only shape the UX; real authorization
- * must be enforced by the backend when it exists.
+ * is enforced by FastAPI.
  */
 export const routes: Routes = [
   {
@@ -57,7 +57,9 @@ export const routes: Routes = [
         path: 'caracterizacion',
         title: pageTitle('Caracterización del lote'),
         loadComponent: () =>
-          import('./features/farm/characterization/characterization').then((m) => m.Characterization),
+          import('./features/farm/characterization/characterization').then(
+            (m) => m.Characterization,
+          ),
       },
       {
         path: 'analisis',
@@ -67,6 +69,16 @@ export const routes: Routes = [
     ],
   },
 
+  {
+    path: 'fincas',
+    canActivate: [requireSession],
+    loadComponent: () => import('./features/farm/manage/manage').then((m) => m.FarmManage),
+  },
+  {
+    path: 'analisis',
+    loadComponent: () => import('./features/farm/analysis/analysis').then((m) => m.Analysis),
+  },
+  { path: 'login', redirectTo: 'acceso', pathMatch: 'full' },
   // Personal area (requires a session)
   {
     path: 'panel',

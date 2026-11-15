@@ -61,6 +61,37 @@ class FarmBoundary(Contract):
         return self
 
 
+class FarmPolygon(Contract):
+    type: Literal['Polygon'] = 'Polygon'
+    coordinates: list[list[tuple[FiniteFloat, FiniteFloat]]]
+
+    @model_validator(mode='after')
+    def valid_ring(self):
+        if len(self.coordinates) != 1 or not 4 <= len(self.coordinates[0]) <= 501:
+            raise ValueError('El polígono debe tener un anillo exterior de 3 a 500 vértices.')
+        ring = self.coordinates[0]
+        if ring[0] != ring[-1] or len(set(ring[:-1])) != len(ring)-1:
+            raise ValueError('El anillo debe cerrarse y no repetir vértices.')
+        if any(abs(lon)>180 or abs(lat)>80 for lon,lat in ring):
+            raise ValueError('Coordenadas fuera del área admitida.')
+        if max(p[0] for p in ring)-min(p[0] for p in ring)>180:
+            raise ValueError('No se admiten polígonos que crucen el antimeridiano.')
+        def turn(a,b,c): return (b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
+        def on(a,b,p): return min(a[0],b[0])<=p[0]<=max(a[0],b[0]) and min(a[1],b[1])<=p[1]<=max(a[1],b[1])
+        def intersects(a,b,c,d):
+            x,y,z,w=turn(a,b,c),turn(a,b,d),turn(c,d,a),turn(c,d,b)
+            return (x*y<0 and z*w<0) or any(v==0 and on(p,q,r) for v,p,q,r in ((x,a,b,c),(y,a,b,d),(z,c,d,a),(w,c,d,b)))
+        count=len(ring)-1
+        for i in range(count):
+            for j in range(i+1,count):
+                if j==i+1 or (i==0 and j==count-1): continue
+                if intersects(ring[i],ring[i+1],ring[j],ring[j+1]):
+                    raise ValueError('Los lados del polígono no pueden cruzarse.')
+        if abs(sum((ring[i][0]-ring[0][0])*(ring[i+1][1]-ring[0][1])-(ring[i+1][0]-ring[0][0])*(ring[i][1]-ring[0][1]) for i in range(count))) < 1e-15:
+            raise ValueError('El polígono debe tener superficie positiva.')
+        return self
+
+
 class FarmWrite(Contract):
     name: str = Field(min_length=1, max_length=120)
     municipality: str = Field(default='', max_length=120)
@@ -68,6 +99,7 @@ class FarmWrite(Contract):
     longitude: FiniteFloat = Field(ge=-180, le=180)
     area_ha: FiniteFloat = Field(gt=0, le=1_000_000)
     boundary: FarmBoundary | None = None
+    geometry: FarmPolygon | None = None
     altitude_m: FiniteFloat | None = Field(default=None, ge=-500, le=9000)
     soil_texture: Literal['unknown', 'sandy', 'clay', 'loam', 'silty'] = 'unknown'
     soil_ph: FiniteFloat | None = Field(default=None, ge=0, le=14)
@@ -77,6 +109,12 @@ class FarmWrite(Contract):
 
     @model_validator(mode='after')
     def center_inside_boundary(self):
+        if self.geometry:
+            ring=self.geometry.coordinates[0]
+            derived=FarmBoundary(west=min(p[0] for p in ring),east=max(p[0] for p in ring),south=min(p[1] for p in ring),north=max(p[1] for p in ring))
+            if self.boundary and any(abs(getattr(self.boundary,key)-getattr(derived,key))>1e-7 for key in ('west','east','south','north')):
+                raise ValueError('El bbox debe corresponder al polígono guardado.')
+            self.boundary=derived
         if self.boundary and not (self.boundary.west <= self.longitude <= self.boundary.east and
                                   self.boundary.south <= self.latitude <= self.boundary.north):
             raise ValueError('El centro de la finca debe quedar dentro del área delimitada.')

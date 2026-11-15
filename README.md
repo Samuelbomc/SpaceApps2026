@@ -1,11 +1,20 @@
 # Field Shift — NASA Space Apps 2026
 
-La sustitución del frontend se prepara en `codex/prepare-frontend-migration`.
-El [contexto de integración](docs/frontend-migration.md) documenta contratos,
-sesiones, proxy, pruebas y retirada de Next.js cuando llegue la rama del equipo.
-El cliente reutilizable está en [packages/api-client](packages/api-client/README.md).
+El frontend activo es **Angular en `frontend/`**, integrado desde
+`feature/agricultural-platform-frontend`. Next.js fue retirado. La
+[guía de integración](docs/frontend-migration.md) documenta los flujos conectados,
+los contratos y los límites actuales. El cliente compartido está en
+[packages/api-client](packages/api-client/README.md).
 
-La base de integración incluye **PostgreSQL, MongoDB, FastAPI, Next.js y jobs
+```bash
+npm ci --prefix frontend
+python -m scripts.dev_stack --with-mongo
+```
+
+La web queda en `http://localhost:3000`, con proxy hacia FastAPI.
+También puede iniciarse solo el backend con `--api-only`.
+
+La base de integración incluye **PostgreSQL, MongoDB, FastAPI, Angular y jobs
 independientes de ingesta, reentrenamiento y recomendaciones**. El ciclo de vida ML
 incluye snapshots, candidatos XGBoost, validación temporal y promoción condicional.
 Las recetas científicas, etiquetas verificadas y reglas agrícolas deben conectarse
@@ -58,7 +67,7 @@ No se almacenan imágenes satelitales completas por defecto. Consulta la
 
 El flujo es **ingesta → procesamiento → histórico → candidato XGBoost → validación
 y publicación condicional → inferencia y recomendaciones → MongoDB → FastAPI →
-Next.js**. El entrenamiento usa el histórico completo disponible hasta el corte,
+Angular**. El entrenamiento usa el histórico completo disponible hasta el corte,
 no solo las observaciones de los últimos siete días. Una falta de etiquetas,
 un candidato peor o una caída del proveedor conservan el modelo vigente.
 El [diagrama y responsabilidades](docs/architecture.md) distingue los componentes
@@ -259,11 +268,7 @@ motor agronómico siguen pendientes.
 
 ```text
 apps/
-  web/src/
-    app/                # Pantalla Next.js: filtros, datos, mapa y estados
-    features/{map,crops,analysis,calendar}/
-    components/         # UI compartida
-    lib/                # Utilidades y acceso HTTP
+  # La web Angular está en frontend/src/
   api/
     app/
       main.py           # FastAPI v1 y contratos HTTP
@@ -318,7 +323,7 @@ La normalización opcional está en
 Los clientes de ingesta solo consumen fuentes y conservan sus respuestas originales.
 Consulta [docs/validation.md](docs/validation.md) para las comprobaciones reales.
 
-Next.js, FastAPI, PostgreSQL y Docker Compose tienen implementaciones iniciales.
+Angular, FastAPI, PostgreSQL y Docker Compose tienen implementaciones iniciales.
 Las carpetas restantes conservan `.gitkeep` donde todavía no hay implementación.
 No hay modelos entrenados, motor agronómico ni despliegue. El worker actual usa
 PostgreSQL para programar las ejecuciones y no requiere Prefect.

@@ -3,16 +3,20 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
 /** Sends signed-out users to the login screen, remembering where they wanted to go. */
-export const requireSession: CanActivateFn = (_route, state) => {
+export const requireSession: CanActivateFn = async (_route, state) => {
   const auth = inject(AuthService);
+  const router = inject(Router);
+  await auth.ready;
   if (auth.isAuthenticated()) return true;
-  return inject(Router).createUrlTree(['/acceso'], { queryParams: { volver: state.url } });
+  return router.createUrlTree(['/acceso'], { queryParams: { volver: state.url } });
 };
 
 /** Keeps signed-in users away from login/registration screens. */
-export const requireGuest: CanActivateFn = () => {
+export const requireGuest: CanActivateFn = async () => {
   const auth = inject(AuthService);
-  return auth.isAuthenticated() ? inject(Router).createUrlTree(['/panel']) : true;
+  const router = inject(Router);
+  await auth.ready;
+  return auth.isAuthenticated() ? router.createUrlTree(['/panel']) : true;
 };
 
 /** Only allows internal return URLs (prevents open redirects via ?volver=). */

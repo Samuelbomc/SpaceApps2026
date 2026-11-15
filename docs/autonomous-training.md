@@ -1,3 +1,6 @@
+> Frontend vigente: Angular en `frontend/`; Next.js fue retirado en la migración.
+> Contratos y estado de integración: [frontend-migration.md](frontend-migration.md).
+
 # Reentrenamiento y recomendaciones autónomos
 
 ## Flujo implementado

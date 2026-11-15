@@ -1559,6 +1559,16 @@
               }
             ]
           },
+          "geometry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FarmPolygon"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "altitude_m": {
             "anyOf": [
               {
@@ -1905,6 +1915,42 @@
         ],
         "title": "FarmModelContext"
       },
+      "FarmPolygon": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "Polygon",
+            "title": "Type",
+            "default": "Polygon"
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Coordinates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "coordinates"
+        ],
+        "title": "FarmPolygon"
+      },
       "FarmWrite": {
         "properties": {
           "name": {
@@ -1941,6 +1987,16 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/FarmBoundary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FarmPolygon"
               },
               {
                 "type": "null"

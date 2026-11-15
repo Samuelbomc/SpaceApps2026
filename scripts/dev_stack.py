@@ -53,8 +53,8 @@ def main(argv=None):
     parser.add_argument('--seed-reference',action='store_true',help='Cargar datos reales Parquet existentes solo si la región no tiene observaciones')
     parser.add_argument('--with-mongo',action='store_true',help='Usar MongoDB local persistente para resultados y registro ML; requiere mongod')
     parser.add_argument('--api-only',action='store_true',help='Iniciar backend y bases sin depender de ningún frontend')
-    parser.add_argument('--web-directory',type=Path,default=ROOT/'apps/web',help='Carpeta del frontend que se desea probar')
-    parser.add_argument('--web-script',default='dev',help='Script npm del frontend: dev, start, etc.')
+    parser.add_argument('--web-directory',type=Path,default=ROOT/'frontend',help='Carpeta del frontend que se desea probar')
+    parser.add_argument('--web-script',default='start',help='Script npm del frontend: start, etc.')
     parser.add_argument('--web-port',type=int,default=3000,help='Puerto configurado por el script npm del frontend')
     args = parser.parse_args(argv)
     if not 1 <= args.web_port <= 65535 or args.web_port in (8000,27018):
@@ -86,7 +86,9 @@ def main(argv=None):
         if args.seed_reference:
             count = seed_reference(OperationalRepository(database))
             print(f'Datos reales cargados inicialmente: {count}.',flush=True)
-        environment = {**os.environ,'DATABASE_URL':postgres.get_uri(),'NEXT_TELEMETRY_DISABLED':'1','API_INTERNAL_URL':'http://127.0.0.1:8000'}
+        environment = {**os.environ,'DATABASE_URL':postgres.get_uri(),'API_INTERNAL_URL':'http://127.0.0.1:8000'}
+        environment['NG_CLI_ANALYTICS']='false'
+        environment['NG_BUILD_MAX_WORKERS']=os.getenv('NG_BUILD_MAX_WORKERS','2')
         environment['RESULTS_BACKEND'] = 'mongodb' if args.with_mongo else 'postgresql'
         origins = list(Settings.from_env().cors_origins)
         if not args.api_only:

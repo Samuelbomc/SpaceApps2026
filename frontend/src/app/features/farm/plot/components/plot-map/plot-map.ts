@@ -1,3 +1,10 @@
+import { FormsModule } from '@angular/forms';
+import {
+  squareArea,
+  squareSideMetres,
+  convertSquareSize,
+  type AreaSizeUnit,
+} from '@field-shift/api-client/area';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,7 +21,11 @@ import {
   viewChild,
 } from '@angular/core';
 import type { Map as MapLibreMap, GeoJSONSource } from 'maplibre-gl';
-import { MAP_LOCALE, WebGLUnavailableError, loadMapLibre } from '../../../../../shared/map/maplibre-loader';
+import {
+  MAP_LOCALE,
+  WebGLUnavailableError,
+  loadMapLibre,
+} from '../../../../../shared/map/maplibre-loader';
 import { SENTINEL2_CLOUDLESS } from '../../../../../shared/map/imagery';
 import { LngLat } from '../../../../../shared/geo/geodesy';
 import { BBox, BoundaryGeometry } from '../../../../explorer/models/geo.models';
@@ -48,6 +59,7 @@ const MAX_ZOOM = 17;
  */
 @Component({
   selector: 'app-plot-map',
+  imports: [FormsModule],
   templateUrl: './plot-map.html',
   styleUrl: './plot-map.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -81,6 +93,47 @@ export class PlotMap {
     }
   });
 
+  protected squareValue = 1000;
+  protected squareUnit: AreaSizeUnit = 'm2';
+  protected readonly squareError = signal('');
+  protected changeSquareUnit(unit: AreaSizeUnit) {
+    try {
+      this.squareValue = convertSquareSize(this.squareValue, this.squareUnit, unit);
+      this.squareUnit = unit;
+      this.squareError.set('');
+    } catch (error) {
+      this.squareError.set(error instanceof Error ? error.message : 'Superficie inválida.');
+    }
+  }
+  protected placeSquare() {
+    const center = this.map?.getCenter();
+    if (!center) return;
+    try {
+      const area = squareArea(
+        { latitude: center.lat, longitude: center.lng },
+        squareSideMetres(this.squareValue, this.squareUnit),
+      );
+      const first = this.editor.mode() === 'idle';
+      this.editor.load([
+        [area.west, area.south],
+        [area.east, area.south],
+        [area.east, area.north],
+        [area.west, area.north],
+      ]);
+      this.squareError.set('');
+      if (first)
+        this.map?.fitBounds(
+          [
+            [area.west, area.south],
+            [area.east, area.north],
+          ],
+          { maxZoom: 17, padding: 40, duration: 0 },
+        );
+    } catch (error) {
+      this.squareError.set(error instanceof Error ? error.message : 'Superficie inválida.');
+    }
+  }
+
   private map?: MapLibreMap;
   private drawing?: MapDrawingLayer;
   private destroyed = false;
@@ -101,7 +154,9 @@ export class PlotMap {
         if (this.state() !== 'ready' && !ring.length) return;
         this.drawing?.render();
         this.drawing?.syncInteractions();
-        this.shapeChange.emit(mode === 'idle' && !ring.length ? null : { ring, closed: mode === 'editing' });
+        this.shapeChange.emit(
+          mode === 'idle' && !ring.length ? null : { ring, closed: mode === 'editing' },
+        );
       });
     });
 
@@ -111,7 +166,9 @@ export class PlotMap {
       untracked(() => {
         if (!this.map || this.state() !== 'ready' || m.code === this.currentCode) return;
         this.currentCode = m.code;
-        (this.map.getSource(SRC.boundary) as GeoJSONSource | undefined)?.setData(boundaryFeature(m) as never);
+        (this.map.getSource(SRC.boundary) as GeoJSONSource | undefined)?.setData(
+          boundaryFeature(m) as never,
+        );
         this.editor.clear();
         this.fit(geometryBBox(m.geometry));
       });
@@ -147,7 +204,9 @@ export class PlotMap {
         locale: MAP_LOCALE,
         attributionControl: {
           compact: true,
-          customAttribution: ['Límite municipal: <a href="https://geoportal.dane.gov.co/" target="_blank" rel="noopener">DANE – MGN 2025</a>'],
+          customAttribution: [
+            'Límite municipal: <a href="https://geoportal.dane.gov.co/" target="_blank" rel="noopener">DANE – MGN 2025</a>',
+          ],
         },
         style: {
           version: 8,
@@ -163,24 +222,44 @@ export class PlotMap {
           },
           layers: [
             { id: 'background', type: 'background', paint: { 'background-color': '#1e3a2f' } },
-            { id: 'imagery', type: 'raster', source: SRC.imagery, paint: { 'raster-fade-duration': 150 } },
-            { id: 'boundary-casing', type: 'line', source: SRC.boundary, paint: { 'line-color': '#0b1d17', 'line-width': 4, 'line-opacity': 0.6 } },
-            { id: 'boundary', type: 'line', source: SRC.boundary, paint: { 'line-color': '#f3f1ea', 'line-width': 2, 'line-dasharray': [3, 2] } },
+            {
+              id: 'imagery',
+              type: 'raster',
+              source: SRC.imagery,
+              paint: { 'raster-fade-duration': 150 },
+            },
+            {
+              id: 'boundary-casing',
+              type: 'line',
+              source: SRC.boundary,
+              paint: { 'line-color': '#0b1d17', 'line-width': 4, 'line-opacity': 0.6 },
+            },
+            {
+              id: 'boundary',
+              type: 'line',
+              source: SRC.boundary,
+              paint: { 'line-color': '#f3f1ea', 'line-width': 2, 'line-dasharray': [3, 2] },
+            },
           ],
         },
       });
       this.map = map;
       map.addControl(new maplibre.NavigationControl({ showCompass: true }), 'top-right');
       map.addControl(new maplibre.ScaleControl({ unit: 'metric' }), 'bottom-right');
-      map.getCanvas().setAttribute(
-        'aria-label',
-        `Imagen satelital de ${m.name}. Usa las flechas para desplazarte y más o menos para acercar.`,
-      );
+      map
+        .getCanvas()
+        .setAttribute(
+          'aria-label',
+          `Imagen satelital de ${m.name}. Usa las flechas para desplazarte y más o menos para acercar.`,
+        );
 
       map.on('error', (e) => {
-        if ((e as unknown as { sourceId?: string }).sourceId === SRC.imagery) this.imageryFailed.set(true);
+        if ((e as unknown as { sourceId?: string }).sourceId === SRC.imagery)
+          this.imageryFailed.set(true);
       });
-      map.on('zoomend', () => this.overzoomed.set(map.getZoom() > SENTINEL2_CLOUDLESS.maxzoom + 0.5));
+      map.on('zoomend', () =>
+        this.overzoomed.set(map.getZoom() > SENTINEL2_CLOUDLESS.maxzoom + 0.5),
+      );
 
       // style.load: drawing works without waiting for imagery tiles.
       map.once('style.load', () => {

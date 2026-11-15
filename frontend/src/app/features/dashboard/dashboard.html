@@ -23,7 +23,9 @@
         <div>
           <span class="eyebrow">Análisis en curso</span>
           <h2>{{ r.municipality }}</h2>
-          <p>Siguiente paso: <strong>{{ r.step.label }}</strong> — {{ r.step.summary }}</p>
+          <p>
+            Siguiente paso: <strong>{{ r.step.label }}</strong> — {{ r.step.summary }}
+          </p>
         </div>
         <a class="btn btn--secondary" [routerLink]="r.step.path">Continuar</a>
       </article>
@@ -33,22 +35,14 @@
       <article class="card panel" aria-labelledby="farms-title">
         <header>
           <h2 id="farms-title">Mis fincas y lotes</h2>
-          <app-status-badge status="planned" />
         </header>
-        <div class="empty">
-          <p><strong>Aún no tienes fincas guardadas.</strong></p>
-          <p>
-            Cuando delimites un lote y completes su caracterización, aparecerá aquí para que puedas
-            actualizar su información y pedir un nuevo análisis.
-          </p>
-          <a class="link-arrow" routerLink="/explorar">Ubicar mi primera finca</a>
-        </div>
+        <p>Consulta y actualiza tus fincas, límites y archivos de mediciones.</p>
+        <a class="btn btn--secondary" routerLink="/fincas">Mis fincas y datos</a>
       </article>
 
       <article class="card panel" aria-labelledby="history-title">
         <header>
           <h2 id="history-title">Análisis anteriores</h2>
-          <app-status-badge status="planned" />
         </header>
         <div class="empty">
           <p><strong>Todavía no hay análisis.</strong></p>

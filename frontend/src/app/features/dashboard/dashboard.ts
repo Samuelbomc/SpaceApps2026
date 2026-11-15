@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AnalysisJourneyStore } from '../../core/journey/analysis-journey.store';
 import { JOURNEY } from '../../core/journey/journey';
-import { StatusBadge } from '../../shared/ui/status-badge/status-badge';
 
 /**
  * Personal dashboard: entry point after signing in.
@@ -12,7 +11,7 @@ import { StatusBadge } from '../../shared/ui/status-badge/status-badge';
  */
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, StatusBadge],
+  imports: [RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,3 +1,6 @@
+> Frontend vigente: Angular en `frontend/`; Next.js fue retirado en la migración.
+> Contratos y estado de integración: [frontend-migration.md](frontend-migration.md).
+
 # Desarrollo: ingesta, ciclo ML, persistencia y aplicación
 
 PostgreSQL conserva identidad, fincas, observaciones recientes y programación.
@@ -46,9 +49,9 @@ python -m scripts.worker --job ingestion
 Frontend:
 
 ```bash
-cd apps/web
+cd frontend
 npm ci
-npm run dev
+npm start
 ```
 
 `DATABASE_URL` se configura por entorno. La CLI Python no carga `.env`
@@ -218,8 +221,8 @@ TypeScript se generan juntos y se guardan en `packages/contracts/`:
 
 ```bash
 python -m scripts.export_openapi
-cd apps/web
-npm run typecheck
+cd frontend
+npm run build
 npm run build
 ```
 
@@ -301,7 +304,7 @@ La selección se distingue expresamente de un recorte científico. Ver
 [validación y tamaños de fuente](recent-data-and-area-selection.md).
 
 ```bash
-cd apps/web
+cd frontend
 npm test
 ```
 

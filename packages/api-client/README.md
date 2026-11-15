@@ -6,7 +6,7 @@ proceden de `packages/contracts/api.generated.ts`; se regeneran con
 
 Se distribuye como TypeScript dentro del monorepo, sin publicar en npm. El
 bundler del frontend debe compilarlo. Ejemplo de alias en el `tsconfig` del
-frontend, si está en `frontend/` o `apps/web/` respectivamente:
+frontend ubicado en `frontend/`:
 
 ```json
 { "compilerOptions": { "paths": {
@@ -14,7 +14,7 @@ frontend, si está en `frontend/` o `apps/web/` respectivamente:
 } } }
 ```
 
-Para `apps/web/`, la ruta es `../../packages/api-client/src/index.ts`.
+La ubicación activa es `frontend/`; `apps/web/` fue retirado.
 El alias es una alternativa al enlace de paquetes locales; no requiere copiar
 el código o agregar otra versión del contrato.
 
@@ -44,7 +44,7 @@ cómo descargarlo y revoca sus object URLs después del uso.
 cambios de ingestión durante la lectura. No crea series o valores de ejemplo.
 
 Las contraseñas y el CSRF no se guardan en almacenamiento persistente. La sesión
-la administra el nuevo frontend en memoria; el identificador es una cookie
+la administra el frontend Angular en memoria; el identificador es una cookie
 HttpOnly emitida por FastAPI. Una respuesta 401 permite mostrar login; no es un
 error que deba ocultarse con datos sintéticos.
 

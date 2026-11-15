@@ -1,6 +1,10 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
-import { PILOT_DEPARTMENT, PILOT_TERRITORY, isSupportedMunicipality } from '../catalog/pilot-territory';
+import {
+  PILOT_DEPARTMENT,
+  PILOT_TERRITORY,
+  isSupportedMunicipality,
+} from '../catalog/pilot-territory';
 import { JourneyStepId } from './journey';
 import {
   PlotSelection,
@@ -24,6 +28,15 @@ export class AnalysisJourneyStore {
   private readonly plotState = signal<PlotSelection | null>(null);
   private readonly plotConfirmedState = signal(false);
   private readonly questionnaireCompleteState = signal(false);
+
+  constructor() {
+    let previous: string | null = this.auth.user()?.id || null;
+    effect(() => {
+      const owner = this.auth.user()?.id || null;
+      if (previous !== null && owner !== previous) this.reset();
+      previous = owner;
+    });
+  }
 
   readonly municipality = this.municipalityState.asReadonly();
   readonly plot = this.plotState.asReadonly();
@@ -65,7 +78,11 @@ export class AnalysisJourneyStore {
     if (municipality?.code === this.municipality()?.code) return;
     this.municipalityState.set(
       municipality
-        ? { code: municipality.code, name: municipality.name, supported: isSupportedMunicipality(municipality.code) }
+        ? {
+            code: municipality.code,
+            name: municipality.name,
+            supported: isSupportedMunicipality(municipality.code),
+          }
         : null,
     );
     this.plotState.set(null);

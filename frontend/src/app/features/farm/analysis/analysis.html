@@ -1,0 +1,197 @@
+<section class="section">
+  <div class="container analysis-layout">
+    <header>
+      <span class="eyebrow">Datos almacenados</span>
+      <h1>Clima, suelo y cultivos</h1>
+      <p>
+        Consulta las regiones con observaciones disponibles. La selección de un lote en el mapa no
+        crea todavía una ingesta para esa parcela.
+      </p>
+    </header>
+    <div class="actions">
+      <label
+        >Datos de la región<select
+          class="input"
+          [ngModel]="region()"
+          (ngModelChange)="region.set($event)"
+        >
+          @for (item of regions(); track item.region_id) {
+            <option [value]="item.region_id">{{ item.name }}</option>
+          }
+        </select></label
+      ><label
+        >Plazo<select
+          aria-label="Plazo"
+          class="input"
+          [ngModel]="horizon()"
+          (ngModelChange)="horizon.set(+$event)"
+        >
+          @for (days of horizons; track days) {
+            <option [value]="days">{{ days }} días</option>
+          }
+        </select></label
+      ><button class="btn btn--secondary" (click)="refresh.update(addOne)">Actualizar vista</button
+      ><label
+        ><input type="checkbox" [ngModel]="technical()" (ngModelChange)="technical.set($event)" />
+        Detalle técnico</label
+      >
+    </div>
+    @if (error()) {
+      <p class="form-alert" role="alert">{{ error() }}</p>
+    }
+    @if (loading()) {
+      <p role="status">Consultando los datos…</p>
+    }
+    <p>
+      Última actualización:
+      {{
+        history()?.last_updated_at
+          ? (history()?.last_updated_at | date: 'medium' : 'America/Bogota')
+          : 'Sin actualización disponible'
+      }}.
+    </p>
+    <h2>Análisis para un periodo de los próximos {{ horizon() }} días</h2>
+    <section class="card">
+      <h3>Predicciones</h3>
+      <p>{{ analysisMessage() }}</p>
+      @for (forecast of forecasts(); track forecast.model_kind) {
+        <article>
+          <h4>{{ forecast.model_kind === 'climate' ? 'Clima' : 'Suelo' }}</h4>
+          @for (value of forecast.values; track value.variable) {
+            <p>
+              {{ value.variable }}: <strong>{{ value.value }} {{ value.unit }}</strong> ·
+              {{ value.aggregation }}
+            </p>
+          }
+          @if (technical()) {
+            <p>Versión: {{ forecast.model_version }}</p>
+          }
+          @for (note of forecast.limitations; track note) {
+            <p>{{ note }}</p>
+          }
+        </article>
+      }
+    </section>
+    <section class="card">
+      <h3>Cultivos y rotaciones</h3>
+      @if (analysis()?.recommendations; as rec) {
+        @for (option of rec.alternatives; track option.name) {
+          <article>
+            <h4>{{ option.name }}</h4>
+            <p>{{ option.crops.join(' → ') }}</p>
+            @for (reason of option.reasons; track reason) {
+              <p>{{ reason }}</p>
+            }
+            @for (risk of option.risks; track risk) {
+              <p>{{ risk }}</p>
+            }
+          </article>
+        }
+      } @else {
+        <p>Todavía no hay recomendaciones publicadas para este periodo.</p>
+      }
+    </section>
+    <section class="card">
+      <h3>Condiciones observadas</h3>
+      <p>{{ history()?.total || 0 }} registros disponibles.</p>
+      @for (row of latest(); track row.variable) {
+        <p>
+          {{ row.variable }}: <strong>{{ row.value }} {{ row.unit }}</strong> · {{ row.date }}
+        </p>
+      }
+      @if (!latest().length) {
+        <p>Sin observaciones válidas disponibles.</p>
+      }
+    </section>
+    @if (technical()) {
+      <section class="card">
+        <h3>Series históricas y calidad</h3>
+        <p>{{ summary().usable }} registros utilizables; {{ summary().missing }} sin valor.</p>
+        @for (series of summary().series; track series.key) {
+          <article>
+            <h4>{{ series.source }} · {{ series.variable }} ({{ series.unit }})</h4>
+            <p>{{ series.resolution }}</p>
+            <svg
+              viewBox="0 0 600 120"
+              role="img"
+              [attr.aria-label]="'Serie histórica de ' + series.variable"
+            >
+              @for (segment of segments(series.rows); track $index) {
+                <polyline
+                  [attr.points]="points(segment, series.rows)"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              }
+            </svg>
+            <p>{{ series.rows[0]?.date }} — {{ series.rows[series.rows.length - 1]?.date }}</p>
+          </article>
+        }
+        <details>
+          <summary>Registros recibidos</summary>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Fuente</th>
+                  <th>Variable</th>
+                  <th>Valor</th>
+                  <th>Unidad</th>
+                  <th>Calidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of visibleRows(); track $index) {
+                  <tr>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.source }}</td>
+                    <td>{{ row.variable }}</td>
+                    <td>{{ row.value === null ? 'Sin dato' : row.value }}</td>
+                    <td>{{ row.unit }}</td>
+                    <td>{{ row.quality }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <div class="actions">
+            <button
+              class="btn btn--secondary"
+              [disabled]="page() === 0"
+              (click)="page.update(previousPage)"
+            >
+              Anterior</button
+            ><span>Página {{ page() + 1 }}</span
+            ><button
+              class="btn btn--secondary"
+              [disabled]="(page() + 1) * 100 >= (history()?.items?.length || 0)"
+              (click)="page.update(addOne)"
+            >
+              Siguiente
+            </button>
+          </div>
+        </details>
+        <details>
+          <summary>Trazabilidad del análisis</summary>
+          <pre>{{ analysis() | json }}</pre>
+        </details>
+      </section>
+    }
+    <details class="card">
+      <summary>Requisitos de referencia de cultivos</summary>
+      <p>Catálogo ECOCROP de referencia, pendiente de revisión agronómica local.</p>
+      @for (crop of crops(); track crop.crop_id) {
+        <p>
+          <strong>{{ crop.chain }} · {{ crop.crop_name }}</strong> — temperatura óptima:
+          {{ crop.temperature.optimal.minimum }}–{{ crop.temperature.optimal.maximum }} °C;
+          precipitación anual óptima: {{ crop.annual_rainfall.optimal.minimum }}–{{
+            crop.annual_rainfall.optimal.maximum
+          }}
+          mm/año. <a [href]="crop.source_url" target="_blank" rel="noopener">Ficha de origen</a>
+        </p>
+      }
+    </details>
+  </div>
+</section>

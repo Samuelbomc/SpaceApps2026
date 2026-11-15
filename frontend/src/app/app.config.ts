@@ -5,7 +5,7 @@ import localeEsCo from '@angular/common/locales/es-CO';
 import { provideRouter, withInMemoryScrolling, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { AuthGateway } from './core/auth/auth-gateway';
-import { MockAuthGateway } from './core/auth/mock-auth-gateway';
+import { HttpAuthGateway } from './core/auth/http-auth-gateway';
 
 // Spanish (Colombia) number and date formatting for the whole UI.
 registerLocaleData(localeEsCo);
@@ -16,8 +16,8 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'es-CO' },
     // Static data files today (geo boundaries); the future FastAPI backend later.
     provideHttpClient(withFetch()),
-    // DEMONSTRATION authentication. Replace with a real HttpAuthGateway when the backend exists.
-    { provide: AuthGateway, useClass: MockAuthGateway },
+    // Sesiones reales de FastAPI con cookie HttpOnly y CSRF en memoria.
+    { provide: AuthGateway, useClass: HttpAuthGateway },
     provideRouter(
       routes,
       // Scroll to top on navigation and support in-page anchors such as /#fuentes.

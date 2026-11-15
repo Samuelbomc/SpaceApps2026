@@ -12,6 +12,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
+    "paths": { "@field-shift/api-client": ["../packages/api-client/src/index.ts"], "@field-shift/api-client/*": ["../packages/api-client/src/*.ts"] },
     "module": "preserve"
   },
   "angularCompilerOptions": {

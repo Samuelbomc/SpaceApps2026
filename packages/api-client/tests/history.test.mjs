@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { api, APIError, loadObservationHistory } from './api.ts';
+import { createAPIClient, APIError } from '../src/index.ts';
+const { request: api, loadObservationHistory } = createAPIClient();
 const updated = '2026-11-14T12:00:00Z';
 function response(offset, total, lastUpdated = updated) {
   return new Response(JSON.stringify({ region_id: 'test', limit: 1000, offset, total,

@@ -27,20 +27,7 @@ describe('Auth forms', () => {
     expect(TestBed.inject(AuthService).isAuthenticated()).toBe(false);
   });
 
-  it('login: the demo account signs in and navigates to the panel', async () => {
-    const router = TestBed.inject(Router);
-    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
-    const fixture = TestBed.createComponent(Login);
-    await fixture.whenStable();
-
-    (fixture.nativeElement as HTMLElement)
-      .querySelectorAll<HTMLButtonElement>('button[type="button"]')[1]
-      .click();
-    await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/panel'));
-    expect(TestBed.inject(AuthService).isAuthenticated()).toBe(true);
-  });
-
-  it('register: requires matching passwords and the demo acknowledgement', async () => {
+  it('register: requires matching passwords and account acknowledgement', async () => {
     const fixture = TestBed.createComponent(Register);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;

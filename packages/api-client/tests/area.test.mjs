@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { squareArea, rectangleArea, areaGeoJSON, squareSideMetres, convertSquareSize } from './area.ts';
+import { squareArea, rectangleArea, areaGeoJSON, squareSideMetres, convertSquareSize } from '../src/area.ts';
 const center = { latitude: 6.2442, longitude: -75.5812 };
 
 test('10 m square retains metre-sized dimensions and approximately 100 square metres', () => {
