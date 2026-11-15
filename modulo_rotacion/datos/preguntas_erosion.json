@@ -1,0 +1,49 @@
+{
+  "_nota": "Preguntas de erosion. entrevista.py carga solo cualquier archivo datos/preguntas_*.json y lo mete despues de la pregunta indicada en 'insertar_despues_de'. La interfaz debe hacer lo mismo. Las respuestas las usa diagnostico.py (semaforo de Erosion) y motor_rotacion.py (labranza).",
+  "insertar_despues_de": "q5",
+  "preguntas": [
+    {"id": "er1", "nivel": "basico", "tema": "Erosión", "texto": "¿Cómo prepara la tierra antes de sembrar?", "tipo": "opcion", "campo": "lote.labranza", "usa_motor": true,
+     "opciones": [
+       {"valor": "tractor", "texto": "Con tractor"},
+       {"valor": "bueyes", "texto": "Con bueyes o caballo"},
+       {"valor": "manual", "texto": "A mano, con azadón o pala"},
+       {"valor": "minima", "texto": "Casi no la remuevo: solo abro el hueco para sembrar"}],
+     "ayuda": "Entre más se remueve la tierra en loma, más fácil se la lleva el agua."},
+    {"id": "er2", "nivel": "basico", "tema": "Erosión", "texto": "¿Cómo van los surcos o las hileras del cultivo?", "tipo": "opcion", "campo": "erosion.surcos", "usa_motor": false,
+     "mostrar_si": {"campo": "lote.pendiente", "distinto": "baja"},
+     "opciones": [
+       {"valor": "a_favor", "texto": "De arriba hacia abajo, siguiendo la bajada"},
+       {"valor": "atravesados", "texto": "Atravesados a la bajada, como curvas a nivel"},
+       {"valor": "sin_surcos", "texto": "No hago surcos"}],
+     "ayuda": "Los surcos de arriba hacia abajo se vuelven canales que se llevan la tierra."},
+    {"id": "er3", "nivel": "basico", "tema": "Erosión", "texto": "Después de cosechar y antes de volver a sembrar, ¿qué queda encima de la tierra?", "tipo": "opcion", "campo": "erosion.cobertura", "usa_motor": false,
+     "opciones": [
+       {"valor": "pelada", "texto": "Nada: la tierra queda pelada"},
+       {"valor": "rastrojo", "texto": "El rastrojo o los restos de la cosecha"},
+       {"valor": "pasto", "texto": "Pasto, maleza u otra planta"}],
+     "ayuda": "La tierra pelada recibe el golpe de la lluvia y se lava; tapada se protege."},
+    {"id": "er4", "nivel": "basico", "tema": "Erosión", "texto": "¿Quema el rastrojo o la maleza para limpiar el lote?", "tipo": "opcion", "campo": "erosion.quema", "usa_motor": false,
+     "opciones": [
+       {"valor": "nunca", "texto": "Nunca"},
+       {"valor": "a_veces", "texto": "A veces"},
+       {"valor": "siempre", "texto": "Siempre o casi siempre"}],
+     "ayuda": "La quema deja la tierra sin protección y le quita materia orgánica."},
+    {"id": "er5", "nivel": "basico", "tema": "Erosión", "texto": "¿Tiene algo en el lote que frene el agua cuando corre? (puede marcar varios)", "tipo": "multi_opcion", "campo": "erosion.barreras", "usa_motor": false,
+     "mostrar_si": {"campo": "lote.pendiente", "distinto": "baja"},
+     "opciones": [
+       {"valor": "barrera_viva", "texto": "Barreras de pasto, caña o matas sembradas atravesadas"},
+       {"valor": "zanjas", "texto": "Zanjas o acequias que desvían el agua"},
+       {"valor": "terrazas", "texto": "Terrazas o escalones"},
+       {"valor": "arboles", "texto": "Árboles o cerco vivo en los bordes"},
+       {"valor": "ninguna", "texto": "Nada de esto"}],
+     "ayuda": "Estas obras frenan el agua y guardan la tierra dentro del lote."},
+    {"id": "er6", "nivel": "basico", "tema": "Erosión", "texto": "¿Ha visto alguna de estas señales en el lote? (puede marcar varias)", "tipo": "multi_opcion", "campo": "erosion.senales", "usa_motor": false,
+     "opciones": [
+       {"valor": "raices", "texto": "Raíces o piedras que antes estaban tapadas y ahora se ven"},
+       {"valor": "carcavas", "texto": "Zanjas o huecos abiertos por el agua"},
+       {"valor": "acumulacion", "texto": "Tierra amontonada en la parte de abajo del lote"},
+       {"valor": "agua_turbia", "texto": "El agua que sale del lote baja café o turbia"},
+       {"valor": "ninguna", "texto": "Ninguna de estas"}],
+     "ayuda": "Son señales de que el lote está perdiendo su tierra buena."}
+  ]
+}

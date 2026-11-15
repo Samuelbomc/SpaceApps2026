@@ -13,8 +13,8 @@ Cada entrevista queda guardada, así que se pueden comparar los lotes de una fin
 
 ```
 pip install pandas openpyxl                    # una sola vez
-python entrevista.py                           # entrevista corta (22 preguntas)
-python entrevista.py --completa                # agrega preguntas abiertas para el equipo
+python entrevista.py                           # entrevista corta (13 preguntas)
+python entrevista.py --completa                # agrega 6 preguntas opcionales
 python lotes.py                                # fincas guardadas
 python lotes.py --finca "La Esperanza"         # comparar los lotes de una finca
 python lotes.py --finca "La Esperanza" --lote "Lote de arriba"   # historia de un lote
@@ -40,27 +40,33 @@ Durante la entrevista: se escribe el **número** de la opción, **?** muestra po
 | `datos/Cultivos_rotables_mas_sembrados_y_aptos_Antioquia.xlsx` | Excel con aptitud, ranking y hoja ECOCROP |
 | `datos/fincas/` | Aquí se guardan las entrevistas (una carpeta por finca y por lote) |
 
-## Las preguntas (para la interfaz)
+## Las preguntas
 
-En `datos/preguntas_agricultor.json`, cada pregunta tiene estos campos:
+**Entrevista corta (13):**
 
-- `texto`: lo que ve el agricultor, en lenguaje sencillo.
-- `tipo`: el espacio de respuesta que se dibuja:
-  - `opcion`: botones con `opciones`, donde cada una trae el `texto` que se ve y el `valor` que se guarda;
-  - `si_no`: dos botones;
-  - `lista_cultivos` y `lista_texto`: caja de texto;
-  - `numero`: campo de número;
-  - `municipio`: buscador con los 125 municipios de Antioquia.
-- `nivel`: `basico` va en la entrevista corta y `completo` solo en la completa.
-- `ayuda`: el texto del botón «¿Por qué preguntamos esto?».
-- `mostrar_si`: la pregunta solo aparece si se cumple la condición. Por ejemplo, «¿cuántas veces fumiga?» solo sale si el agricultor nombró alguna plaga.
-- `campo`: dónde se guarda la respuesta.
+| # | Pregunta | Tipo de respuesta |
+|---|---|---|
+| 1 | ¿Qué nombre le damos a este lote? | texto |
+| 2 | ¿En qué municipio está la finca? | buscador con los 125 municipios |
+| 3 | ¿Cómo es el clima en la finca? | Frío (ruana casi todo el día) / Templado (calor suave de día, fresco de noche) / Caliente (calor de día y de noche) |
+| 4 | ¿Cómo son las lluvias durante el año? | Dos épocas / Una época larga / Casi todo el año / No sé |
+| 5 | ¿Cómo es el terreno del lote? | Plano / Inclinado sin apoyarse / Muy inclinado, toca apoyarse |
+| 6 | ¿Qué sembró en la última cosecha? | menú con los 8 cultivos + papa, pasto, otro |
+| 7 | ¿Cuántas cosechas seguidas lleva con ese cultivo? | 1 / 2 / 3 o más (solo si respondió la 6) |
+| 8 | Comparado con hace unos años, ¿cuánto produce la tierra? | Igual / Un poco menos / La mitad o menos |
+| 9 | ¿Hay algún cultivo que NO pueda sembrar? | menú de los 8 cultivos, puede marcar varios |
+| 10 | ¿Tiene ganado? | Sí / No |
+| 11 | Cuando cae un aguacero fuerte, ¿qué le pasa al lote? | Nada / Charcos de un día o más / El agua arrastra tierra / Las dos cosas |
+| 12 | En los años de verano muy largo, ¿qué le pasa a su cultivo? | Tengo riego / Se resiente un poco / Baja mucho / He perdido cosechas |
+| 13 | En los años en que llueve mucho más de lo normal, ¿qué le pasa? | No me afecta / Se enferma (hongos) / He perdido cosechas |
 
-Recomendaciones para que sea fácil de usar:
-- una pregunta por pantalla;
-- botones grandes;
-- una barra de avance («3 de 22»);
-- un botón para saltar la pregunta.
+Las preguntas 12 y 13 miden cómo le afectan **El Niño** (años muy secos) y **La Niña** (años muy lluviosos), sin nombrarlos.
+
+**Opcionales (`--completa`):** cómo prepara la tierra, cómo abona, si puede dejar el lote una temporada sin vender, qué cultivo cree que mejora la tierra, a quién le vende, cómo se entera del clima.
+
+El nombre de la finca se pide al final, solo si el agricultor quiere guardar.
+
+**Para la interfaz:** todo está en `datos/preguntas_agricultor.json`. Cuando `opciones` dice `"cultivos_menu+..."`, el menú se arma con `cultivos_menu` más `opciones_extra`. Si `multi_opcion`, el agricultor puede marcar varias. La interfaz puede mandar las respuestas tal cual a `recomendar()` y a `diagnosticar()`; la función `normalizar()` del motor las traduce.
 
 ## Cómo decide
 
@@ -68,10 +74,9 @@ Recomendaciones para que sea fácil de usar:
 
 | Área | Qué suma puntos |
 |---|---|
-| Erosión | pendiente, tractor en loma, tierra que se lava, suelo pelado, sin coberturas |
-| Cansancio del suelo | misma familia repetida, produce menos, sin abono orgánico, nunca descansa, sin leguminosas |
-| Plagas y enfermedades | cuántas plagas, cuántas fumigaciones, cultivo repetido, encharcamiento |
-| Agua | encharcamiento, sin riego |
+| Erosión | terreno inclinado, el agua arrastra tierra, último cultivo deja la tierra destapada (papa, hortalizas, maíz…) |
+| Rotación y suelo | mismo cultivo seguido, produce menos, no ha sembrado leguminosas |
+| Agua y años extremos | charcos, pérdidas en años muy secos o muy lluviosos |
 
 Con pocos puntos el área sale en verde, con algunos en amarillo y con muchos en rojo. Cada color trae sus consejos.
 
@@ -92,18 +97,18 @@ Las lluvias marcan qué temporadas son de lluvia (más hongos y más erosión) y
 **Reglas de rotación:**
 - no repetir la misma familia de planta seguida;
 - máximo una solanácea al año;
-- si el agricultor no puede aguantar sin vender, no se deja el lote en descanso.
+- el lote no se deja en descanso, salvo que el agricultor diga (pregunta opcional) que puede aguantar una temporada sin vender.
 
 **Puntaje.** Se calcula con cuatro componentes:
 
 `Puntaje = w_ingreso·I + w_riesgo·(1 − R) + w_suelo·S + w_trabajo·(1 − T)`
 
 - **R (riesgo)** combina:
-  - 45 % la falta de aptitud de temperatura según ECOCROP (vale 0 si la temperatura está en el rango óptimo y sube hasta 1 en los límites absolutos);
-  - 25 % el riesgo de hongos en las temporadas de lluvia;
+  - 40 % la falta de aptitud de temperatura según ECOCROP (vale 0 si la temperatura está en el rango óptimo y sube hasta 1 en los límites absolutos);
+  - 25 % el riesgo de hongos en las temporadas de lluvia (más si el lote se encharca o se enferma en años muy lluviosos);
   - 15 % la erosión;
-  - 15 % la falta de agua en la temporada seca.
-- **Pesos.** Lo que el agricultor escoge como lo **más** importante pesa 55 % y cada una de las otras tres cosas 15 %. Si el diagnóstico sale en rojo en erosión o en cansancio del suelo, cuidar la tierra pesa más.
+  - 20 % la falta de agua en verano (más si pierde cosecha en años muy secos; nada si tiene riego).
+- **Pesos.** Ingreso, riesgo, suelo y trabajo pesan igual (25 % cada uno). Si el diagnóstico sale en rojo en erosión o en cansancio del suelo, cuidar la tierra pesa más.
 
 ## Pendientes
 
