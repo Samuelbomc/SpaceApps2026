@@ -5,7 +5,8 @@ from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from ml.features.expanded import ExpandedFeatureStore, snapshot_from_csv
+from ml.features.daily import daily_snapshot_from_csv
+from ml.features.expanded import ExpandedFeatureStore
 from ml.inference.expanded import ExpandedModelBundle
 
 
@@ -16,7 +17,7 @@ def main(argv=None):
     parser.add_argument("--region-id", required=True)
     parser.add_argument("--issue-date", type=date.fromisoformat, required=True)
     parser.add_argument("--horizon-days", type=int, choices=(7, 15, 30, 60), default=7)
-    parser.add_argument("--output-root", type=Path, default=Path("data/features/expanded-v1"))
+    parser.add_argument("--output-root", type=Path, default=Path("data/features/daily-direct-v1"))
     parser.add_argument("--models", type=Path, default=Path("ml/artifacts"))
     parser.add_argument(
         "--preview",
@@ -24,21 +25,13 @@ def main(argv=None):
         help="Calcular y mostrar la inferencia sin escribir en las bases",
     )
     args = parser.parse_args(argv)
-    if args.issue_date >= datetime.now(ZoneInfo("America/Bogota")).date():
-        parser.error("Se exige una fecha de emisión histórica completada.")
+    if args.issue_date > datetime.now(ZoneInfo("America/Bogota")).date():
+        parser.error("La fecha de emisión no puede estar en el futuro.")
     bundle = ExpandedModelBundle(args.models)
     catalog = bundle.catalog()
-    climate = next(
-        model.features
-        for model in catalog.models
-        if model.model_kind == "climate" and model.horizon_days == args.horizon_days
-    )
-    soil = next(
-        model.features
-        for model in catalog.models
-        if model.model_kind == "soil" and model.horizon_days == args.horizon_days
-    )
-    snapshot = snapshot_from_csv(
+    climate = catalog.input_contract.climate_features
+    soil = catalog.input_contract.soil_features
+    snapshot = daily_snapshot_from_csv(
         args.dataset,
         region_id=args.region_id,
         point_id=args.point_id,

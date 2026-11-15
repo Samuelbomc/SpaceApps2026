@@ -1,70 +1,75 @@
-"""Default loader for canonical rolling-origin forecast artifacts."""
+"""Default loader for direct daily rolling-origin forecast artifacts."""
 
 import json
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+import xgboost as xgb
+
 from ml.configs.forecasting import ARTIFACT_ROOT, BASELINES, HORIZONS
+from ml.datasets.calendar import target_calendar
 
 
 class ForecastPredictor:
     def __init__(
-        self, model_name, horizon_days=7, *, artifact_root=ARTIFACT_ROOT, evaluation=False
+        self,
+        model_name,
+        horizon_days=7,
+        *,
+        artifact_root=ARTIFACT_ROOT,
+        evaluation=False,
+        directory=None,
     ):
-        import xgboost as xgb
-
         if model_name not in BASELINES or horizon_days not in HORIZONS:
-            raise ValueError("Unknown model output or unsupported forecast horizon")
-        directory = Path(artifact_root) / f"{horizon_days}d" / model_name
+            raise ValueError("Unknown model output or unsupported lead: expected 1..60")
+        directory = Path(directory) if directory is not None else Path(artifact_root) / model_name
         self.config = json.loads((directory / "training.json").read_text())
         if (
             self.config["model_name"] != model_name
-            or self.config["horizon_days"] != horizon_days
-            or self.config["training_pipeline"] != "rolling_origin"
+            or self.config["forecast_type"] != "direct_daily"
+        ):
+            raise ValueError("Artifact is not the requested direct-daily forecast")
+        self.horizon_days = horizon_days
+        expected_mode = "baseline_plus_change" if model_name == "moisture" else "absolute"
+        if (
+            self.config["prediction_mode"] != expected_mode
+            or self.config["baseline_feature"] != BASELINES[model_name]
         ):
             raise ValueError(
-                "Artifact metadata does not match the requested rolling-origin forecast"
+                "Model baseline or prediction semantics differ from the declared output"
             )
-        if (
-            self.config["prediction_mode"]
-            != ("baseline_plus_change" if model_name == "moisture" else "absolute")
-            or self.config["baseline_feature"] != BASELINES[model_name]
-            or (model_name == "moisture" and self.config.get("baseline_scale") != 1)
-            or len(set(self.config["features"])) != len(self.config["features"])
-        ):
-            raise ValueError("Artifact semantics or feature columns do not match the model")
         self.booster = xgb.Booster(params={"nthread": 1})
         self.booster.load_model(
             directory / ("evaluation_model.json" if evaluation else "model.json")
         )
         if self.booster.feature_names != self.config["features"]:
-            raise ValueError("Model feature order differs from the metadata")
-
-    def predict_row(self, features):
-        import numpy as np
-        import xgboost as xgb
-
-        names = self.config["features"]
-        if set(features) != set(names):
-            raise ValueError("Forecast inputs must match the declared feature columns exactly")
-        values = np.array([[float(features[name]) for name in names]])
-        if not np.isfinite(values).all():
-            raise ValueError("Forecast features must all be finite")
-        value = float(self.booster.predict(xgb.DMatrix(values, feature_names=names))[0])
-        if self.config["prediction_mode"] == "baseline_plus_change":
-            value += features[self.config["baseline_feature"]]
-        if not np.isfinite(value):
-            raise ValueError("Forecast output must be finite")
-        return value
+            raise ValueError("Booster feature order differs from metadata")
 
     def predict(self, frame):
-        import numpy as np
-        import xgboost as xgb
-
+        frame = frame.copy()
+        if "lead_days" not in frame:
+            frame["lead_days"] = self.horizon_days
+        leads = pd.to_numeric(frame.lead_days).to_numpy(float)
+        if not (
+            np.isfinite(leads).all()
+            and ((leads >= 1) & (leads <= 60) & (leads == np.floor(leads))).all()
+        ):
+            raise ValueError("lead_days must contain integers from 1 through 60")
+        if "issue_date" in frame:
+            dates = pd.to_datetime(frame.issue_date) + pd.to_timedelta(leads, unit="D")
+            if (
+                "target_date" in frame
+                and not (pd.to_datetime(frame.target_date).to_numpy() == dates.to_numpy()).all()
+            ):
+                raise ValueError("target_date must equal issue_date plus lead_days")
+            for name, values in target_calendar(dates).items():
+                frame[name] = values
         features = self.config["features"]
-        values = frame[features].to_numpy(float)
+        values = frame[features].to_numpy(dtype=np.float32)
         if not np.isfinite(values).all():
             raise ValueError("Forecast features must all be finite")
-        prediction = self.booster.predict(xgb.DMatrix(values, feature_names=features))
+        prediction = self.booster.inplace_predict(values)
         if self.config["prediction_mode"] == "baseline_plus_change":
             prediction = prediction + frame[self.config["baseline_feature"]].to_numpy(float)
         if not np.isfinite(prediction).all():

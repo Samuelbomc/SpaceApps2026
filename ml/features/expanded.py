@@ -2,17 +2,26 @@
 
 import csv
 import hashlib
+import json
 import os
 import tempfile
 from datetime import date, timedelta
 from pathlib import Path
 
-from packages.contracts.pretrained import ExpandedFeatures
+from packages.contracts.pretrained import DailyFeatures, ExpandedFeatures
 from pipelines.training.snapshots import fingerprint
 
 
+def parse_snapshot(text):
+    body = json.loads(text)
+    model = (
+        DailyFeatures if body.get("recipe_version") == "daily-direct-1-60-v1" else ExpandedFeatures
+    )
+    return model.model_validate(body)
+
+
 class ExpandedFeatureStore:
-    def __init__(self, root=Path("data/features/expanded-v1")):
+    def __init__(self, root=Path("data/features/daily-direct-v1")):
         self.root = Path(root)
 
     def path(self, region_id, issue_date):
@@ -33,7 +42,7 @@ class ExpandedFeatureStore:
             try:
                 os.link(temporary, archive)
             except FileExistsError:
-                if ExpandedFeatures.model_validate_json(archive.read_text()) != snapshot:
+                if parse_snapshot(archive.read_text()) != snapshot:
                     raise ValueError("El snapshot de inferencia archivado fue alterado.")
             os.replace(temporary, target)
         finally:
@@ -44,7 +53,7 @@ class ExpandedFeatureStore:
         path = self.path(region["region_id"], issue_date)
         if not path.is_file():
             return None
-        snapshot = ExpandedFeatures.model_validate_json(path.read_text())
+        snapshot = parse_snapshot(path.read_text())
         if snapshot.region_id != region["region_id"] or snapshot.issue_date != issue_date:
             raise ValueError("El snapshot no corresponde a la región o fecha solicitada.")
         if any(

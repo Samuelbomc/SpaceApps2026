@@ -242,3 +242,11 @@ SRTM
 # Entrevistas locales del módulo de terminal; no deben entrar en Git.
 modulo_rotacion/datos/fincas/*
 !modulo_rotacion/datos/fincas/.gitkeep
+
+# Preparados y evaluaciones científicos permanecen locales.
+prepared/
+/ml/artifacts/forecasts/*/evaluation_model.json
+/ml/artifacts/forecasts/*/test_predictions.npz
+/ml/artifacts/forecasts/current_predictions.csv
+/ml/artifacts/*_pending/
+/ml/artifacts/*_pending_removal/

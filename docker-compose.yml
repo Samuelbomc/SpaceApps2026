@@ -51,7 +51,7 @@ services:
       TRAINING_DATA_DIRECTORY: /app/data/prepared
       TRAINING_CONFIG_PATH: ${TRAINING_CONFIG_PATH:-}
       PRETRAINED_MODEL_DIRECTORY: /app/ml/artifacts
-      FEATURE_DIRECTORY: /app/data/features/expanded-v1
+      FEATURE_DIRECTORY: /app/data/features/daily-direct-v1
       ROTATION_WATER_RULES_PATH: ${ROTATION_WATER_RULES_PATH:-}
       GEOCODER_URL: ${GEOCODER_URL:-https://photon.komoot.io/reverse}
     ports:

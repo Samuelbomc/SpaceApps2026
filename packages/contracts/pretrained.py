@@ -13,6 +13,8 @@ class ModelInfo(Contract):
     model_kind: Literal["climate", "soil"]
     version: str
     horizon_days: int = 7
+    forecast_type: Literal["period_aggregate", "direct_daily"] = "period_aggregate"
+    supported_leads: list[int] = Field(default_factory=list)
     validation_status: Literal["experimental"] = "experimental"
     unit: str
     features: list[str]
@@ -27,10 +29,21 @@ class ModelInfo(Contract):
 
 
 class ModelInputContract(Contract):
-    recipe_version: Literal["expanded-v1"] = "expanded-v1"
+    recipe_version: Literal["daily-direct-1-60-v1"] = "daily-direct-1-60-v1"
     input_lag_days: Literal[2] = 2
     feature_window_days: Literal[30] = 30
-    forecast_start_rule: str = "issue_date + 1 día; agregados de t+1 a t+H"
+    radiation_lag_days: Literal[7] = 7
+    forecast_start_rule: str = (
+        "target_date = issue_date + lead_days; salidas diarias directas 1..60"
+    )
+    derived_features: list[str] = Field(
+        default_factory=lambda: [
+            "lead_days",
+            "target_day_of_year_sin",
+            "target_day_of_year_cos",
+            "target_week_of_year",
+        ]
+    )
     csv_metadata_fields: list[str] = Field(
         default_factory=lambda: [
             "point_id",
@@ -38,6 +51,7 @@ class ModelInputContract(Contract):
             "longitude",
             "issue_date",
             "observation_cutoff",
+            "radiation_observation_cutoff",
         ]
     )
     climate_features: list[str]
@@ -51,15 +65,13 @@ class ModelInputContract(Contract):
     provenance: str = (
         "El receptor calcula SHA-256 del archivo; region_id se declara como parámetro."
     )
-    missing_values: str = (
-        "Sin relleno ni ceros inventados. Clima completo; suelo completo u omitido por completo."
-    )
+    missing_values: str = "El receptor no rellena. El productor respeta rellenos causales y sus contadores de la receta diaria; suelo completo u omitido."
     labels: str = "target y fechas futuras no son necesarios para recibir entradas de inferencia."
 
 
 class ModelCatalog(Contract):
     models: list[ModelInfo]
-    recipe_version: str = "expanded-v1"
+    recipe_version: str = "daily-direct-1-60-v1"
     supported_horizons: list[int]
     limitations: list[str]
     input_contract: ModelInputContract | None = None
@@ -87,4 +99,15 @@ class ExpandedFeatures(Contract):
             raise ValueError(
                 "Clima y suelo deben compartir las mismas variables climáticas de esta celda."
             )
+        return self
+
+
+class DailyFeatures(ExpandedFeatures):
+    recipe_version: Literal["daily-direct-1-60-v1"] = "daily-direct-1-60-v1"
+    radiation_observation_cutoff: date
+
+    @model_validator(mode="after")
+    def radiation_cutoff(self):
+        if self.radiation_observation_cutoff != self.issue_date - timedelta(days=7):
+            raise ValueError("La receta diaria exige radiación hasta t-7.")
         return self

@@ -52,6 +52,11 @@ class ForecastValue(Contract):
     statistic: Literal["mean", "sum"] | None = None
 
 
+class DailyForecastDay(Contract):
+    date: date
+    values: list[ForecastValue] = Field(min_length=1)
+
+
 class Forecast(Contract):
     model_kind: Literal["climate", "soil"]
     model_version: str = Field(min_length=1)
@@ -62,6 +67,32 @@ class Forecast(Contract):
     horizon_days: int = Field(ge=1, le=90)
     values: list[ForecastValue] = Field(min_length=1)
     limitations: list[str] = Field(default_factory=list)
+    daily: list[DailyForecastDay] = Field(default_factory=list)
+    component_versions: dict[str, str] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def daily_dates_match_period(self):
+        if self.daily:
+            if self.forecast_start_date is None or len(self.daily) != self.horizon_days:
+                raise ValueError("La serie diaria debe cubrir el periodo declarado.")
+            from datetime import timedelta
+
+            if any(
+                day.date != self.forecast_start_date + timedelta(days=i)
+                for i, day in enumerate(self.daily)
+            ):
+                raise ValueError(
+                    "Las fechas diarias deben ser consecutivas y comenzar en el periodo declarado."
+                )
+            expected = {(value.variable, value.unit) for value in self.values}
+            if any(
+                {(value.variable, value.unit) for value in day.values} != expected
+                for day in self.daily
+            ):
+                raise ValueError(
+                    "Las variables diarias deben coincidir con el resumen del periodo."
+                )
+        return self
 
 
 class Rotation(Contract):

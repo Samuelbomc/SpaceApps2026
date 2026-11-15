@@ -78,6 +78,13 @@ class CropRecommendationJob:
 
     def _run_task(self, region, today, horizon):
         region_id = region["region_id"]
+        if getattr(self.bundled_models, "forecast_type", None) == "direct_daily":
+            result = self._bundled(region, today, horizon)
+            return {
+                "status": result.status,
+                "analysis_id": result.analysis_id,
+                "messages": result.messages,
+            }
         climate = self.registry.current(f"{region_id}:climate:{horizon}")
         soil = self.registry.current(f"{region_id}:soil:{horizon}")
         if (

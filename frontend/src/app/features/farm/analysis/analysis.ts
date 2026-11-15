@@ -88,7 +88,7 @@ export class Analysis {
   protected readonly models = signal<ModelCatalog | null>(null);
   protected readonly currentModels = computed(
     () =>
-      this.models()?.models.filter((model) => model.horizon_days === this.displayedHorizon()) || [],
+      this.models()?.models.filter((model) => (model.supported_leads?.includes(this.displayedHorizon()) || model.horizon_days === this.displayedHorizon())) || [],
   );
   protected readonly modelError = signal('');
   protected readonly page = signal(0);

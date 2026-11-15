@@ -128,6 +128,8 @@ class ModelRelease(Contract):
     evaluated_through: date | None = None
     validation_status: Literal["experimental", "validated"] = "validated"
     spatial_scope: dict = Field(default_factory=dict)
+    forecast_type: Literal["period_aggregate", "direct_daily"] = "period_aggregate"
+    supported_leads: list[int] = Field(default_factory=list)
 
 
 class TrainingOutcome(Contract):
