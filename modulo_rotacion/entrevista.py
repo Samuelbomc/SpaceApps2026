@@ -1,7 +1,7 @@
 """
 Entrevista al agricultor (version por terminal; la interfaz hace lo mismo con botones).
 
-  python entrevista.py              # entrevista corta (13 preguntas)
+  python entrevista.py              # entrevista corta (13 preguntas + las de datos/preguntas_*.json)
   python entrevista.py --completa   # agrega preguntas opcionales
 
 Al final muestra como esta el lote y que sembrar, y ofrece guardarlo
@@ -123,11 +123,36 @@ def visible(p, resp):
     if not c:
         return True
     v = obtener(resp, c["campo"])
-    return bool(v) if c.get("no_vacio") else v == c.get("igual")
+    if c.get("no_vacio"):
+        return bool(v)
+    if "distinto" in c:
+        return v != c["distinto"]
+    return v == c.get("igual")
+
+
+def cargar_banco():
+    """preguntas_agricultor.json + cualquier otro datos/preguntas_*.json (por ejemplo preguntas_erosion.json).
+    Cada archivo extra se mete despues de la pregunta que dice 'insertar_despues_de' (o al final).
+    Si dos preguntas guardan en el mismo 'campo', se deja solo la primera."""
+    banco = json.loads((DATOS / "preguntas_agricultor.json").read_text(encoding="utf-8"))
+    preguntas = banco["preguntas"]
+    for f in sorted(DATOS.glob("preguntas_*.json")):
+        if f.name == "preguntas_agricultor.json":
+            continue
+        extra = json.loads(f.read_text(encoding="utf-8"))
+        ids = [p["id"] for p in preguntas]
+        pos = ids.index(extra["insertar_despues_de"]) + 1 if extra.get("insertar_despues_de") in ids else len(preguntas)
+        preguntas = preguntas[:pos] + extra["preguntas"] + preguntas[pos:]
+    vistos, unicas = set(), []
+    for p in preguntas:
+        if p["campo"] not in vistos:
+            vistos.add(p["campo"]); unicas.append(p)
+    banco["preguntas"] = unicas
+    return banco
 
 
 def entrevistar(completa=False):
-    banco = json.loads((DATOS / "preguntas_agricultor.json").read_text(encoding="utf-8"))
+    banco = cargar_banco()
     preguntas = [p for p in banco["preguntas"] if completa or p["nivel"] == "basico"]
     lista_muni = municipios()
     resp = {}

@@ -43,26 +43,53 @@ def diagnosticar(resp):
     areas = []
 
     # 1. EROSION ---------------------------------------------------------
-    pts, por = 0, []
-    if lote.get("pendiente") == "alta": pts += 2; por.append("el lote es muy pendiente")
-    elif lote.get("pendiente") == "media": pts += 1; por.append("el lote tiene loma")
-    if lote.get("labranza") == "tractor" and lote.get("pendiente") in ("alta", "media"):
+    er = resp.get("erosion", {})
+    loma = lote.get("pendiente") in ("alta", "media")
+    pts, por, cons = 0, [], []
+    if lote.get("pendiente") == "alta": pts += 2; por.append("el lote es muy inclinado")
+    elif lote.get("pendiente") == "media": pts += 1; por.append("el lote es inclinado")
+    if loma and lote.get("labranza") == "tractor":
         pts += 1; por.append("se ara con tractor en loma")
-    if suelo.get("se_lava") == "mucho": pts += 2; por.append("la lluvia se lleva la tierra")
-    elif suelo.get("se_lava") == "a_veces": pts += 1; por.append("a veces se lava la tierra")
-    if hist and hist[0] in LIMPIOS and lote.get("pendiente") in ("alta", "media"):
+        cons.append("Evite el tractor en la loma: prefiera labranza mínima (solo abrir el hueco para sembrar) o bueyes.")
+    if loma and er.get("surcos") == "a_favor":
+        pts += 2; por.append("los surcos van de arriba hacia abajo")
+        cons.append("Haga los surcos atravesados a la bajada, siguiendo curvas a nivel.")
+    cob = er.get("cobertura") or ("pelada" if lote.get("descanso") == "desnudo" else None)
+    if cob == "pelada":
+        pts += 1; por.append("la tierra queda pelada entre cosechas")
+        cons.append("No deje la tierra pelada: deje el rastrojo encima o siembre una cobertura.")
+    elif hist and hist[0] in LIMPIOS and loma and not cob:
         pts += 1; por.append(f"{hist[0].replace('_', ' ')} deja la tierra suelta y destapada en loma")
-    if lote.get("descanso") == "desnudo": pts += 1; por.append("descansa con la tierra pelada")
-    if suelo.get("coberturas") is False: pts += 1; por.append("no deja coberturas")
-    c = _color(pts, 2, 3)
-    consejos = {0: ["Siga protegiendo la tierra: no la deje pelada en las temporadas de lluvia."],
-                1: ["Siembre en curvas de nivel (atravesado a la pendiente).",
-                    "Deje rastrojo o maleza baja entre cosechas para tapar la tierra."],
-                2: ["Ponga barreras vivas de pasto en curvas de nivel cada 10-15 m.",
-                    "Siembre atravesado a la pendiente, nunca a favor.",
-                    "Evite arar con tractor en la loma; prefiera labranza mínima o con bueyes.",
-                    "No deje la tierra pelada en marzo-mayo ni en septiembre-noviembre."]}[c]
-    areas.append({"area": "Erosión", "color": COLOR[c], "puntos": pts, "motivos": por, "consejos": consejos})
+    if er.get("quema") == "siempre":
+        pts += 2; por.append("quema el rastrojo")
+        cons.append("No queme el rastrojo: píquelo y déjelo encima, protege la tierra y la abona.")
+    elif er.get("quema") == "a_veces":
+        pts += 1; por.append("a veces quema el rastrojo")
+        cons.append("Evite quemar: el rastrojo encima protege la tierra.")
+    barreras = [x for x in er.get("barreras", []) if x != "ninguna"]
+    if loma and "barreras" in er and not barreras:
+        pts += 1; por.append("no tiene barreras que frenen el agua")
+        cons.append("Siembre barreras vivas de pasto o caña atravesadas cada 10-15 m de bajada.")
+    senales = [x for x in er.get("senales", []) if x != "ninguna"]
+    if senales:
+        pts += 2 if len(senales) >= 2 else 1
+        por.append("ya hay señales de erosión (" + ", ".join({"raices": "raíces o piedras al aire", "carcavas": "zanjas",
+                   "acumulacion": "tierra amontonada abajo", "agua_turbia": "agua turbia"}[x] for x in senales) + ")")
+        if "carcavas" in senales:
+            cons.append("Tape las zanjas con ramas, piedras o costales de tierra y siembre pasto en ellas.")
+    elif suelo.get("se_lava") == "mucho":
+        pts += 2; por.append("la lluvia se lleva la tierra")
+    elif suelo.get("se_lava") == "a_veces":
+        pts += 1; por.append("a veces se lava la tierra")
+    if suelo.get("coberturas") is False and not cob:
+        pts += 1; por.append("no deja coberturas")
+    c = _color(pts, 2, 4)
+    if c == 0:
+        cons = ["Siga protegiendo la tierra: no la deje pelada en las temporadas de lluvia."]
+    elif not cons:
+        cons = ["Siembre atravesado a la bajada y deje rastrojo encima entre cosechas.",
+                "Ponga barreras vivas de pasto en curvas a nivel."]
+    areas.append({"area": "Erosión", "color": COLOR[c], "puntos": pts, "motivos": por, "consejos": cons})
 
     # 2. CANSANCIO DEL SUELO ---------------------------------------------
     pts, por = 0, []
