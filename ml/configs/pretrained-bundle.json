@@ -1,90 +1,110 @@
 {
   "7": {
     "temperature_mean": {
-      "training.json": "ad297cf8304377d4d6b413d58b01caa497bba705bd01fd2ce3a750cb54773cae",
-      "model.json": "066a44c3038cbc26e3a35630858b2414fa391a279a51e568d4c5014d0484bcbc"
+      "training.json": "7f2eb2d875373f822e5844103962198006d61534e0ffed4e83dee22ecfbf55b9",
+      "model.json": "0b449ad5a3d2f2445987e6e1e48155fa79fcd830f0086babcbf623e3fb633d22",
+      "evaluation_model.json": "c26b4dedc7293ca5c5a4f071eeb074413f21f238659c6a342d5c9b880fed9651"
     },
     "temperature_min": {
-      "training.json": "0771bc5b5752bff9644541fccc6a7ee3b1ca9d7d1e60cef831ec6ee68886ba4e",
-      "model.json": "014157b8aa368131eaa47c2ffbe80aa8788872b7523472c270f8a14405067963"
+      "training.json": "bb929e4a519feb91fe6a9516ddd5f0c64a43367bbf11f99c58036ac7eae79f80",
+      "model.json": "9506af6a3a1da7adf08afdd4456db97fb2c5e93b019b1c93c9937b9530b7b6bd",
+      "evaluation_model.json": "fb1001018d328e749b951e2c480e8ef1cd336649b22b033af6bc6b679de52da6"
     },
     "temperature_max": {
-      "training.json": "3783e0bffd8914345b5c953ab8e2893c55a3053d3fc8f677e2efdb519e819551",
-      "model.json": "04b6e2745fb18bbbc3cb7e80f67b3e0903f36d52276820bf39e572785fc7c6c9"
+      "training.json": "b4615ba455f1b0a18fecbb43b583654a905a7f35e15fd35968f63656448b251d",
+      "model.json": "44e52ea8697d85e6c398ca5c6714de8f4180f9ed9c76db0b159809f0abd7aacf",
+      "evaluation_model.json": "ee0a605f0b9bc809fe66e3351fb8f0203e7f9b458b3439ad150ef2e83b8b2cb8"
     },
     "precipitation": {
-      "training.json": "c48463613e560b5b42ce7b46686957b35b62abd33f8b66f2c4df42cf4976d9af",
-      "model.json": "9d42e1cad95046b8fd649934de10375912158f5f31b30c3cfd7c4dbd9f79515c"
+      "training.json": "6cd77938a13c3ce7bd2d6a412ffcfa6cae9ef7f2ffca044b0f430e298d2246f1",
+      "model.json": "9547935fff89cb8ad01027d9f61d35e56fea645a2f8d092a715d38d19c75b23a",
+      "evaluation_model.json": "5e4964346f95c76aea82765e228e64c488ef1d6eeb60b9465d52b1ec70811ed3"
     },
     "moisture": {
-      "training.json": "7b720cad3d1f6d2bc48d6379eacddc03e7aaab000862a3375bb7e67566b0a3e9",
-      "model.json": "419a41fea30fe2ce87fc6e9f308f1f871e1a57f45147ccea98157c8ecc6f3d81"
+      "training.json": "86aada3c5405640115e30a42afff9d6d19f078bbc71922e04d670092646f7be0",
+      "model.json": "205f8945f83e4513ed0e9757ddc0aded61427e627733749df7fc89982ae423f2",
+      "evaluation_model.json": "d01576903d699501a76dbc1f0c19a6eeaa1014ca5a0a39e81c9617d6e2fd7fcd"
     }
   },
   "15": {
     "temperature_mean": {
-      "training.json": "76ce55921ff4974be49b6a6ab93f4c340be2d5b2395c70c2a7001d309598c894",
-      "model.json": "e4a48d8619a21507103a755652135cc1b90c2b1a8eb09fba92c52cdcd65122a5"
+      "training.json": "5866d8e69e9c18358136c3c3442479279f87bc3365a8b802f02afb702c9fa28a",
+      "model.json": "e224798797456a72f4e8411cc20f0185aec63e29a5d728a910174c36b69d0a8b",
+      "evaluation_model.json": "afcd74d0f4c9ebdbd79eb9af1d7abb43bc7773b0ff5400ad3bbeeaacb5ab8d61"
     },
     "temperature_min": {
-      "training.json": "41defad9bf36d95fc87478fe7201acf98a299c99dff82ab4e99c1bfa946650a5",
-      "model.json": "70bffec18ad36f3b7a1a4a26031e6e25ee8599703c3974f42f97be643b5d532e"
+      "training.json": "f2439b5f7b6c6d09158849ac06bbedea4c613bc7c53a4732798c81ce04a06e14",
+      "model.json": "a0ba0a0e87b81035c755ec8fcc46f1d3d5540a8ff5a002470f7eeaa896ba8935",
+      "evaluation_model.json": "998afa93f840106b52f99696d0648f2a9e6eb85aa533311749259fa3cf59aaec"
     },
     "temperature_max": {
-      "training.json": "978053d83c830598a293f526a9db865372e6603d088252413d4ce0d69e12cf0d",
-      "model.json": "b8b4a49b8a41c45c57b94e7e78ca3a9ff1a80bdac381ce913d419e075b2e7754"
+      "training.json": "627b4416fc42ca23e4322eb1ed46c122075412f26b17bc2296a80d03b9b73b35",
+      "model.json": "83d0390bd488f6b3729160ad410ee8f2091cc9adc9cf04717178bf01f33b1e08",
+      "evaluation_model.json": "27dc108a453d98cbba8af2588c9776b5a342da8a621543d4ee1d387ca6172ec9"
     },
     "precipitation": {
-      "training.json": "af4c1694e4c859c0e3014681d9a10dc7d531596a6a1b47f47942cadab16c3152",
-      "model.json": "f14ee0d68569b1dd98f0f15e2be6884156d41b35e4c821cb9f007493789dfd61"
+      "training.json": "6d6dae0aa9c64ed4a73ff6a843615489436f166269cfd1907cf4eeeef1ada2fc",
+      "model.json": "f5a1b6b420fedf4ae01729235081069e1c30a2d1009e970e4072b070784890f5",
+      "evaluation_model.json": "100d666007cdeb78297fc6396d4fe88738d358e1d48c86f1b18fb646590427ac"
     },
     "moisture": {
-      "training.json": "6d97ecd1ed55791955a81fbf19dee45108d2b224aa451860d5bdbea8725f4781",
-      "model.json": "9591b8bcd7dd4fe4f3ae96bded58447eec3b655c87c41b82c91d6c150a49ef59"
+      "training.json": "4933bf8143843eb724bbe4363cfe93a882437dece31267717f5ff6d6f0691eb0",
+      "model.json": "4709d82185736fc4f8106875366d96f425a82ba15c5c613d01f62997e244452a",
+      "evaluation_model.json": "852904dbc3a1e6ffa9fdff07f3e29af37687a9ea3db4479ae3330e8b983968bb"
     }
   },
   "30": {
     "temperature_mean": {
-      "training.json": "ac778a9147c7a5eb487659839dfbe74d19ae283255e3f61fab85b79f61d78b79",
-      "model.json": "5d4ca0330955b03db83984bd9aef2b347a796114a040a7aafb9579d72dbe2493"
+      "training.json": "4a693729bc16d92be8ec875cda003b0c18d54a81b19f61f65351ed787ebb07e4",
+      "model.json": "6061749fb60100085548b3268bb86023250516ef85941bdc98646760c51a28db",
+      "evaluation_model.json": "cc0fd62e36a3b97e12ba1c2be1b576024ffbd535a74ced29de886b76b441a41f"
     },
     "temperature_min": {
-      "training.json": "43fa2b9815a1501f147e24056676bc41112ba10aa87f850c240c6ed8123e5acd",
-      "model.json": "c6c0454a4bde7b13bd03393a94dbe027b75006355d0690e2f9dde2baba908f70"
+      "training.json": "bd0f06140f22020c01cec873dc5b20e6c4b92dc5b29ea98ea765fb3c74c9c04d",
+      "model.json": "6d4ccfc0ac62a850cbda17097285ea0f314c3e2f4496aaa539fd0820b95fd7d5",
+      "evaluation_model.json": "73fb7139c6e49fddab17a54f2ae9fb1cf2d74569c54eb06b41422a0c6b104cee"
     },
     "temperature_max": {
-      "training.json": "e24fc08c3b4e4965db2f850ccd64ba218ea6ac34ccd9c84bcec7d1f51072774b",
-      "model.json": "38fcb70530e7ab19756b3fd73d5382f0102daae7d8be413702aad725f3e9c377"
+      "training.json": "66fd9a9515a252ac4b830555ac5be9928519a731a2737fc2e79991637d65208b",
+      "model.json": "824dae13b5f676e31788cb06a8d88fbda9ebd2b089c3101f3c72f4e77730b8fc",
+      "evaluation_model.json": "b3f1088cb253b01948cdba3963a0375b15edd81e379870e805eb8f5b63ca6bac"
     },
     "precipitation": {
-      "training.json": "556b2cf10dd1ba8f9639c4146ac61e0b02e3d5f9ef389c61e7b29eb8787d939b",
-      "model.json": "e10756c8e13bbb7f538351cfd7b8dae9aea4129a29ea2698bdd2f5077e9e4102"
+      "training.json": "0b1a3f794e6cc5d9d736bdb1b31220c5a604556d51b2a4cc306b4046dcd4b1e6",
+      "model.json": "18d1045ddd4718e4dbdc0a647c5f6a7d78429d307918f9c4b5782c2443688c08",
+      "evaluation_model.json": "5f4771c38a87b7a57c6ded746a0f5da9288049957bfe9582db65a84b7fc70f7f"
     },
     "moisture": {
-      "training.json": "c2ec344dca98a62815f7dd157dea661eee17fe5d4dd268d72a08a3044375dbef",
-      "model.json": "501d1691f74c171594115b3cd349625178543ff84e86846a13c529485260bcd6"
+      "training.json": "e719eb69dff3a0cf315e2fb37e40a32302a2fb32d0bc4c2ad0d9fbfb33d7ca56",
+      "model.json": "9df8485d68dcca12985e7aae78267b6a5064e1e3b87be303b78f38d82e83fc94",
+      "evaluation_model.json": "5e9c111ce946bf420053a7f836444d7c1f9c0ef31b7222d169f003f0453b7bbc"
     }
   },
   "60": {
     "temperature_mean": {
-      "training.json": "5bcd800e148a00b448e6f979f8c895a73fe5c0bf66bb1e4f4384a6db78b4be6a",
-      "model.json": "b273263af697cd05b5307eb0af3e913827382f9d0ca84c1f8caa24a62701ebe0"
+      "training.json": "7a1888c4bc373db05cf0add44ef794f6c7352e6ba2075fafb63ad87bdec23e80",
+      "model.json": "26b6b54da45964ba2ef6d136ea01cf41f9b087adde4b728506b5a6f00bc35761",
+      "evaluation_model.json": "abcbf33a2c142e062f063102073694fc6e50348e09778d3edff7a81f77852c4e"
     },
     "temperature_min": {
-      "training.json": "7e0ffedb7dac64dd0a4fa147d5c9b03ae3edef5758b34a3c43034dd9e3b3fa94",
-      "model.json": "880fbdfaa65d7a08fb4340c17554d3c6f27b4af266753b8b1958a7032f5b1d75"
+      "training.json": "ad98be3b51a1b642f709ece5044a367fd11662074d26b6a57b3b1ba07ba0967f",
+      "model.json": "2eec95d565f3d7dcbd36073e9d0db9e2d482fbe6332a49d00f74bd2a7068cb35",
+      "evaluation_model.json": "4d6ae1e7809de1612afcde64b978b6683d9884b2f70b602bd0f941ef021f795d"
     },
     "temperature_max": {
-      "training.json": "4a146e28f66e8ece9f352a5ed497e1aeada0f6c2bc568f9c0554c04c003cd981",
-      "model.json": "3b59b76aadc1f8a49d7bd4b9447b5c7e5134900a76d030d0616d9cee863f30b1"
+      "training.json": "543305aa65c5d454549e07e12e2ff3f19bccc6f180ef41a750ac3525c1741087",
+      "model.json": "e81272000f445550ce56a4ae2e8c8eff3fb371e59abb48ed4f74a6494187d6df",
+      "evaluation_model.json": "fb134083136c4ad50ce75aeacc547e9989954dc707ee8767190a5e7c5437574e"
     },
     "precipitation": {
-      "training.json": "498be409d02ccefb50e7925df55d2f9129af331e64e77cac069f731aafc4f65e",
-      "model.json": "78581b3958abb04237908b1e51ad4286205e71761a8b41946b6471d2e1d735d6"
+      "training.json": "2586fc4b96f66733d7493b4642ec66feaab901f4dc1c6668add4cf60aa35ee4c",
+      "model.json": "0352498903c1448f7154cedec3fc8bfe9993f189f4a1a884a2ffb274c1022979",
+      "evaluation_model.json": "4edd6d9da7d3f2f250517d33fa706c5222d5e15b0493c448f2d1fb1f576ed7d5"
     },
     "moisture": {
-      "training.json": "3c7cdf6e8920c45522f46f30b0d82bd34ce2f0029734ce061c404ddf54b83745",
-      "model.json": "ac080cb03569eeef3508d4ec3eae757df7fbe3b94bc21ed3828d02182119ce48"
+      "training.json": "da9870efc25acbd8c6368af348d9fc2882d2750bce372c831c1fc686c13a5e64",
+      "model.json": "ee8ba1849849465a1da4f82481c7beb4a4af51a4dee4b7b1c5a58579b5aa291d",
+      "evaluation_model.json": "7c71b4399da9d4d84e7cd251df48115e8f90da5d36114accda97722e150f9edb"
     }
   }
 }

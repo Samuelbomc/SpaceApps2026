@@ -1,44 +1,38 @@
-# Modelos y experimentación
+# Modelos XGBoost de AgroGeo
 
-`ml/` contiene recetas, entrenamiento, evaluación e inferencia XGBoost para cinco
-objetivos y horizontes 7/15/30/60. Los artefactos experimentales y los modelos del
-registro operativo tienen contratos de publicación distintos.
+Los veinte modelos canónicos se encuentran en `artifacts/forecasts/<horizonte>d/<modelo>/`.
+Los horizontes son 7, 15, 30 y 60 días; los nombres son `temperature_mean`,
+`temperature_min`, `temperature_max`, `precipitation` y `moisture`.
 
-| Carpeta | Responsabilidad |
-| --- | --- |
-| configs | Receta de entrenamiento, bundle y catálogos/reglas empaquetados |
-| features | Snapshots recientes de entrada para inferencia |
-| training | Constructor multiespacial, trainer residual y artefactos inmutables |
-| evaluation | Particiones con purga, MAE y promoción |
-| inference | Interfaces y carga de modelos registrados/experimentales |
-| recommendations | Evaluación de requisitos y rotación |
-| scripts | Preparación, ajuste y reproducción de experimentos |
-| artifacts | Boosters, metadatos, predicciones y métricas científicas |
+La selección utiliza cuatro ventanas temporales expansivas anteriores al test,
+con purga de etiquetas por horizonte. La humedad predice una corrección que se
+suma una sola vez a `smap_mean_7d`; las otras salidas son agregados absolutos.
+`evaluation_model.json` conserva el ajuste anterior al test. `model.json` está
+reajustado con todas las filas y no tiene una evaluación independiente posterior.
+Estos artefactos son experimentales; el registro operativo aplica sus políticas
+de validación y publicación.
 
-## Contratos de aplicación
+## Uso y contratos
 
-- [Entrenamiento](../docs/reference/model-training.md): configuración, fuentes,
-  disponibilidad temporal, muestras, particiones y publicación.
-- [Inferencia](../docs/reference/model-inference.md): fechas, columnas, unidades,
-  versión y reconstrucción residual.
-- [Componentes ML](../docs/reference/ml/components.md).
-- [Rotación](../docs/reference/crop-rotation.md) y
-  [personalización de finca](../docs/architecture/farm-personalization.md).
+- [Entrenamiento, datasets y publicación](../docs/reference/model-training.md).
+- [Entradas e inferencia](../docs/reference/model-inference.md).
+- [Resultados rolling-origin](../docs/reference/ml/rolling-origin-results.md).
+- [Evaluación por horizonte](../docs/reference/ml/horizon-results.md).
+- [Arquitectura y flujo completo](../docs/architecture/flows.md).
 
-El runtime conecta constructor, trainer, políticas y factory de campeones. La
-publicación exige revisión científica. Los pronósticos actuales necesitan
-snapshots recientes completos; las muestras históricas no los sustituyen.
+## Reproducción científica
 
-## Metodología y reproducción
+Desde la raíz, con las dependencias científicas y las fuentes verificadas:
 
-Los comandos se ejecutan desde la raíz. La preparación científica utiliza numpy,
-pandas, rasterio y h5py además de XGBoost. Consultar:
+```bash
+python -m ml.scripts.prepare_expanded_datasets --horizons 7 15 30 60
+python -m ml.scripts.train_rolling_origin
+python -m ml.scripts.validate_rolling_origin
+python -m ml.scripts.summarize_rolling_origin
+python -m ml.sample_forecasts
+```
 
-- [Receta de datos](../docs/reference/ml/datasets.md).
-- [Evaluación de siete días](../docs/reference/ml/seven-day-results.md).
-- [Evaluaciones 15/30/60](../docs/reference/ml/horizon-results.md).
-- [Humedad residual](../docs/reference/ml/moisture-model.md).
-- [Adquisición de raster](../docs/guides/data-acquisition.md).
-
-Los reportes indican el archivo evaluado y su partición. Un modelo reajustado con
-todo el dataset no hereda una evaluación independiente posterior al reajuste.
+Las fuentes y etiquetas no se reconstruyen a partir de predicciones. Los scripts
+científicos no se ejecutan al importar FastAPI. Las consultas HTTP leen resultados
+almacenados; el worker diario evalúa nuevas versiones cuando existen entradas
+procesadas y etiquetas disponibles.

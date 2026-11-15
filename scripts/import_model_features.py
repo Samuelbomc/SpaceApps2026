@@ -1,8 +1,9 @@
 """Importar una fila exacta de los datasets del equipo como snapshot de inferencia."""
 
 import argparse
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from ml.features.expanded import ExpandedFeatureStore, snapshot_from_csv
 from ml.inference.expanded import ExpandedModelBundle
@@ -23,7 +24,7 @@ def main(argv=None):
         help="Calcular y mostrar la inferencia sin escribir en las bases",
     )
     args = parser.parse_args(argv)
-    if args.issue_date >= date.today():
+    if args.issue_date >= datetime.now(ZoneInfo("America/Bogota")).date():
         parser.error("Se exige una fecha de emisión histórica completada.")
     bundle = ExpandedModelBundle(args.models)
     catalog = bundle.catalog()
@@ -46,6 +47,7 @@ def main(argv=None):
         soil_features=soil,
         horizon_days=args.horizon_days,
     )
+    bundle.validate_inputs(snapshot, horizon_days=args.horizon_days)
     if args.preview:
         print(bundle.predict(snapshot, horizon_days=args.horizon_days).model_dump_json(indent=2))
     else:

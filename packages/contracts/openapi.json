@@ -867,6 +867,24 @@
         }
       }
     },
+    "/api/v1/models/input-contract": {
+      "get": {
+        "summary": "Model Inputs",
+        "operationId": "model_inputs_api_v1_models_input_contract_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelInputContract"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/regions": {
       "get": {
         "summary": "Regions",
@@ -2658,6 +2676,16 @@
             },
             "type": "array",
             "title": "Limitations"
+          },
+          "input_contract": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelInputContract"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -2724,7 +2752,7 @@
           "evaluation_note": {
             "type": "string",
             "title": "Evaluation Note",
-            "default": "Métricas de evaluation_model.json; model.json fue reajustado con todos los datos."
+            "default": "Selección rolling-origin con cuatro ventanas purgadas; métricas del test de evaluation_model.json. model.json fue reajustado con todos los datos y no tiene un test independiente posterior."
           }
         },
         "additionalProperties": false,
@@ -2740,6 +2768,90 @@
           "baseline_mae"
         ],
         "title": "ModelInfo"
+      },
+      "ModelInputContract": {
+        "properties": {
+          "recipe_version": {
+            "type": "string",
+            "const": "expanded-v1",
+            "title": "Recipe Version",
+            "default": "expanded-v1"
+          },
+          "input_lag_days": {
+            "type": "integer",
+            "const": 2,
+            "title": "Input Lag Days",
+            "default": 2
+          },
+          "feature_window_days": {
+            "type": "integer",
+            "const": 30,
+            "title": "Feature Window Days",
+            "default": 30
+          },
+          "forecast_start_rule": {
+            "type": "string",
+            "title": "Forecast Start Rule",
+            "default": "issue_date + 1 día; agregados de t+1 a t+H"
+          },
+          "csv_metadata_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Csv Metadata Fields"
+          },
+          "climate_features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Climate Features"
+          },
+          "soil_features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Soil Features"
+          },
+          "climate_sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Climate Sources"
+          },
+          "soil_additional_sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Soil Additional Sources"
+          },
+          "provenance": {
+            "type": "string",
+            "title": "Provenance",
+            "default": "El receptor calcula SHA-256 del archivo; region_id se declara como parámetro."
+          },
+          "missing_values": {
+            "type": "string",
+            "title": "Missing Values",
+            "default": "Sin relleno ni ceros inventados. Clima completo; suelo completo u omitido por completo."
+          },
+          "labels": {
+            "type": "string",
+            "title": "Labels",
+            "default": "target y fechas futuras no son necesarios para recibir entradas de inferencia."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "climate_features",
+          "soil_features"
+        ],
+        "title": "ModelInputContract"
       },
       "ModelRelease": {
         "properties": {

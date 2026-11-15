@@ -8,10 +8,15 @@ ni validación prospectiva.
 
 ## Receta y configuración
 
-La fuente ejecutable es `ml/configs/expanded-training.json`. Sus parámetros vienen
+La fuente ejecutable es `ml/configs/expanded-training.json` (`expanded-training-v2`). Sus parámetros vienen
 de los informes de los veinte modelos; un override usa TRAINING_CONFIG_PATH y su
 hash participa en la identidad del entrenamiento. Cambiar columnas o unidades
 requiere otra versión de receta, no modificar silenciosamente expanded-v1.
+
+`python -m scripts.export_model_contracts` sincroniza hashes y referencias desde
+los artefactos canónicos, comprobando columnas, unidades, modos y candidatos.
+No reescribe modelos, resultados ni CSV científicos. `--check` verifica sin
+modificar y se ejecuta en CI. El diff generado se revisa junto con los modelos.
 
 | Propiedad | Definición |
 | --- | --- |
@@ -20,8 +25,8 @@ requiere otra versión de receta, no modificar silenciosamente expanded-v1.
 | Entradas | Observaciones hasta t-2, ventanas 7/14/30 y variables estáticas/estacionales |
 | Esquemas | 31 variables de clima; 52 de suelo |
 | Espacio | Celdas originales agrupadas del AOI configurado; no precisión de parcela |
-| XGBoost | hist, profundidad 3, eta 0.03, min_child_weight 5, lambda 10, alpha 0.1, seed 42, nthread 2 |
-| Selección de iteraciones | Máximo 800, parada temprana 30 sobre validación; test no selecciona árboles |
+| XGBoost | hist, eta 0.03, alpha 0.1, seed 42, nthread 2; candidatos profundidad/peso mínimo/L2: (2,10,20), (3,5,10), (4,10,20) |
+| Selección | Cuatro folds temporales; menor MAE agregado elige parámetros y mediana de sus mejores rondas fija árboles; máximo 800 y parada temprana 30 |
 | Suelo | Aprende target − smap_mean_7d y suma ese baseline una sola vez al inferir |
 | Persistencia climática | Media reciente de 7 días; lluvia reciente de 7 días × H/7 |
 | Publicación inicial | Deshabilitada hasta revisión, aunque un candidato supere métricas |
@@ -74,21 +79,29 @@ como un promedio completo de todo el horizonte.
 
 ## Separación, entrenamiento y evaluación
 
-Se agrupan las fechas únicas en 60 % entrenamiento, 20 % validación y 20 % test.
-Todas las celdas de un día van juntas. Se purgan las etiquetas que alcancen el
-corte de observaciones de la siguiente partición. No se barajan muestras.
+Cada objetivo deriva sus propias fechas disponibles: el 20 % final es test y
+el desarrollo previo se purga contra su corte de observación. Sobre las fechas
+elegibles de desarrollo se forman cuatro ventanas expansivas, con inicios de
+validación en 40/55/70/85 %. Todas las celdas de una fecha permanecen juntas.
+Las etiquetas de ajuste terminan antes del corte t-2 de validación; las de cada
+bloque de validación terminan antes del siguiente corte. Ningún fold incluye test.
 
-Los cuatro objetivos climáticos comparten las fronteras temporales del grupo,
-con conteos de etiquetas propios. Esto conserva filas parciales y puede cambiar
-ligeramente la frontera de precipitación respecto a entrenarla aisladamente.
-El modelo residual de suelo usa exactamente la misma reconstrucción al evaluar,
-guardar y volver a cargar.
+Cada objetivo evalúa los tres candidatos y selecciona por MAE agregado de sus
+predicciones fuera de muestra. La mediana de mejores rondas de los cuatro folds
+fija el número de árboles. El ajuste operativo usa todo el desarrollo elegible y
+se congela antes de evaluar test. Se conservan las predicciones de CV, parámetros,
+conteos y fronteras por objetivo junto con los modelos y sus hashes.
 
-La validación selecciona árboles y se compara candidato, persistencia y campeón
-sobre las mismas muestras. El test se evalúa después de fijar árboles. El artefacto
-guardado es ese modelo evaluado: no se reajusta con etiquetas de validación/test.
-trained_through indica el último periodo realmente usado para ajustar;
-evaluated_through permite contar etiquetas nuevas sin confundir ambos conceptos.
+La comparación con persistencia usa las mismas etiquetas de CV y test. El campeón
+se contrasta en test; no se compara sobre CV que pueda contener su propio ajuste.
+Si el test se solapa con las etiquetas usadas para ajustar el campeón, la
+publicación requiere una evaluación posterior independiente. Las ausencias de
+una etiqueta climática no descartan las demás ni cambian su frontera temporal.
+
+El Booster operativo guardado es el evaluado antes del test. A diferencia del
+`model.json` científico reajustado con todas las filas, no se reajusta con etiquetas
+del test. `trained_through` refleja el ajuste; `evaluated_through` refleja las
+etiquetas examinadas y permite contar nuevas fechas sin confundir ambos conceptos.
 
 Los mínimos se comprueban por objetivo y partición: 100 muestras de entrenamiento,
 20 de validación, 20 de test y al menos dos ubicaciones. Un campeón requiere al
@@ -98,8 +111,7 @@ menos siete nuevas fechas etiquetadas por objetivo antes de reevaluar.
 
 Las cotas MAE iniciales se toman de los baselines reportados por horizonte, en sus
 unidades; son límites técnicos de referencia, no tolerancias agronómicas.
-El candidato debe respetarlas y mejorar al baseline y al campeón en validación y
-test por al menos el margen configurado (1 % inicial). No se exige publicar cada semana.
+El candidato debe respetarlas y mejorar al baseline en CV y test y al campeón sobre test comparable por al menos el margen configurado (1 % inicial). No se exige publicar un modelo cada día.
 
 Una tarea que supera esas comparaciones queda pending_review si la publicación
 está deshabilitada o faltan evidencias. Para habilitar publicación se necesitan:

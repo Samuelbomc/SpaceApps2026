@@ -31,7 +31,7 @@ from packages.contracts.api import (
     Region,
     StatusResponse,
 )
-from packages.contracts.pretrained import ModelCatalog
+from packages.contracts.pretrained import ModelCatalog, ModelInputContract
 from packages.contracts.training import AutomationStatus
 
 
@@ -132,6 +132,13 @@ def create_app(
     @app.get("/api/v1/health")
     def health():
         return {"status": "ok", "api_version": "1.0.0"}
+
+    @app.get("/api/v1/models/input-contract", response_model=ModelInputContract)
+    def model_inputs():
+        contract = model_catalog().input_contract
+        if contract is None:
+            raise HTTPException(503, "No hay un contrato de entradas de modelos disponible.")
+        return contract
 
     @app.get("/api/v1/regions", response_model=list[Region])
     def regions():

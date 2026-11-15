@@ -11,6 +11,7 @@ from pathlib import Path
 from unittest.mock import Mock
 
 from ml.evaluation.promotion import chronological_partitions
+from ml.evaluation.rolling_origin import rolling_origin_plan
 from ml.features.expanded import ExpandedFeatureStore
 from ml.inference.registered import RegisteredPredictorFactory
 from ml.training.artifacts import ModelArtifactStore
@@ -165,7 +166,8 @@ class ExpandedTrainingTests(unittest.TestCase):
 
     def test_config_matches_original_recipes_and_prevents_feature_leakage(self):
         canonical = load_training_config()
-        self.assertEqual(canonical["params"]["max_depth"], 3)
+        self.assertEqual(canonical["split_strategy"], "rolling_origin")
+        self.assertEqual(canonical["candidates"][1]["max_depth"], 3)
         self.assertEqual(canonical["max_rounds"], 800)
         self.assertEqual(canonical["early_stopping_rounds"], 30)
         self.assertFalse(canonical["publication_allowed"])
@@ -278,6 +280,64 @@ class ExpandedTrainingTests(unittest.TestCase):
         self.assertEqual(len(jobs["training"].pipeline.policies), 8)
         self.assertTrue(jobs["recommendations"].predictor_factory.uses_feature_snapshots)
 
+    def test_rolling_origin_folds_keep_cells_grouped_and_purge_each_target_before_test(self):
+        dataset = self.build("climate", 15)
+        plan = rolling_origin_plan(dataset, self.snapshot.cutoff)
+        for target, folds in plan.folds.items():
+            self.assertEqual(len(folds), 4)
+            test = [row for row in plan.test if target in row.targets]
+            test_dates = {row.feature_date for row in test}
+            for train, validation in folds:
+                self.assertTrue(train and validation)
+                self.assertLess(
+                    max(row.label_end for row in train),
+                    min(row.observation_cutoff for row in validation),
+                )
+                self.assertLess(
+                    max(row.label_end for row in validation),
+                    min(row.observation_cutoff for row in test),
+                )
+                self.assertFalse(test_dates & {row.feature_date for row in train + validation})
+                self.assertTrue(
+                    all(
+                        len({row.spatial_id for row in validation if row.feature_date == day}) == 3
+                        for day in {row.feature_date for row in validation}
+                    )
+                )
+
+    def test_holdout_labels_do_not_select_candidates_or_trees_and_oof_metrics_are_recoverable(self):
+        from ml.evaluation.promotion import mae
+
+        dataset = self.build("soil", 7)
+        plan = rolling_origin_plan(dataset, self.snapshot.cutoff)
+        trainer = ExpandedXGBoostTrainer(self.config)
+        model = trainer.fit_rolling_origin(dataset, plan)
+        measured = mae(
+            plan.validation, model.validation_predictions(plan.validation), dataset.target_units
+        )
+        report = model.config["cross_validation"]["moisture"]
+        best = min(report["candidates"], key=lambda candidate: candidate["cv_mae"])
+        self.assertAlmostEqual(measured["moisture"], best["cv_mae"])
+        altered = dataset.model_copy(deep=True)
+        first_test = min(row.feature_date for row in plan.test)
+        for row in altered.samples:
+            if row.feature_date >= first_test:
+                row.targets["moisture"] += 1000
+        repeated = trainer.fit_rolling_origin(
+            altered, rolling_origin_plan(altered, self.snapshot.cutoff)
+        )
+        self.assertEqual(
+            model.config["selected_parameters"], repeated.config["selected_parameters"]
+        )
+        self.assertEqual(model.config["selected_rounds"], repeated.config["selected_rounds"])
+        self.assertEqual(model.predict(plan.test[:3]), repeated.predict(plan.test[:3]))
+        folder = self.root / "cv-artifacts"
+        folder.mkdir()
+        model.save(folder)
+        stored = json.loads((folder / "cv_predictions.json").read_text())
+        self.assertEqual(len(stored), len(plan.validation))
+        self.assertTrue(all(row["predictions"].keys() == {"moisture"} for row in stored))
+
     def test_real_training_residual_roundtrip_and_registered_inference_use_same_recipe(self):
         trainer = ExpandedXGBoostTrainer(self.config)
         dataset = self.build("soil", 7)
@@ -360,6 +420,8 @@ class ExpandedTrainingTests(unittest.TestCase):
             release = attempt["release"]
             self.assertEqual(release["validation_status"], "experimental")
             self.assertIsNotNone(release["metrics"]["test"])
+            self.assertEqual(release["metrics"]["validation_method"], "rolling_origin")
+            self.assertTrue(release["metrics"]["cross_validation"])
         self.assertEqual(
             [r.status for r in pipeline.run(self.region, date(2024, 1, 1))],
             ["unchanged", "unchanged"],

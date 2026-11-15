@@ -1,5 +1,5 @@
 {
-  "schema_version": "expanded-training-v1",
+  "schema_version": "expanded-training-v2",
   "recipe_version": "expanded-v1",
   "input_lag_days": 2,
   "label_lag_days": 2,
@@ -10,17 +10,14 @@
     "east": -74.6167,
     "north": 6.5866
   },
-  "split_strategy": "chronological_60_20_20",
+  "split_strategy": "rolling_origin",
   "max_rounds": 800,
   "early_stopping_rounds": 30,
   "params": {
     "objective": "reg:squarederror",
     "eval_metric": "mae",
     "tree_method": "hist",
-    "max_depth": 3,
-    "min_child_weight": 5,
     "eta": 0.03,
-    "lambda": 10,
     "alpha": 0.1,
     "seed": 42,
     "nthread": 2
@@ -74,7 +71,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "f18e5493886fb6e44d60cdf251e07609ad1a882bc3cb8afa7364a8a78fe4646d",
         "reference_baseline_mae": 0.638649531530729,
-        "original_selected_rounds": 210
+        "original_selected_rounds": 265
       },
       "temperature_min": {
         "relative_path": "expanded/temperature_min.csv",
@@ -117,7 +114,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "8574c7ede8dfb34efe8f58c7db9f9f3e612765a9eb0f110b3058e16dee090fb8",
         "reference_baseline_mae": 0.5201703119663831,
-        "original_selected_rounds": 236
+        "original_selected_rounds": 192
       },
       "temperature_max": {
         "relative_path": "expanded/temperature_max.csv",
@@ -160,7 +157,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "9b485fb08a9cce43ff206068e42224d937d5b92cdbfad12001ece5d2fb967ce3",
         "reference_baseline_mae": 1.007309308506689,
-        "original_selected_rounds": 174
+        "original_selected_rounds": 163
       },
       "precipitation": {
         "relative_path": "expanded/precipitation.csv",
@@ -203,7 +200,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "a0d067f41284020278abe481f0efad56bc83b1e2633280b266a85d183822c429",
         "reference_baseline_mae": 46.31018803387053,
-        "original_selected_rounds": 71
+        "original_selected_rounds": 166
       },
       "moisture": {
         "relative_path": "expanded/moisture.csv",
@@ -267,7 +264,7 @@
         "prediction_mode": "baseline_plus_change",
         "original_source_sha256": "a0d4130a5f21bbeb15ceb942b9712fa4b43c2d09138b64e08446c116053bbd61",
         "reference_baseline_mae": 0.03763295110026594,
-        "original_selected_rounds": 10
+        "original_selected_rounds": 114
       }
     },
     "15": {
@@ -312,7 +309,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "2b996000a475ef75084aaa21197dbc26015be5a7bfe473a8424020ca46350065",
         "reference_baseline_mae": 0.6152846402462867,
-        "original_selected_rounds": 187
+        "original_selected_rounds": 224
       },
       "temperature_min": {
         "relative_path": "horizons/15d/temperature_min.csv",
@@ -355,7 +352,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "8e17c19752b062ee6069d872c384a4498d7268701b190d183e847671a0dd74c8",
         "reference_baseline_mae": 0.4872378180666301,
-        "original_selected_rounds": 225
+        "original_selected_rounds": 223
       },
       "temperature_max": {
         "relative_path": "horizons/15d/temperature_max.csv",
@@ -398,7 +395,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "19e23cac424046e7a15bc931a3c393891144fd646a0cb202d0d21533874e98e5",
         "reference_baseline_mae": 0.9703002162927326,
-        "original_selected_rounds": 177
+        "original_selected_rounds": 199
       },
       "precipitation": {
         "relative_path": "horizons/15d/precipitation.csv",
@@ -441,7 +438,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "788fe938512e0600f1d4e0f7db9f0993ec40281f79c25f6c5aca70ecb5d1a47c",
         "reference_baseline_mae": 89.23447366584537,
-        "original_selected_rounds": 82
+        "original_selected_rounds": 195
       },
       "moisture": {
         "relative_path": "horizons/15d/moisture.csv",
@@ -505,7 +502,7 @@
         "prediction_mode": "baseline_plus_change",
         "original_source_sha256": "f5b602eeb612ea44722706851a57be4ebe16a55ddcfc9948c02dd37cd52c09d2",
         "reference_baseline_mae": 0.03706095839075407,
-        "original_selected_rounds": 36
+        "original_selected_rounds": 53
       }
     },
     "30": {
@@ -550,7 +547,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "1b9c846082b264dba8a645473b26a156d452437398a543b13362ac9feecd9beb",
         "reference_baseline_mae": 0.5974138367955019,
-        "original_selected_rounds": 171
+        "original_selected_rounds": 178
       },
       "temperature_min": {
         "relative_path": "horizons/30d/temperature_min.csv",
@@ -593,7 +590,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "3dd3180bb72a0d176ad68571a909bdad87162e3cbf45512b09e5b51610d06096",
         "reference_baseline_mae": 0.46509754950727816,
-        "original_selected_rounds": 192
+        "original_selected_rounds": 451
       },
       "temperature_max": {
         "relative_path": "horizons/30d/temperature_max.csv",
@@ -636,7 +633,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "885fcfc5522dd125ad92a45852094fbfbfcf509728551d899fb6d294bd468c58",
         "reference_baseline_mae": 0.9717061833984191,
-        "original_selected_rounds": 186
+        "original_selected_rounds": 214
       },
       "precipitation": {
         "relative_path": "horizons/30d/precipitation.csv",
@@ -679,7 +676,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "5467a9e127e1cc02c5f75d8dc4102ff425e39bcc17e9fc0a7cba83ff6bd16179",
         "reference_baseline_mae": 172.66209602305491,
-        "original_selected_rounds": 59
+        "original_selected_rounds": 218
       },
       "moisture": {
         "relative_path": "horizons/30d/moisture.csv",
@@ -743,7 +740,7 @@
         "prediction_mode": "baseline_plus_change",
         "original_source_sha256": "58f754797ffe748bb26b658f561f38b2bc42b8bd36a8e787deb3b9acc70712d6",
         "reference_baseline_mae": 0.03519040057955142,
-        "original_selected_rounds": 5
+        "original_selected_rounds": 67
       }
     },
     "60": {
@@ -788,7 +785,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "d87e375ae82c411dad29228666088219c9d277a3e6e1470b5854c0027a4d53f5",
         "reference_baseline_mae": 0.6311350171499843,
-        "original_selected_rounds": 172
+        "original_selected_rounds": 260
       },
       "temperature_min": {
         "relative_path": "horizons/60d/temperature_min.csv",
@@ -831,7 +828,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "be4590413f56e81b8a6ed0715dbab8d43cae78c198c89501066df4ab4bb89e9e",
         "reference_baseline_mae": 0.47707608109245153,
-        "original_selected_rounds": 213
+        "original_selected_rounds": 193
       },
       "temperature_max": {
         "relative_path": "horizons/60d/temperature_max.csv",
@@ -874,7 +871,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "855ad13eb7e931c95f7fe6d145b80747ce5f7afe376b9294151ef1b5b7d2b75f",
         "reference_baseline_mae": 1.0820643557495757,
-        "original_selected_rounds": 160
+        "original_selected_rounds": 197
       },
       "precipitation": {
         "relative_path": "horizons/60d/precipitation.csv",
@@ -917,7 +914,7 @@
         "prediction_mode": "absolute",
         "original_source_sha256": "1f91405ab61f32dfb980663e66013b2c94a14ab183541b69520a1639cf50b724",
         "reference_baseline_mae": 338.78133327337133,
-        "original_selected_rounds": 98
+        "original_selected_rounds": 140
       },
       "moisture": {
         "relative_path": "horizons/60d/moisture.csv",
@@ -981,8 +978,31 @@
         "prediction_mode": "baseline_plus_change",
         "original_source_sha256": "0f1e8f3ca292c2879014bbc8ce01a9bd0d3b79fcb6082d68e72101314884265d",
         "reference_baseline_mae": 0.03477416679214545,
-        "original_selected_rounds": 1
+        "original_selected_rounds": 20
       }
     }
-  }
+  },
+  "cv_train_fractions": [
+    0.4,
+    0.55,
+    0.7,
+    0.85
+  ],
+  "candidates": [
+    {
+      "max_depth": 2,
+      "min_child_weight": 10,
+      "reg_lambda": 20
+    },
+    {
+      "max_depth": 3,
+      "min_child_weight": 5,
+      "reg_lambda": 10
+    },
+    {
+      "max_depth": 4,
+      "min_child_weight": 10,
+      "reg_lambda": 20
+    }
+  ]
 }

@@ -221,7 +221,7 @@ class MongoIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="agrogeo-real-model-recovery-") as directory:
             root = Path(directory)
             artifacts = root / "models"
-            for name in ("model.json", "training.json"):
+            for name in ("model.json", "training.json", "evaluation_model.json"):
                 for source in original.rglob(name):
                     target = artifacts / source.relative_to(original)
                     target.parent.mkdir(parents=True, exist_ok=True)
@@ -259,7 +259,7 @@ class MongoIntegrationTests(unittest.TestCase):
                     rotation_engine=ForecastRotationEngine(),
                 )
 
-            damaged = artifacts / "environmental_conditions/temperature_mean/model.json"
+            damaged = artifacts / "forecasts/7d/temperature_mean/model.json"
             damaged.write_text("{}")
             first = restart().run(as_of=target_start)
             self.assertEqual(first["status"], "partial")

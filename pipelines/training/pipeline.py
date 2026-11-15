@@ -9,6 +9,7 @@ from ml.evaluation.promotion import (
     promotion_decision,
     temporal_split,
 )
+from ml.evaluation.rolling_origin import rolling_origin_plan
 from packages.contracts.training import ModelRelease, TrainingOutcome, TrainingPolicy
 from pipelines.training.snapshots import fingerprint
 
@@ -65,7 +66,11 @@ class ModelTrainingPipeline:
         ):
             raise ValueError("El constructor devolvió un dataset de otra tarea o snapshot.")
         incumbent = self.registry.current(slot)
-        if policy.split_strategy == "chronological_60_20_20":
+        plan = None
+        if policy.split_strategy == "rolling_origin":
+            plan = rolling_origin_plan(dataset, snapshot.cutoff)
+            training, validation, test = plan.development, plan.validation, plan.test
+        elif policy.split_strategy == "chronological_60_20_20":
             training, validation, test = chronological_partitions(dataset, snapshot.cutoff)
         else:
             training, validation = temporal_split(dataset, snapshot.cutoff, policy)
@@ -74,6 +79,23 @@ class ModelTrainingPipeline:
         if (
             len(training) < policy.min_train_samples
             or len(validation) < policy.min_validation_samples
+            or (
+                plan is not None
+                and any(
+                    len(plan.folds[target]) != 4
+                    or any(
+                        len(train) < policy.min_train_samples
+                        or len(valid) < policy.min_validation_samples
+                        or min(
+                            len({row.spatial_id for row in train}),
+                            len({row.spatial_id for row in valid}),
+                        )
+                        < policy.min_spatial_locations
+                        for train, valid in plan.folds[target]
+                    )
+                    for target in dataset.target_units
+                )
+            )
         ):
             return TrainingOutcome(
                 **base,
@@ -85,7 +107,7 @@ class ModelTrainingPipeline:
             (validation, policy.min_validation_samples),
         ] + (
             [(test, policy.min_test_samples)]
-            if policy.split_strategy == "chronological_60_20_20"
+            if policy.split_strategy in ("chronological_60_20_20", "rolling_origin")
             else []
         ):
             if any(
@@ -147,22 +169,50 @@ class ModelTrainingPipeline:
             raise ValueError(
                 "Un cambio de esquema requiere una migración explícita del adapter del campeón."
             )
-        fitted = (
-            self.trainer.fit_with_validation(dataset, training, validation)
-            if policy.split_strategy == "chronological_60_20_20"
-            and hasattr(self.trainer, "fit_with_validation")
-            else self.trainer.fit(dataset, training)
-        )
+        if plan is not None:
+            if not hasattr(self.trainer, "fit_rolling_origin"):
+                raise ValueError("La política rolling-origin requiere un entrenador compatible.")
+            fitted = self.trainer.fit_rolling_origin(dataset, plan)
+        else:
+            fitted = (
+                self.trainer.fit_with_validation(dataset, training, validation)
+                if policy.split_strategy == "chronological_60_20_20"
+                and hasattr(self.trainer, "fit_with_validation")
+                else self.trainer.fit(dataset, training)
+            )
         targets = dataset.target_units
-        candidate_mae = mae(validation, fitted.predict(validation), targets)
+        candidate_mae = mae(
+            validation,
+            fitted.validation_predictions(validation)
+            if plan is not None
+            else fitted.predict(validation),
+            targets,
+        )
         baseline_mae = mae(validation, [sample.baseline for sample in validation], targets)
-        incumbent_mae = mae(validation, champion.predict(validation), targets) if champion else None
+        # El campeón no se compara sobre CV que puede incluir sus propias etiquetas de ajuste.
+        incumbent_mae = (
+            mae(validation, champion.predict(validation), targets)
+            if champion and plan is None
+            else None
+        )
         accepted, reasons = promotion_decision(candidate_mae, baseline_mae, incumbent_mae, policy)
         test_metrics = None
+        champion_comparable = (
+            not champion
+            or plan is None
+            or all(
+                (sample.observation_cutoff or sample.feature_date) > incumbent.trained_through
+                for sample in test
+            )
+        )
         if test:
             test_candidate = mae(test, fitted.predict(test), targets)
             test_baseline = mae(test, [s.baseline for s in test], targets)
-            test_incumbent = mae(test, champion.predict(test), targets) if champion else None
+            test_incumbent = (
+                mae(test, champion.predict(test), targets)
+                if champion and champion_comparable
+                else None
+            )
             test_accepted, test_reasons = promotion_decision(
                 test_candidate, test_baseline, test_incumbent, policy
             )
@@ -175,7 +225,13 @@ class ModelTrainingPipeline:
                 "samples": len(test),
                 "snapshot_id": fingerprint([s.model_dump(mode="json") for s in test]),
             }
-        publication_ready = policy.publication_allowed and dataset.publication_ready
+        publication_ready = (
+            policy.publication_allowed and dataset.publication_ready and champion_comparable
+        )
+        if not champion_comparable:
+            reasons.append(
+                "La ventana de test se solapa con el ajuste del campeón; se requiere una evaluación posterior independiente."
+            )
         if accepted and not publication_ready:
             reasons.append(
                 "Evaluación técnica superada; falta revisión de publicación, disponibilidad histórica o cobertura de etiquetas."
@@ -207,6 +263,8 @@ class ModelTrainingPipeline:
             },
             "publication_ready": publication_ready,
             "dataset_provenance": dataset.provenance,
+            "validation_method": policy.split_strategy,
+            "cross_validation": fitted.config.get("cross_validation") if plan is not None else None,
         }
         version = uuid.uuid4().hex
         metadata = {

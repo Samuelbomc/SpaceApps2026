@@ -97,7 +97,7 @@ class TrainingPolicy(Contract):
     min_relative_improvement: FiniteFloat = Field(default=0.01, ge=0, lt=1)
     # Sin umbrales agronómicos explícitos no se permite publicar un modelo.
     max_mae: dict[str, FiniteFloat] = Field(default_factory=dict)
-    split_strategy: Literal["rolling", "chronological_60_20_20"] = "rolling"
+    split_strategy: Literal["rolling", "chronological_60_20_20", "rolling_origin"] = "rolling"
     min_test_samples: int = Field(default=1, ge=1)
     min_spatial_locations: int = Field(default=1, ge=1)
     publication_allowed: bool = True

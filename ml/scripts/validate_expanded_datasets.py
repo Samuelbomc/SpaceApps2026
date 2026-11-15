@@ -1,7 +1,6 @@
 """Validate finite features, time windows, split purging and sampled raw labels."""
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
@@ -15,19 +14,15 @@ from ml.scripts.prepare_expanded_datasets import load_moisture, load_power
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--dataset-root", type=Path, default=Path("data/prepared/expanded"))
-    parser.add_argument(
-        "--artifact-root", type=Path, default=Path("ml/artifacts/environmental_conditions")
-    )
+    parser.add_argument("--artifact-root", type=Path, default=Path("ml/artifacts/forecasts/7d"))
     args = parser.parse_args()
     root = args.dataset_root
     manifest = json.loads((root / "manifest.json").read_text())
-    report = json.loads((args.artifact_root / "report.json").read_text())
     pp, powers, _ = load_power()
     sp, moisture, _, _, _ = load_moisture()
     checks = {}
     for name, spec in manifest.items():
-        source = Path(str(spec["path"]).replace("\\", "/"))
-        frame = pd.read_csv(source)
+        frame = pd.read_csv(spec["path"])
         horizon = spec.get("horizon_days", 7)
         assert len(frame) == spec["rows"]
         assert np.isfinite(frame[spec["features"] + ["target"]].to_numpy(float)).all()
@@ -74,12 +69,20 @@ def main():
             assert np.isclose(expected, row.target), (name, expected, row.target)
             verified += 1
         folder = args.artifact_root / name
+        metadata = json.loads((folder / "training.json").read_text())
         partitions = pd.read_csv(folder / "partitions.csv")
-        for earlier, later in (("train", "validation"), ("validation", "test")):
-            left, right = (
-                partitions[partitions.partition == earlier],
-                partitions[partitions.partition == later],
-            )
+        left, right = (
+            partitions[partitions.partition == "development"],
+            partitions[partitions.partition == "test"],
+        )
+        assert len(left) and len(right)
+        assert (
+            pd.to_datetime(left.target_end).max() < pd.to_datetime(right.observation_cutoff).min()
+        )
+        folds = pd.read_csv(folder / "cv_partitions.csv")
+        for _, fold in folds.groupby("fold"):
+            left, right = fold[fold.partition == "train"], fold[fold.partition == "validation"]
+            assert len(left) and len(right)
             assert (
                 pd.to_datetime(left.target_end).max()
                 < pd.to_datetime(right.observation_cutoff).min()
@@ -88,7 +91,7 @@ def main():
         assert np.isfinite(predictions.prediction).all()
         assert np.isclose(
             np.abs(predictions.prediction - predictions.target).mean(),
-            report["models"][name]["test_xgboost"]["mae"],
+            metadata["test_metrics"]["model"]["mae"],
         )
         import xgboost as xgb
 
@@ -102,7 +105,6 @@ def main():
         reconstructed = booster.predict(
             xgb.DMatrix(test[spec["features"]].to_numpy(float), feature_names=spec["features"])
         )
-        metadata = report["models"][name]
         if metadata.get("prediction_mode") == "baseline_plus_change":
             reconstructed += test[metadata["baseline_feature"]].to_numpy(float)
         paired = (
@@ -122,7 +124,6 @@ def main():
             "saved_metrics_verified": True,
             "saved_inference_verified": True,
         }
-        checks[name]["source_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
         print(name, checks[name], flush=True)
     (root / "validation.json").write_text(json.dumps(checks, indent=2), encoding="utf-8")
 

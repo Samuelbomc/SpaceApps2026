@@ -25,6 +25,7 @@ export type Status = components['schemas']['StatusResponse'];
 export type Forecast = components['schemas']['Forecast'];
 export type Analysis = components['schemas']['AnalysisResult'];
 export type ModelCatalog = components['schemas']['ModelCatalog'];
+export type ModelInputContract = components['schemas']['ModelInputContract'];
 export type ManualUpdate = components['schemas']['ManualUpdate'];
 
 export type ObservationHistory = Pick<

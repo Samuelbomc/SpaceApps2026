@@ -59,32 +59,65 @@ def snapshot_from_csv(
 ):
     """Importa una fila exacta; excluye target y cualquier observación futura."""
     path = Path(path)
+    before = hashlib.sha256(path.read_bytes()).hexdigest()
     found = None
     with path.open(newline="", encoding="utf-8-sig") as handle:
-        for row in csv.DictReader(handle):
+        reader = csv.DictReader(handle)
+        columns = reader.fieldnames or []
+        required = {
+            "point_id",
+            "issue_date",
+            "observation_cutoff",
+            "latitude",
+            "longitude",
+            *climate_features,
+        }
+        if len(columns) != len(set(columns)) or not required <= set(columns):
+            raise ValueError(
+                "Columnas duplicadas o faltantes: " + ", ".join(sorted(required - set(columns)))
+            )
+        soil_present = bool((set(soil_features) - set(climate_features)) & set(columns))
+        if soil_present and not set(soil_features) <= set(columns):
+            raise ValueError(
+                "Entradas de suelo incompletas: "
+                + ", ".join(sorted(set(soil_features) - set(columns)))
+            )
+        for row in reader:
+            if None in row or any(value is None for value in row.values()):
+                raise ValueError("La cantidad de valores no coincide con las columnas del CSV.")
             if row["point_id"] == point_id and row["issue_date"] == issue_date.isoformat():
                 if found is not None:
                     raise ValueError("La fila de entrada está duplicada.")
                 found = row
     if found is None:
         raise ValueError("No hay datos para esa celda y fecha exactas; no se reutiliza otra fecha.")
-    if (
-        date.fromisoformat(found["target_start"]) != issue_date + timedelta(days=1)
+    if before != hashlib.sha256(path.read_bytes()).hexdigest():
+        raise ValueError("El archivo cambió durante su recepción; vuelve a importarlo.")
+    # Los datasets históricos pueden llevar fechas de etiqueta; una entrada viva no las necesita.
+    has_targets = bool(found.get("target_start") or found.get("target_end"))
+    if has_targets and (
+        not found.get("target_start")
+        or not found.get("target_end")
+        or date.fromisoformat(found["target_start"]) != issue_date + timedelta(days=1)
         or (
             date.fromisoformat(found["target_end"]) - date.fromisoformat(found["target_start"])
         ).days
         != horizon_days - 1
     ):
         raise ValueError("La fila no pertenece al horizonte t+1..t+H declarado.")
+    if (
+        found.get("features_available_on")
+        and date.fromisoformat(found["features_available_on"]) > issue_date
+    ):
+        raise ValueError("Las entradas todavía no estaban disponibles para la fecha declarada.")
     return ExpandedFeatures(
         region_id=region_id,
+        point_id=point_id,
         longitude=float(found["longitude"]),
         latitude=float(found["latitude"]),
         issue_date=issue_date,
         observation_cutoff=found["observation_cutoff"],
-        source_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        source_sha256=before,
         climate={key: float(found[key]) for key in climate_features},
-        soil={key: float(found[key]) for key in soil_features}
-        if all(key in found for key in soil_features)
-        else None,
+        soil={key: float(found[key]) for key in soil_features} if soil_present else None,
     )

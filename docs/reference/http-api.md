@@ -13,6 +13,7 @@ La documentación interactiva local se sirve en `http://localhost:8000/docs`.
 | GET /api/v1/regions | Regiones operativas configuradas |
 | GET /api/v1/status | Ingesta y disponibilidad de componentes |
 | GET /api/v1/automation | Calendarios y estado del ciclo de modelos |
+| GET /api/v1/models/input-contract | Receta, columnas ordenadas, metadatos y reglas de recepción |
 | GET /api/v1/models | Catálogo del bundle y sus métricas; no carga Boosters |
 | GET /api/v1/regions/{id}/observations | Observaciones operativas paginadas y última actualización |
 | GET /api/v1/regions/{id}/latest-analysis | Resultado guardado para inicio y horizonte exactos |

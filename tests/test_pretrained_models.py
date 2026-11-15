@@ -1,5 +1,6 @@
 """Integración real de los artefactos del equipo; no publica modelos en producción."""
 
+import csv
 import importlib.util
 import json
 import shutil
@@ -51,8 +52,22 @@ class PretrainedModelTests(unittest.TestCase):
         soil = next(m for m in catalog.models if m.model_kind == "soil" and m.horizon_days == 7)
         self.assertIn("smap_mean_7d", soil.formula)
         self.assertEqual(len(soil.features), 52)
-        self.assertAlmostEqual(soil.evaluation_mae, 0.03593788088985969)
+        self.assertAlmostEqual(soil.evaluation_mae, 0.03310611989038711)
+        self.assertEqual(len(catalog.input_contract.climate_features), 31)
+        self.assertEqual(len(catalog.input_contract.soil_features), 52)
         self.assertTrue(all(m.validation_status == "experimental" for m in catalog.models))
+
+    def test_http_input_contract_exposes_ordered_columns_without_running_models(self):
+        with patch.object(
+            self.bundle, "predict", side_effect=AssertionError("HTTP no debe inferir")
+        ):
+            response = TestClient(create_app(Mock(), pretrained_models=self.bundle)).get(
+                "/api/v1/models/input-contract"
+            )
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()["climate_features"], self.climate)
+        self.assertEqual(response.json()["soil_features"], self.soil)
+        self.assertEqual(response.json()["input_lag_days"], 2)
 
     def test_exact_date_geometry_and_cutoff_are_required(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -101,12 +116,74 @@ class PretrainedModelTests(unittest.TestCase):
                     source = self.bundle._directory(name, horizon)
                     destination = Path(folder) / source.relative_to(self.bundle.root)
                     destination.mkdir(parents=True)
-                    for filename in ("model.json", "training.json"):
+                    for filename in ("model.json", "training.json", "evaluation_model.json"):
                         shutil.copyfile(source / filename, destination / filename)
-            path = Path(folder) / "soil_moisture/model.json"
+            path = Path(folder) / "forecasts/7d/moisture/model.json"
             path.write_text(path.read_text() + " ")
             with self.assertRaisesRegex(ValueError, "no coincide"):
                 ExpandedModelBundle(folder).catalog()
+
+    def test_feature_only_csv_is_received_without_future_labels_and_keeps_soil_optional(self):
+        with SAMPLE.open() as handle:
+            row = next(csv.DictReader(handle))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "inputs.csv"
+            for include_soil in (True, False):
+                columns = ["point_id", "issue_date", "observation_cutoff", "latitude", "longitude"]
+                columns += self.soil if include_soil else self.climate
+                with path.open("w", newline="") as handle:
+                    writer = csv.DictWriter(handle, fieldnames=columns)
+                    writer.writeheader()
+                    writer.writerow({key: row[key] for key in columns})
+                received = snapshot_from_csv(
+                    path,
+                    region_id="test-only",
+                    point_id="moisture_99",
+                    issue_date=date(2022, 1, 8),
+                    climate_features=self.climate,
+                    soil_features=self.soil,
+                )
+                self.bundle.validate_inputs(received)
+                self.assertEqual(received.climate, self.snapshot.climate)
+                self.assertEqual(received.soil, self.snapshot.soil if include_soil else None)
+                self.assertNotIn("target", received.climate)
+
+    def test_partial_soil_duplicate_headers_and_future_availability_are_rejected(self):
+        with SAMPLE.open() as handle:
+            original = next(csv.DictReader(handle))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "inputs.csv"
+            for mistake in ("partial_soil", "duplicate", "future_availability"):
+                with self.subTest(mistake=mistake):
+                    row = dict(original)
+                    if mistake == "partial_soil":
+                        del row["smap_mean_7d"]
+                    if mistake == "future_availability":
+                        row["features_available_on"] = "2022-01-09"
+                    columns = list(row)
+                    if mistake == "duplicate":
+                        columns.append("t2m_last")
+                    with path.open("w", newline="") as handle:
+                        writer = csv.DictWriter(handle, fieldnames=columns)
+                        writer.writeheader()
+                        writer.writerow(row)
+                    with self.assertRaises(ValueError):
+                        snapshot_from_csv(
+                            path,
+                            region_id="test-only",
+                            point_id="moisture_99",
+                            issue_date=date(2022, 1, 8),
+                            climate_features=self.climate,
+                            soil_features=self.soil,
+                        )
+
+    def test_unexpected_input_columns_are_rejected_before_any_inference(self):
+        altered = self.snapshot.model_copy(deep=True)
+        altered.climate["target"] = 100
+        with patch.object(self.bundle, "_predict") as inference:
+            with self.assertRaisesRegex(ValueError, "sobran.*target"):
+                self.bundle.predict(altered)
+            inference.assert_not_called()
 
     @unittest.skipUnless(importlib.util.find_spec("xgboost"), "Requiere el extra ml")
     def test_real_models_preserve_feature_order_and_add_moisture_baseline_once(self):
@@ -124,7 +201,7 @@ class PretrainedModelTests(unittest.TestCase):
         self.assertEqual(result.request.reference_date, date(2022, 1, 6))
         self.assertEqual(result.climate.validation_status, "experimental")
         booster = xgb.Booster(params={"nthread": 1})
-        booster.load_model(ROOT / "ml/artifacts/soil_moisture/model.json")
+        booster.load_model(ROOT / "ml/artifacts/forecasts/7d/moisture/model.json")
         delta = float(
             booster.predict(
                 xgb.DMatrix([[self.snapshot.soil[k] for k in self.soil]], feature_names=self.soil)

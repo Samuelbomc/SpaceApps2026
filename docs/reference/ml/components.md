@@ -11,19 +11,17 @@ flowchart LR
     RAW[Descargas de fuentes] --> SRC[dataset_sources.py]
     SRC --> PREP[prepare_expanded_datasets.py]
     PREP --> TABLES[CSV, manifiesto y validación]
-    TABLES --> ABS[train_prepared_models.py]
-    ABS --> EVAL[evaluation_model.json y métricas]
-    ABS --> REFIT[model.json reajustado]
-    TABLES --> RES[train_moisture_change.py]
-    ABS -->|particiones y comparator| RES
-    RES --> MOIST[Modelo residual y baseline]
+    TABLES --> FIT[train_rolling_origin.py: cuatro folds por objetivo]
+    FIT --> EVAL[evaluation_model.json: ajuste pre-test]
+    FIT --> REFIT[model.json: reajuste sobre todas las filas]
+    EVAL --> CHECK[validate_rolling_origin.py]
+    CHECK --> REPORT[Índice y métricas por horizonte]
 ```
 
-`environmental_conditions/` contiene cuatro regresores climáticos y el comparador
-absoluto de humedad. `soil_moisture/` contiene la formulación residual usada para
-humedad; `forecasts/{H}d/` contiene variantes por horizonte. Los resultados de
-holdout corresponden a `evaluation_model.json`. El `model.json` de experimentación
-se reajusta con todas las filas y no tiene una evaluación independiente posterior.
+`forecasts/{H}d/{modelo}/` contiene las cinco salidas para cada horizonte, incluida
+la humedad residual. Las métricas de holdout pertenecen a `evaluation_model.json`;
+el reajuste `model.json` no tiene evaluación independiente posterior. El índice
+científico no sustituye el registro de campeones operativos.
 
 Los archivos de humedad residual predicen un cambio. Sus adaptadores suman el
 baseline observado exactamente una vez; cargarlos como regresión absoluta altera

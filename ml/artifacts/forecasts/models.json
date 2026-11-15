@@ -1,0 +1,170 @@
+{
+  "7": {
+    "temperature_mean": {
+      "model_name": "temperature_mean",
+      "horizon_days": 7,
+      "directory": "ml\\artifacts\\forecasts\\7d\\temperature_mean",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_min": {
+      "model_name": "temperature_min",
+      "horizon_days": 7,
+      "directory": "ml\\artifacts\\forecasts\\7d\\temperature_min",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_max": {
+      "model_name": "temperature_max",
+      "horizon_days": 7,
+      "directory": "ml\\artifacts\\forecasts\\7d\\temperature_max",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "precipitation": {
+      "model_name": "precipitation",
+      "horizon_days": 7,
+      "directory": "ml\\artifacts\\forecasts\\7d\\precipitation",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "moisture": {
+      "model_name": "moisture",
+      "horizon_days": 7,
+      "directory": "ml\\artifacts\\forecasts\\7d\\moisture",
+      "prediction_mode": "baseline_plus_change",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    }
+  },
+  "15": {
+    "temperature_mean": {
+      "model_name": "temperature_mean",
+      "horizon_days": 15,
+      "directory": "ml\\artifacts\\forecasts\\15d\\temperature_mean",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_min": {
+      "model_name": "temperature_min",
+      "horizon_days": 15,
+      "directory": "ml\\artifacts\\forecasts\\15d\\temperature_min",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_max": {
+      "model_name": "temperature_max",
+      "horizon_days": 15,
+      "directory": "ml\\artifacts\\forecasts\\15d\\temperature_max",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "precipitation": {
+      "model_name": "precipitation",
+      "horizon_days": 15,
+      "directory": "ml\\artifacts\\forecasts\\15d\\precipitation",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "moisture": {
+      "model_name": "moisture",
+      "horizon_days": 15,
+      "directory": "ml\\artifacts\\forecasts\\15d\\moisture",
+      "prediction_mode": "baseline_plus_change",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    }
+  },
+  "30": {
+    "temperature_mean": {
+      "model_name": "temperature_mean",
+      "horizon_days": 30,
+      "directory": "ml\\artifacts\\forecasts\\30d\\temperature_mean",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_min": {
+      "model_name": "temperature_min",
+      "horizon_days": 30,
+      "directory": "ml\\artifacts\\forecasts\\30d\\temperature_min",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_max": {
+      "model_name": "temperature_max",
+      "horizon_days": 30,
+      "directory": "ml\\artifacts\\forecasts\\30d\\temperature_max",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "precipitation": {
+      "model_name": "precipitation",
+      "horizon_days": 30,
+      "directory": "ml\\artifacts\\forecasts\\30d\\precipitation",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "moisture": {
+      "model_name": "moisture",
+      "horizon_days": 30,
+      "directory": "ml\\artifacts\\forecasts\\30d\\moisture",
+      "prediction_mode": "baseline_plus_change",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    }
+  },
+  "60": {
+    "temperature_mean": {
+      "model_name": "temperature_mean",
+      "horizon_days": 60,
+      "directory": "ml\\artifacts\\forecasts\\60d\\temperature_mean",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_min": {
+      "model_name": "temperature_min",
+      "horizon_days": 60,
+      "directory": "ml\\artifacts\\forecasts\\60d\\temperature_min",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "temperature_max": {
+      "model_name": "temperature_max",
+      "horizon_days": 60,
+      "directory": "ml\\artifacts\\forecasts\\60d\\temperature_max",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "precipitation": {
+      "model_name": "precipitation",
+      "horizon_days": 60,
+      "directory": "ml\\artifacts\\forecasts\\60d\\precipitation",
+      "prediction_mode": "absolute",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    },
+    "moisture": {
+      "model_name": "moisture",
+      "horizon_days": 60,
+      "directory": "ml\\artifacts\\forecasts\\60d\\moisture",
+      "prediction_mode": "baseline_plus_change",
+      "model": "model.json",
+      "evaluation_model": "evaluation_model.json"
+    }
+  }
+}

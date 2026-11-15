@@ -13,6 +13,7 @@ ruff check .
 ruff format --check .
 python -m scripts.check_repository
 python -m scripts.export_openapi --check
+python -m scripts.export_model_contracts --check
 python -m scripts.verify_automation
 npm test --prefix packages/api-client
 npm test --prefix frontend -- --watch=false

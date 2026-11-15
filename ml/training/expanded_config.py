@@ -20,14 +20,16 @@ def load_training_config(path=None):
     config = json.loads(text)
     canonical = json.loads(files("ml.configs").joinpath("expanded-training.json").read_text())
     if (
-        config["schema_version"] != "expanded-training-v1"
+        config["schema_version"] != "expanded-training-v2"
         or config["recipe_version"] != "expanded-v1"
     ):
         raise ValueError("Configuración de entrenamiento no soportada.")
     if (
         config["input_lag_days"] != 2
         or config["label_lag_days"] < 0
-        or config["split_strategy"] != "chronological_60_20_20"
+        or config["split_strategy"] != "rolling_origin"
+        or config["cv_train_fractions"] != [0.4, 0.55, 0.7, 0.85]
+        or not config["candidates"]
         or config["max_rounds"] < 1
         or config["early_stopping_rounds"] < 1
         or config["params"]["objective"] != "reg:squarederror"
@@ -58,6 +60,12 @@ def load_training_config(path=None):
             reference = canonical["sources"][str(horizon)][target]
             if spec["features"] != reference["features"] or spec["unit"] != reference["unit"]:
                 raise ValueError("Cambiar columnas o unidades exige otra versión de receta.")
+    allowed = {"max_depth", "min_child_weight", "reg_lambda"}
+    if any(
+        set(candidate) != allowed or any(value <= 0 for value in candidate.values())
+        for candidate in config["candidates"]
+    ):
+        raise ValueError("Candidatos rolling-origin inválidos.")
     scope = config["spatial_scope"]
     if (
         scope["kind"] != "pooled_aoi"

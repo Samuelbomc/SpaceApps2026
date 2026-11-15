@@ -2,12 +2,11 @@
 
 import hashlib
 import json
-import math
 from datetime import timedelta
 from pathlib import Path
 
 from packages.contracts.api import AnalysisRequest, AnalysisResult, Forecast, ForecastValue
-from packages.contracts.pretrained import ModelCatalog, ModelInfo
+from packages.contracts.pretrained import ModelCatalog, ModelInfo, ModelInputContract
 from pipelines.training.snapshots import fingerprint
 
 CLIMATE = ("temperature_mean", "temperature_min", "temperature_max", "precipitation")
@@ -19,7 +18,7 @@ LIMITATIONS = [
     "Faltan validación independiente y evaluación de transferencia a otras regiones.",
     "La precipitación usa GPM Late; los mínimos y máximos son medias de extremos diarios.",
     "La humedad es superficial, requiere SMAP y SoilGrids y no representa toda la zona radicular.",
-    "La humedad a 30 días no supera la persistencia en el test completo del equipo.",
+    "La selección utiliza cuatro ventanas temporales expansivas, purgadas antes del test cronológico.",
     "No se rellenan variables faltantes ni se extrapola un modelo de siete días.",
 ]
 
@@ -30,10 +29,6 @@ class ExpandedModelBundle:
         self._boosters = {}
 
     def _directory(self, name, horizon=7):
-        if horizon == 7:
-            return self.root / (
-                "soil_moisture" if name == "moisture" else f"environmental_conditions/{name}"
-            )
         return self.root / f"forecasts/{horizon}d/{name}"
 
     def _metadata(self, horizon=7):
@@ -51,7 +46,11 @@ class ExpandedModelBundle:
                         f"El artefacto {horizon}d/{name}/{filename} no coincide con la versión integrada."
                     )
             config = json.loads((directory / "training.json").read_text())
-            if config.get("horizon_days", 7) != horizon:
+            if (
+                config.get("horizon_days") != horizon
+                or config.get("model_name") != name
+                or config.get("training_pipeline") != "rolling_origin"
+            ):
                 raise ValueError("El horizonte declarado por el artefacto no coincide.")
             expected_mode = "baseline_plus_change" if name == "moisture" else "absolute"
             if config.get("prediction_mode", expected_mode) != expected_mode:
@@ -70,8 +69,7 @@ class ExpandedModelBundle:
         for horizon in HORIZONS:
             for name, (config, version) in self._metadata(horizon).items():
                 residual = name == "moisture"
-                legacy_residual = residual and horizon == 7
-                test = config["partitions"]["test"] if legacy_residual else config
+                test = config["test_metrics"]
                 models.append(
                     ModelInfo(
                         model_id=name,
@@ -83,48 +81,54 @@ class ExpandedModelBundle:
                         formula="smap_mean_7d + XGBoost(features)"
                         if residual
                         else "XGBoost(features)",
-                        evaluation_mae=test["change_model" if legacy_residual else "test_xgboost"][
-                            "mae"
-                        ],
-                        baseline_mae=test["persistence" if legacy_residual else "test_persistence"][
-                            "mae"
-                        ],
+                        evaluation_mae=test["model"]["mae"],
+                        baseline_mae=test["persistence"]["mae"],
                     )
                 )
         return ModelCatalog(
-            models=models, supported_horizons=list(HORIZONS), limitations=LIMITATIONS
+            models=models,
+            supported_horizons=list(HORIZONS),
+            limitations=LIMITATIONS,
+            input_contract=self.input_contract(),
         )
 
-    def _predict(self, name, features, config, version, horizon=7):
-        import xgboost as xgb
+    def input_contract(self):
+        records = self._metadata(7)
+        climate = records[CLIMATE[0]][0]["features"]
+        soil = records["moisture"][0]["features"]
+        for horizon in HORIZONS:
+            for name, (config, _) in self._metadata(horizon).items():
+                if config["features"] != (soil if name == "moisture" else climate):
+                    raise ValueError("El esquema de entradas requiere otra versión de receta.")
+        return ModelInputContract(climate_features=climate, soil_features=soil)
 
-        names = config["features"]
-        missing = [key for key in names if key not in features]
-        if missing:
-            raise ValueError("Faltan variables: " + ", ".join(missing))
-        values = [float(features[key]) for key in names]
-        if not all(math.isfinite(value) for value in values):
-            raise ValueError("Las variables deben ser finitas.")
+    def validate_inputs(self, snapshot, *, horizon_days=7):
+        records = self._metadata(horizon_days)
+        for kind, values, expected in (
+            ("clima", snapshot.climate, records[CLIMATE[0]][0]["features"]),
+            ("suelo", snapshot.soil, records["moisture"][0]["features"]),
+        ):
+            if values is None:
+                continue
+            missing, extra = set(expected) - values.keys(), values.keys() - set(expected)
+            if missing or extra:
+                raise ValueError(
+                    f"Entradas de {kind} incompatibles: faltan {sorted(missing)}; sobran {sorted(extra)}."
+                )
+        return snapshot
+
+    def _predict(self, name, features, config, version, horizon=7):
+        from ml.inference.forecast import ForecastPredictor
+
         key = (horizon, name, version)
         if key not in self._boosters:
-            booster = xgb.Booster(params={"nthread": 1})
-            booster.load_model(self._directory(name, horizon) / "model.json")
-            if booster.feature_names != names:
-                raise ValueError("El orden de variables del modelo difiere del contrato.")
-            self._boosters[key] = booster
-        value = float(self._boosters[key].predict(xgb.DMatrix([values], feature_names=names))[0])
-        if name == "moisture":
-            if (
-                config.get("baseline_feature") != "smap_mean_7d"
-                or config.get("baseline_scale", 1) != 1
-            ):
-                raise ValueError("Baseline de humedad no compatible.")
-            value += features["smap_mean_7d"]
-        if not math.isfinite(value):
-            raise ValueError("El modelo devolvió un valor no finito.")
-        return value
+            self._boosters[key] = ForecastPredictor(
+                name, horizon, artifact_root=self.root / "forecasts"
+            )
+        return self._boosters[key].predict_row(features)
 
     def predict(self, snapshot, *, horizon_days=7):
+        self.validate_inputs(snapshot, horizon_days=horizon_days)
         records = self._metadata(horizon_days)
         start = snapshot.issue_date + timedelta(days=1)
         request = AnalysisRequest(
