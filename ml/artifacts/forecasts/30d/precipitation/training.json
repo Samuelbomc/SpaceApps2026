@@ -1,9 +1,4 @@
 {
-  "rows": 47835,
-  "train_rows": 28413,
-  "validation_rows": 9279,
-  "test_rows": 9567,
-  "purged_rows": 576,
   "features": [
     "t2m_mean_7d",
     "t2m_mean_14d",
@@ -38,46 +33,380 @@
     "day_of_year_cos"
   ],
   "target": "target",
-  "units": "mm",
-  "selected_rounds": 59,
+  "baseline_feature": "gpm_late_sum_7d_mm",
   "horizon_days": 30,
   "prediction_mode": "absolute",
-  "baseline_feature": "gpm_late_sum_7d_mm",
   "baseline_scale": 4.285714285714286,
-  "constant_features_in_training": [],
-  "test_xgboost": {
-    "mae": 102.81464577508956,
-    "rmse": 136.86223031544571,
-    "bias": -37.46031204625169,
-    "r2": 0.15646858526175578
-  },
-  "test_persistence": {
-    "mae": 172.66209602305491,
-    "rmse": 232.7140374696174,
-    "bias": 1.4358706358211375,
-    "r2": -1.4388169076684463
-  },
-  "test_training_mean": {
-    "mae": 116.95563480417691,
-    "rmse": 153.794608287217,
-    "bias": -38.039519107132115,
-    "r2": -0.06516345025436565
-  },
-  "source_sha256": "5467a9e127e1cc02c5f75d8dc4102ff425e39bcc17e9fc0a7cba83ff6bd16179",
   "source_file": "data\\prepared\\horizons\\30d\\precipitation.csv",
-  "locations": 9,
-  "first_issue": "2011-12-16",
-  "last_issue": "2026-09-02",
+  "source_sha256": "5467a9e127e1cc02c5f75d8dc4102ff425e39bcc17e9fc0a7cba83ff6bd16179",
+  "parameters": {
+    "objective": "reg:squarederror",
+    "eval_metric": "mae",
+    "tree_method": "hist",
+    "eta": 0.03,
+    "alpha": 0.1,
+    "seed": 42,
+    "nthread": 2,
+    "max_depth": 2,
+    "min_child_weight": 10,
+    "reg_lambda": 20
+  },
+  "selected_rounds": 218,
+  "model_name": "precipitation",
+  "training_pipeline": "rolling_origin",
+  "units": "mm",
+  "development_rows": 37980,
+  "test_rows": 9567,
   "test_first_issue": "2023-10-06",
   "test_last_issue": "2026-09-02",
-  "artifact_note": "evaluation_model.json has held-out metrics; model.json is refitted on all rows and has no independent evaluation after refitting",
-  "test_nonoverlapping_targets": {
-    "rows": 324,
-    "xgboost": {
-      "mae": 103.39741349501972,
-      "rmse": 137.2229939391741,
-      "bias": -35.27941719260366,
-      "r2": 0.14607876035131717
+  "selected_candidate": 0,
+  "candidates": [
+    {
+      "candidate": 0,
+      "parameters": {
+        "objective": "reg:squarederror",
+        "eval_metric": "mae",
+        "tree_method": "hist",
+        "eta": 0.03,
+        "alpha": 0.1,
+        "seed": 42,
+        "nthread": 2,
+        "max_depth": 2,
+        "min_child_weight": 10,
+        "reg_lambda": 20
+      },
+      "cv_mae": 83.59360517174494,
+      "cv_persistence_mae": 158.9530704077529,
+      "folds": [
+        {
+          "fold": 1,
+          "train_rows": 14904,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2016-06-27",
+          "validation_first": "2016-07-30",
+          "validation_last": "2018-03-22",
+          "rounds": 515,
+          "model": {
+            "mae": 72.8360535261731,
+            "rmse": 93.2039141611016,
+            "bias": -40.38574535707034,
+            "r2": 0.3726726940789471
+          },
+          "persistence": {
+            "mae": 157.78782509048747,
+            "rmse": 202.8122641099092,
+            "bias": -5.25710516516863,
+            "r2": -1.9703957573574695
+          }
+        },
+        {
+          "fold": 2,
+          "train_rows": 20601,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2018-03-22",
+          "validation_first": "2018-04-24",
+          "validation_last": "2019-12-15",
+          "rounds": 255,
+          "model": {
+            "mae": 74.80733376899575,
+            "rmse": 97.30504210866398,
+            "bias": -11.15776533382053,
+            "r2": 0.4614705953419963
+          },
+          "persistence": {
+            "mae": 153.67738424301237,
+            "rmse": 201.56847712672047,
+            "bias": 11.007282149450491,
+            "r2": -1.3109149439204502
+          }
+        },
+        {
+          "fold": 3,
+          "train_rows": 26298,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2019-12-15",
+          "validation_first": "2020-01-17",
+          "validation_last": "2021-11-07",
+          "rounds": 98,
+          "model": {
+            "mae": 99.98314843179541,
+            "rmse": 130.2414320434525,
+            "bias": -41.11406846886856,
+            "r2": 0.04170305068867208
+          },
+          "persistence": {
+            "mae": 163.4323260607127,
+            "rmse": 212.49396161367613,
+            "bias": -4.487191487822021,
+            "r2": -1.5509090038513826
+          }
+        },
+        {
+          "fold": 4,
+          "train_rows": 31995,
+          "validation_rows": 5697,
+          "train_first": "2011-12-16",
+          "train_last": "2021-11-07",
+          "validation_first": "2021-12-10",
+          "validation_last": "2023-09-03",
+          "rounds": 182,
+          "model": {
+            "mae": 86.58842689804919,
+            "rmse": 116.71652820914947,
+            "bias": -33.92227350387851,
+            "r2": 0.15640135866177673
+          },
+          "persistence": {
+            "mae": 160.815577790465,
+            "rmse": 213.8959662211222,
+            "bias": -1.9100077311628505,
+            "r2": -1.8331941669443417
+          }
+        }
+      ],
+      "selected_rounds": 218
+    },
+    {
+      "candidate": 1,
+      "parameters": {
+        "objective": "reg:squarederror",
+        "eval_metric": "mae",
+        "tree_method": "hist",
+        "eta": 0.03,
+        "alpha": 0.1,
+        "seed": 42,
+        "nthread": 2,
+        "max_depth": 3,
+        "min_child_weight": 5,
+        "reg_lambda": 10
+      },
+      "cv_mae": 84.01297696502142,
+      "cv_persistence_mae": 158.9530704077529,
+      "folds": [
+        {
+          "fold": 1,
+          "train_rows": 14904,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2016-06-27",
+          "validation_first": "2016-07-30",
+          "validation_last": "2018-03-22",
+          "rounds": 211,
+          "model": {
+            "mae": 73.32444699540412,
+            "rmse": 93.61502706612936,
+            "bias": -40.33317415576351,
+            "r2": 0.3671263359914094
+          },
+          "persistence": {
+            "mae": 157.78782509048747,
+            "rmse": 202.8122641099092,
+            "bias": -5.25710516516863,
+            "r2": -1.9703957573574695
+          }
+        },
+        {
+          "fold": 2,
+          "train_rows": 20601,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2018-03-22",
+          "validation_first": "2018-04-24",
+          "validation_last": "2019-12-15",
+          "rounds": 190,
+          "model": {
+            "mae": 76.10882497310982,
+            "rmse": 97.97279363615799,
+            "bias": -9.161520830990414,
+            "r2": 0.4540539659998414
+          },
+          "persistence": {
+            "mae": 153.67738424301237,
+            "rmse": 201.56847712672047,
+            "bias": 11.007282149450491,
+            "r2": -1.3109149439204502
+          }
+        },
+        {
+          "fold": 3,
+          "train_rows": 26298,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2019-12-15",
+          "validation_first": "2020-01-17",
+          "validation_last": "2021-11-07",
+          "rounds": 56,
+          "model": {
+            "mae": 100.41802511715899,
+            "rmse": 130.67440263643655,
+            "bias": -43.942448842715606,
+            "r2": 0.03532099459206417
+          },
+          "persistence": {
+            "mae": 163.4323260607127,
+            "rmse": 212.49396161367613,
+            "bias": -4.487191487822021,
+            "r2": -1.5509090038513826
+          }
+        },
+        {
+          "fold": 4,
+          "train_rows": 31995,
+          "validation_rows": 5697,
+          "train_first": "2011-12-16",
+          "train_last": "2021-11-07",
+          "validation_first": "2021-12-10",
+          "validation_last": "2023-09-03",
+          "rounds": 103,
+          "model": {
+            "mae": 86.09001949178952,
+            "rmse": 116.20341946316789,
+            "bias": -33.504307598328914,
+            "r2": 0.1638023049308256
+          },
+          "persistence": {
+            "mae": 160.815577790465,
+            "rmse": 213.8959662211222,
+            "bias": -1.9100077311628505,
+            "r2": -1.8331941669443417
+          }
+        }
+      ],
+      "selected_rounds": 146
+    },
+    {
+      "candidate": 2,
+      "parameters": {
+        "objective": "reg:squarederror",
+        "eval_metric": "mae",
+        "tree_method": "hist",
+        "eta": 0.03,
+        "alpha": 0.1,
+        "seed": 42,
+        "nthread": 2,
+        "max_depth": 4,
+        "min_child_weight": 10,
+        "reg_lambda": 20
+      },
+      "cv_mae": 84.41036734732592,
+      "cv_persistence_mae": 158.9530704077529,
+      "folds": [
+        {
+          "fold": 1,
+          "train_rows": 14904,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2016-06-27",
+          "validation_first": "2016-07-30",
+          "validation_last": "2018-03-22",
+          "rounds": 95,
+          "model": {
+            "mae": 73.4891220892019,
+            "rmse": 93.8787441289139,
+            "bias": -40.36434547948369,
+            "r2": 0.36355565572274273
+          },
+          "persistence": {
+            "mae": 157.78782509048747,
+            "rmse": 202.8122641099092,
+            "bias": -5.25710516516863,
+            "r2": -1.9703957573574695
+          }
+        },
+        {
+          "fold": 2,
+          "train_rows": 20601,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2018-03-22",
+          "validation_first": "2018-04-24",
+          "validation_last": "2019-12-15",
+          "rounds": 123,
+          "model": {
+            "mae": 77.28557749556329,
+            "rmse": 99.09560619234597,
+            "bias": -8.697085628085587,
+            "r2": 0.44146868309594534
+          },
+          "persistence": {
+            "mae": 153.67738424301237,
+            "rmse": 201.56847712672047,
+            "bias": 11.007282149450491,
+            "r2": -1.3109149439204502
+          }
+        },
+        {
+          "fold": 3,
+          "train_rows": 26298,
+          "validation_rows": 5409,
+          "train_first": "2011-12-16",
+          "train_last": "2019-12-15",
+          "validation_first": "2020-01-17",
+          "validation_last": "2021-11-07",
+          "rounds": 64,
+          "model": {
+            "mae": 101.03679430957803,
+            "rmse": 131.2805304211957,
+            "bias": -43.914712671866994,
+            "r2": 0.02635099230344562
+          },
+          "persistence": {
+            "mae": 163.4323260607127,
+            "rmse": 212.49396161367613,
+            "bias": -4.487191487822021,
+            "r2": -1.5509090038513826
+          }
+        },
+        {
+          "fold": 4,
+          "train_rows": 31995,
+          "validation_rows": 5697,
+          "train_first": "2011-12-16",
+          "train_last": "2021-11-07",
+          "validation_first": "2021-12-10",
+          "validation_last": "2023-09-03",
+          "rounds": 74,
+          "model": {
+            "mae": 85.75821015416379,
+            "rmse": 115.75875010125462,
+            "bias": -33.0416008890107,
+            "r2": 0.17018972560128698
+          },
+          "persistence": {
+            "mae": 160.815577790465,
+            "rmse": 213.8959662211222,
+            "bias": -1.9100077311628505,
+            "r2": -1.8331941669443417
+          }
+        }
+      ],
+      "selected_rounds": 84
+    }
+  ],
+  "test_metrics": {
+    "model": {
+      "mae": 100.3119928585348,
+      "rmse": 132.96157002664972,
+      "bias": -27.975776787498095,
+      "r2": 0.20386575607512025
+    },
+    "persistence": {
+      "mae": 172.66209602305491,
+      "rmse": 232.7140374696174,
+      "bias": 1.4358706358211375,
+      "r2": -1.4388169076684463
+    }
+  },
+  "nonoverlapping_test_rows": 324,
+  "nonoverlapping_test_metrics": {
+    "model": {
+      "mae": 101.41772367209656,
+      "rmse": 134.16915368332192,
+      "bias": -25.631405690679166,
+      "r2": 0.18366316093455592
     },
     "persistence": {
       "mae": 178.95345138334153,
@@ -85,5 +414,6 @@
       "bias": 0.04708891160492997,
       "r2": -1.5731681723846207
     }
-  }
+  },
+  "artifact_note": "Evaluation model uses only pre-test rows; full model refit uses all rows and has no independent post-refit test score."
 }

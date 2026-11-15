@@ -1,0 +1,182 @@
+{
+  "7d/temperature_mean": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "7d/temperature_min": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "7d/temperature_max": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "7d/precipitation": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "7d/moisture": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "15d/temperature_mean": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "15d/temperature_min": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "15d/temperature_max": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "15d/precipitation": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "15d/moisture": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "30d/temperature_mean": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "30d/temperature_min": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "30d/temperature_max": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "30d/precipitation": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "30d/moisture": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "60d/temperature_mean": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "60d/temperature_min": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "60d/temperature_max": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "60d/precipitation": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  },
+  "60d/moisture": {
+    "status": "PASS",
+    "folds": 4,
+    "test_labels_verified_from_source": true,
+    "no_test_labels_in_cv": true,
+    "purging_verified": true,
+    "selection_verified": true,
+    "metrics_and_saved_inference_verified": true
+  }
+}

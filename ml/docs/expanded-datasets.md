@@ -22,8 +22,10 @@ Reproduce from the repository root:
 
 ```powershell
 .\.venv-data\Scripts\python.exe -m ml.scripts.prepare_expanded_datasets
-.\.venv-data\Scripts\python.exe -m ml.scripts.train_prepared_models --manifest data/prepared/expanded/manifest.json --output ml/artifacts/environmental_conditions --max-depth 3 --max-rounds 800
+.\.venv-data\Scripts\python.exe -m ml.scripts.train_rolling_origin
 .\.venv-data\Scripts\python.exe -m ml.scripts.validate_expanded_datasets
+.\.venv-data\Scripts\python.exe -m ml.scripts.validate_rolling_origin
+.\.venv-data\Scripts\python.exe -m ml.scripts.summarize_rolling_origin
 ```
 
 Dependencies: numpy, pandas, rasterio, h5py and xgboost. Test results and evaluation limitations are documented in `ml/docs/model-results.md`.

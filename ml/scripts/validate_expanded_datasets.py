@@ -13,11 +13,10 @@ from ml.scripts.prepare_expanded_datasets import load_power, load_moisture
 def main():
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument("--dataset-root",type=Path,default=Path("data/prepared/expanded"))
-    parser.add_argument("--artifact-root",type=Path,default=Path("ml/artifacts/environmental_conditions"))
+    parser.add_argument("--artifact-root",type=Path,default=Path("ml/artifacts/forecasts/7d"))
     args = parser.parse_args()
     root = args.dataset_root
     manifest = json.loads((root/"manifest.json").read_text())
-    report = json.loads((args.artifact_root/"report.json").read_text())
     pp,powers,_ = load_power()
     sp,moisture,_,_,_ = load_moisture()
     checks = {}
@@ -57,19 +56,24 @@ def main():
             assert np.isclose(expected,row.target), (name,expected,row.target)
             verified+=1
         folder = args.artifact_root/name
+        metadata = json.loads((folder/"training.json").read_text())
         partitions = pd.read_csv(folder/"partitions.csv")
-        for earlier,later in (("train","validation"),("validation","test")):
-            left,right = partitions[partitions.partition==earlier],partitions[partitions.partition==later]
+        left,right = partitions[partitions.partition=="development"],partitions[partitions.partition=="test"]
+        assert len(left) and len(right)
+        assert pd.to_datetime(left.target_end).max()<pd.to_datetime(right.observation_cutoff).min()
+        folds = pd.read_csv(folder/"cv_partitions.csv")
+        for _,fold in folds.groupby("fold"):
+            left,right = fold[fold.partition=="train"],fold[fold.partition=="validation"]
+            assert len(left) and len(right)
             assert pd.to_datetime(left.target_end).max()<pd.to_datetime(right.observation_cutoff).min()
         predictions = pd.read_csv(folder/"test_predictions.csv")
         assert np.isfinite(predictions.prediction).all()
-        assert np.isclose(np.abs(predictions.prediction-predictions.target).mean(),report["models"][name]["test_xgboost"]["mae"])
+        assert np.isclose(np.abs(predictions.prediction-predictions.target).mean(),metadata["test_metrics"]["model"]["mae"])
         import xgboost as xgb
         test = frame.merge(predictions[["point_id","issue_date"]],on=["point_id","issue_date"],validate="one_to_one")
         booster = xgb.Booster()
         booster.load_model(folder/"evaluation_model.json")
         reconstructed = booster.predict(xgb.DMatrix(test[spec["features"]].to_numpy(float),feature_names=spec["features"]))
-        metadata = report["models"][name]
         if metadata.get("prediction_mode")=="baseline_plus_change":
             reconstructed += test[metadata["baseline_feature"]].to_numpy(float)
         paired = test[["point_id","issue_date"]].assign(reconstructed=reconstructed).merge(predictions,on=["point_id","issue_date"],validate="one_to_one")

@@ -1,0 +1,440 @@
+{
+  "features": [
+    "t2m_mean_7d",
+    "t2m_mean_14d",
+    "t2m_mean_30d",
+    "t2m_min_mean_7d",
+    "t2m_min_mean_14d",
+    "t2m_min_mean_30d",
+    "t2m_max_mean_7d",
+    "t2m_max_mean_14d",
+    "t2m_max_mean_30d",
+    "rh2m_mean_7d",
+    "rh2m_mean_14d",
+    "rh2m_mean_30d",
+    "qv2m_mean_7d",
+    "qv2m_mean_14d",
+    "qv2m_mean_30d",
+    "ws2m_mean_7d",
+    "ws2m_mean_14d",
+    "ws2m_mean_30d",
+    "t2m_last",
+    "radiation_sum_7d",
+    "gpm_late_sum_1d_mm",
+    "gpm_late_sum_3d_mm",
+    "gpm_late_sum_7d_mm",
+    "gpm_late_sum_14d_mm",
+    "gpm_late_sum_30d_mm",
+    "gpm_late_max_daily_7d_mm",
+    "rainy_days_7d",
+    "elevation_m",
+    "week_of_year",
+    "day_of_year_sin",
+    "day_of_year_cos",
+    "smap_mean_7d",
+    "smap_last_valid_m3_m3",
+    "smap_age_days",
+    "smap_observed_days_7d",
+    "slope_degrees",
+    "soil_sand_mean",
+    "soil_sand_uncertainty",
+    "soil_silt_mean",
+    "soil_silt_uncertainty",
+    "soil_clay_mean",
+    "soil_clay_uncertainty",
+    "soil_soc_mean",
+    "soil_soc_uncertainty",
+    "soil_bdod_mean",
+    "soil_bdod_uncertainty",
+    "soil_wv0010_mean",
+    "soil_wv0010_uncertainty",
+    "soil_wv0033_mean",
+    "soil_wv0033_uncertainty",
+    "soil_wv1500_mean",
+    "soil_wv1500_uncertainty"
+  ],
+  "target": "target",
+  "baseline_feature": "smap_mean_7d",
+  "horizon_days": 7,
+  "prediction_mode": "baseline_plus_change",
+  "baseline_scale": 1,
+  "source_file": "data\\prepared\\expanded\\moisture.csv",
+  "source_sha256": "a0d4130a5f21bbeb15ceb942b9712fa4b43c2d09138b64e08446c116053bbd61",
+  "parameters": {
+    "objective": "reg:squarederror",
+    "eval_metric": "mae",
+    "tree_method": "hist",
+    "eta": 0.03,
+    "alpha": 0.1,
+    "seed": 42,
+    "nthread": 2,
+    "max_depth": 3,
+    "min_child_weight": 5,
+    "reg_lambda": 10
+  },
+  "selected_rounds": 114,
+  "model_name": "moisture",
+  "training_pipeline": "rolling_origin",
+  "units": "m3/m3",
+  "development_rows": 3102,
+  "test_rows": 792,
+  "test_first_issue": "2021-08-08",
+  "test_last_issue": "2022-01-08",
+  "selected_candidate": 1,
+  "candidates": [
+    {
+      "candidate": 0,
+      "parameters": {
+        "objective": "reg:squarederror",
+        "eval_metric": "mae",
+        "tree_method": "hist",
+        "eta": 0.03,
+        "alpha": 0.1,
+        "seed": 42,
+        "nthread": 2,
+        "max_depth": 2,
+        "min_child_weight": 10,
+        "reg_lambda": 20
+      },
+      "cv_mae": 0.03472371200044177,
+      "cv_persistence_mae": 0.03624746626603207,
+      "folds": [
+        {
+          "fold": 1,
+          "train_rows": 1182,
+          "validation_rows": 414,
+          "train_first": "2015-04-04",
+          "train_last": "2015-10-17",
+          "validation_first": "2015-10-27",
+          "validation_last": "2016-01-03",
+          "rounds": 29,
+          "model": {
+            "mae": 0.029088198246911237,
+            "rmse": 0.03874421811247567,
+            "bias": 0.0010984072268261146,
+            "r2": 0.38841411220447664
+          },
+          "persistence": {
+            "mae": 0.033179857881796726,
+            "rmse": 0.04113150983736106,
+            "bias": 0.012718052548414842,
+            "r2": 0.31072431719374227
+          }
+        },
+        {
+          "fold": 2,
+          "train_rows": 1650,
+          "validation_rows": 408,
+          "train_first": "2015-04-04",
+          "train_last": "2016-01-03",
+          "validation_first": "2016-01-13",
+          "validation_last": "2016-03-20",
+          "rounds": 31,
+          "model": {
+            "mae": 0.035545736736312866,
+            "rmse": 0.04301766723166615,
+            "bias": -0.0014461843156312081,
+            "r2": -0.42846529907630315
+          },
+          "persistence": {
+            "mae": 0.03734377133690454,
+            "rmse": 0.045050764047289256,
+            "bias": -0.00045457507964540093,
+            "r2": -0.5666800209057337
+          }
+        },
+        {
+          "fold": 3,
+          "train_rows": 2112,
+          "validation_rows": 444,
+          "train_first": "2015-04-04",
+          "train_last": "2016-03-20",
+          "validation_first": "2016-03-30",
+          "validation_last": "2016-06-23",
+          "rounds": 6,
+          "model": {
+            "mae": 0.03984356299109125,
+            "rmse": 0.04868296943927312,
+            "bias": -0.003180324680741048,
+            "r2": -0.22104497617253815
+          },
+          "persistence": {
+            "mae": 0.040068329638289706,
+            "rmse": 0.04891027532888679,
+            "bias": 0.0014257872021301197,
+            "r2": -0.23247396969810863
+          }
+        },
+        {
+          "fold": 4,
+          "train_rows": 2610,
+          "validation_rows": 468,
+          "train_first": "2015-04-04",
+          "train_last": "2016-06-23",
+          "validation_first": "2016-07-03",
+          "validation_last": "2021-07-29",
+          "rounds": 1,
+          "model": {
+            "mae": 0.03413504268821499,
+            "rmse": 0.042116374901704834,
+            "bias": 0.007587211458490062,
+            "r2": 0.08876272884454617
+          },
+          "persistence": {
+            "mae": 0.034380445037132654,
+            "rmse": 0.042448775153165176,
+            "bias": 0.009256092850596476,
+            "r2": 0.0743222273294264
+          }
+        }
+      ],
+      "selected_rounds": 17
+    },
+    {
+      "candidate": 1,
+      "parameters": {
+        "objective": "reg:squarederror",
+        "eval_metric": "mae",
+        "tree_method": "hist",
+        "eta": 0.03,
+        "alpha": 0.1,
+        "seed": 42,
+        "nthread": 2,
+        "max_depth": 3,
+        "min_child_weight": 5,
+        "reg_lambda": 10
+      },
+      "cv_mae": 0.031928326564222516,
+      "cv_persistence_mae": 0.03624746626603207,
+      "folds": [
+        {
+          "fold": 1,
+          "train_rows": 1182,
+          "validation_rows": 414,
+          "train_first": "2015-04-04",
+          "train_last": "2015-10-17",
+          "validation_first": "2015-10-27",
+          "validation_last": "2016-01-03",
+          "rounds": 48,
+          "model": {
+            "mae": 0.029430853905667662,
+            "rmse": 0.03814012214302861,
+            "bias": 0.00620707773776716,
+            "r2": 0.4073370030369676
+          },
+          "persistence": {
+            "mae": 0.033179857881796726,
+            "rmse": 0.04113150983736106,
+            "bias": 0.012718052548414842,
+            "r2": 0.31072431719374227
+          }
+        },
+        {
+          "fold": 2,
+          "train_rows": 1650,
+          "validation_rows": 408,
+          "train_first": "2015-04-04",
+          "train_last": "2016-01-03",
+          "validation_first": "2016-01-13",
+          "validation_last": "2016-03-20",
+          "rounds": 181,
+          "model": {
+            "mae": 0.03281213119133967,
+            "rmse": 0.0411008151705346,
+            "bias": 0.019060752050556844,
+            "r2": -0.30399778708377223
+          },
+          "persistence": {
+            "mae": 0.03734377133690454,
+            "rmse": 0.045050764047289256,
+            "bias": -0.00045457507964540093,
+            "r2": -0.5666800209057337
+          }
+        },
+        {
+          "fold": 3,
+          "train_rows": 2112,
+          "validation_rows": 444,
+          "train_first": "2015-04-04",
+          "train_last": "2016-03-20",
+          "validation_first": "2016-03-30",
+          "validation_last": "2016-06-23",
+          "rounds": 302,
+          "model": {
+            "mae": 0.03146921943714713,
+            "rmse": 0.04005557340622305,
+            "bias": -0.005462289293802323,
+            "r2": 0.17338468617976865
+          },
+          "persistence": {
+            "mae": 0.040068329638289706,
+            "rmse": 0.04891027532888679,
+            "bias": 0.0014257872021301197,
+            "r2": -0.23247396969810863
+          }
+        },
+        {
+          "fold": 4,
+          "train_rows": 2610,
+          "validation_rows": 468,
+          "train_first": "2015-04-04",
+          "train_last": "2016-06-23",
+          "validation_first": "2016-07-03",
+          "validation_last": "2021-07-29",
+          "rounds": 18,
+          "model": {
+            "mae": 0.03380269613088788,
+            "rmse": 0.04187382067652326,
+            "bias": 0.006740199747688382,
+            "r2": 0.09922839665520788
+          },
+          "persistence": {
+            "mae": 0.034380445037132654,
+            "rmse": 0.042448775153165176,
+            "bias": 0.009256092850596476,
+            "r2": 0.0743222273294264
+          }
+        }
+      ],
+      "selected_rounds": 114
+    },
+    {
+      "candidate": 2,
+      "parameters": {
+        "objective": "reg:squarederror",
+        "eval_metric": "mae",
+        "tree_method": "hist",
+        "eta": 0.03,
+        "alpha": 0.1,
+        "seed": 42,
+        "nthread": 2,
+        "max_depth": 4,
+        "min_child_weight": 10,
+        "reg_lambda": 20
+      },
+      "cv_mae": 0.032340062235728585,
+      "cv_persistence_mae": 0.03624746626603207,
+      "folds": [
+        {
+          "fold": 1,
+          "train_rows": 1182,
+          "validation_rows": 414,
+          "train_first": "2015-04-04",
+          "train_last": "2015-10-17",
+          "validation_first": "2015-10-27",
+          "validation_last": "2016-01-03",
+          "rounds": 58,
+          "model": {
+            "mae": 0.029136618056568933,
+            "rmse": 0.03889370675756027,
+            "bias": 0.002681556357027076,
+            "r2": 0.38368558623807114
+          },
+          "persistence": {
+            "mae": 0.033179857881796726,
+            "rmse": 0.04113150983736106,
+            "bias": 0.012718052548414842,
+            "r2": 0.31072431719374227
+          }
+        },
+        {
+          "fold": 2,
+          "train_rows": 1650,
+          "validation_rows": 408,
+          "train_first": "2015-04-04",
+          "train_last": "2016-01-03",
+          "validation_first": "2016-01-13",
+          "validation_last": "2016-03-20",
+          "rounds": 78,
+          "model": {
+            "mae": 0.03288253083719729,
+            "rmse": 0.03891696141070375,
+            "bias": 0.008453765597245411,
+            "r2": -0.16910584238539927
+          },
+          "persistence": {
+            "mae": 0.03734377133690454,
+            "rmse": 0.045050764047289256,
+            "bias": -0.00045457507964540093,
+            "r2": -0.5666800209057337
+          }
+        },
+        {
+          "fold": 3,
+          "train_rows": 2112,
+          "validation_rows": 444,
+          "train_first": "2015-04-04",
+          "train_last": "2016-03-20",
+          "validation_first": "2016-03-30",
+          "validation_last": "2016-06-23",
+          "rounds": 155,
+          "model": {
+            "mae": 0.03315754756064877,
+            "rmse": 0.041506461401165436,
+            "bias": -0.008451860640734618,
+            "r2": 0.11241703278023696
+          },
+          "persistence": {
+            "mae": 0.040068329638289706,
+            "rmse": 0.04891027532888679,
+            "bias": 0.0014257872021301197,
+            "r2": -0.23247396969810863
+          }
+        },
+        {
+          "fold": 4,
+          "train_rows": 2610,
+          "validation_rows": 468,
+          "train_first": "2015-04-04",
+          "train_last": "2016-06-23",
+          "validation_first": "2016-07-03",
+          "validation_last": "2021-07-29",
+          "rounds": 56,
+          "model": {
+            "mae": 0.03392539389493436,
+            "rmse": 0.04204921360919771,
+            "bias": 0.006738572423721331,
+            "r2": 0.09166663862138713
+          },
+          "persistence": {
+            "mae": 0.034380445037132654,
+            "rmse": 0.042448775153165176,
+            "bias": 0.009256092850596476,
+            "r2": 0.0743222273294264
+          }
+        }
+      ],
+      "selected_rounds": 68
+    }
+  ],
+  "test_metrics": {
+    "model": {
+      "mae": 0.03310611989038711,
+      "rmse": 0.042950075590317514,
+      "bias": -0.00920557662444872,
+      "r2": -0.37140880270636734
+    },
+    "persistence": {
+      "mae": 0.03763295110026594,
+      "rmse": 0.04790797569602605,
+      "bias": 0.0013840318754666581,
+      "r2": -0.7062973208571304
+    }
+  },
+  "nonoverlapping_test_rows": 114,
+  "nonoverlapping_test_metrics": {
+    "model": {
+      "mae": 0.037189923955594964,
+      "rmse": 0.047127508879960554,
+      "bias": -0.012426227640827956,
+      "r2": -0.7398496001188666
+    },
+    "persistence": {
+      "mae": 0.039400126748004846,
+      "rmse": 0.049619220100405176,
+      "bias": -0.0006263919414309717,
+      "r2": -0.9286907942766858
+    }
+  },
+  "artifact_note": "Evaluation model uses only pre-test rows; full model refit uses all rows and has no independent post-refit test score."
+}
