@@ -1,0 +1,1376 @@
+Cod_Municipio,Municipio,Cadena,PUESTO,HA_ALTA,PCT_ALTA,HA_MEDIA,PCT_MEDIA,PUNTAJE_APTITUD,AREA_MUNICIPIO_HA
+05002,Abejorral,Hortalizas clima frio,1,22620,44.3,3954,7.7,48.2,51059
+05002,Abejorral,Cebolla junca,2,3705,7.3,32552,63.8,39.2,51059
+05002,Abejorral,Maíz choclo,3,4429,8.7,10619,20.8,19.1,51059
+05002,Abejorral,Frijol voluble,4,3519,6.9,6429,12.6,13.2,51059
+05002,Abejorral,Papa,5,0,0.0,11679,22.9,11.4,51059
+05002,Abejorral,Frijol arbustivo,6,2,0.0,4249,8.3,4.2,51059
+05002,Abejorral,Maíz,7,0,0.0,2408,4.7,2.4,51059
+05002,Abejorral,Tomate chonto,8,0,0.0,1240,2.4,1.2,51059
+05002,Abejorral,Ñame,9,1,0.0,548,1.1,0.6,51059
+05002,Abejorral,Yuca,10,1,0.0,650,1.3,0.6,51059
+05002,Abejorral,Arroz,11,0,0.0,474,0.9,0.4,51059
+05004,Abriaquí,Cebolla junca,1,1072,3.7,54,0.2,3.8,29285
+05004,Abriaquí,Frijol voluble,2,722,2.5,58,0.2,2.6,29285
+05004,Abriaquí,Frijol arbustivo,3,383,1.3,618,2.1,2.4,29285
+05004,Abriaquí,Maíz,4,0,0.0,947,3.2,1.6,29285
+05004,Abriaquí,Tomate chonto,5,64,0.2,706,2.4,1.4,29285
+05004,Abriaquí,Maíz choclo,6,239,0.8,133,0.5,1.0,29285
+05004,Abriaquí,Hortalizas clima frio,7,232,0.8,1,0.0,0.8,29285
+05004,Abriaquí,Papa,8,0,0.0,63,0.2,0.1,29285
+05004,Abriaquí,Arroz,9,0,0.0,0,0.0,0.0,29285
+05004,Abriaquí,Ñame,10,0,0.0,0,0.0,0.0,29285
+05004,Abriaquí,Yuca,11,0,0.0,40,0.1,0.0,29285
+05021,Alejandría,Cebolla junca,1,8041,60.7,944,7.1,64.2,13258
+05021,Alejandría,Maíz,2,5481,41.3,3478,26.2,54.4,13258
+05021,Alejandría,Tomate chonto,3,5250,39.6,366,2.8,41.0,13258
+05021,Alejandría,Frijol arbustivo,4,9,0.1,8789,66.3,33.2,13258
+05021,Alejandría,Maíz choclo,5,1,0.0,4093,30.9,15.4,13258
+05021,Alejandría,Frijol voluble,6,614,4.6,1802,13.6,11.4,13258
+05021,Alejandría,Yuca,7,7,0.1,2792,21.1,10.6,13258
+05021,Alejandría,Hortalizas clima frio,8,1380,10.4,18,0.1,10.5,13258
+05021,Alejandría,Ñame,9,0,0.0,1013,7.6,3.8,13258
+05021,Alejandría,Arroz,10,0,0.0,0,0.0,0.0,13258
+05021,Alejandría,Papa,11,0,0.0,0,0.0,0.0,13258
+05030,Amagá,Cebolla junca,1,2,0.0,5525,66.7,33.4,8287
+05030,Amagá,Frijol arbustivo,2,87,1.1,4714,56.9,29.6,8287
+05030,Amagá,Frijol voluble,3,0,0.0,1410,17.0,8.5,8287
+05030,Amagá,Maíz choclo,4,0,0.0,1173,14.2,7.1,8287
+05030,Amagá,Hortalizas clima frio,5,2,0.0,1024,12.4,6.2,8287
+05030,Amagá,Tomate chonto,6,0,0.0,655,7.9,4.0,8287
+05030,Amagá,Arroz,7,128,1.5,39,0.5,1.8,8287
+05030,Amagá,Maíz,8,1,0.0,273,3.3,1.6,8287
+05030,Amagá,Ñame,9,0,0.0,2,0.0,0.0,8287
+05030,Amagá,Papa,10,0,0.0,0,0.0,0.0,8287
+05030,Amagá,Yuca,11,1,0.0,1,0.0,0.0,8287
+05031,Amalfi,Frijol arbustivo,1,46782,38.7,7,0.0,38.7,120823
+05031,Amalfi,Maíz,2,45265,37.5,954,0.8,37.9,120823
+05031,Amalfi,Cebolla junca,3,41747,34.6,6,0.0,34.6,120823
+05031,Amalfi,Tomate chonto,4,15458,12.8,4,0.0,12.8,120823
+05031,Amalfi,Yuca,5,10075,8.3,1,0.0,8.3,120823
+05031,Amalfi,Frijol voluble,6,5552,4.6,1,0.0,4.6,120823
+05031,Amalfi,Ñame,7,3752,3.1,1525,1.3,3.8,120823
+05031,Amalfi,Arroz,8,2115,1.8,15,0.0,1.8,120823
+05031,Amalfi,Hortalizas clima frio,9,2088,1.7,1,0.0,1.7,120823
+05031,Amalfi,Maíz choclo,10,397,0.3,6,0.0,0.3,120823
+05031,Amalfi,Papa,11,0,0.0,0,0.0,0.0,120823
+05034,Andes,Cebolla junca,1,1,0.0,15711,38.4,19.2,40870
+05034,Andes,Frijol arbustivo,2,672,1.7,9589,23.5,13.4,40870
+05034,Andes,Maíz,3,346,0.9,7554,18.5,10.2,40870
+05034,Andes,Frijol voluble,4,1,0.0,5240,12.8,6.4,40870
+05034,Andes,Hortalizas clima frio,5,1,0.0,4488,11.0,5.5,40870
+05034,Andes,Tomate chonto,6,6,0.0,4395,10.8,5.4,40870
+05034,Andes,Yuca,7,1742,4.3,4,0.0,4.3,40870
+05034,Andes,Maíz choclo,8,1371,3.4,345,0.8,3.8,40870
+05034,Andes,Ñame,9,0,0.0,1019,2.5,1.2,40870
+05034,Andes,Papa,10,0,0.0,500,1.2,0.6,40870
+05034,Andes,Arroz,11,0,0.0,0,0.0,0.0,40870
+05036,Angelópolis,Frijol arbustivo,1,17,0.2,3106,38.0,19.2,8171
+05036,Angelópolis,Maíz choclo,2,0,0.0,1836,22.5,11.2,8171
+05036,Angelópolis,Tomate chonto,3,0,0.0,648,7.9,4.0,8171
+05036,Angelópolis,Papa,4,0,0.0,434,5.3,2.6,8171
+05036,Angelópolis,Yuca,5,0,0.0,188,2.3,1.2,8171
+05036,Angelópolis,Maíz,6,0,0.0,138,1.7,0.8,8171
+05036,Angelópolis,Cebolla junca,7,0,0.0,25,0.3,0.2,8171
+05036,Angelópolis,Ñame,8,0,0.0,42,0.5,0.2,8171
+05036,Angelópolis,Arroz,9,0,0.0,0,0.0,0.0,8171
+05036,Angelópolis,Frijol voluble,10,1,0.0,1,0.0,0.0,8171
+05036,Angelópolis,Hortalizas clima frio,11,1,0.0,0,0.0,0.0,8171
+05038,Angostura,Cebolla junca,1,748,2.3,30324,92.0,48.3,32946
+05038,Angostura,Maíz,2,7266,22.1,17105,51.9,48.0,32946
+05038,Angostura,Tomate chonto,3,5241,15.9,15836,48.1,40.0,32946
+05038,Angostura,Frijol arbustivo,4,6590,20.0,11651,35.4,37.7,32946
+05038,Angostura,Maíz choclo,5,5382,16.3,12272,37.3,35.0,32946
+05038,Angostura,Frijol voluble,6,12,0.0,22975,69.7,34.8,32946
+05038,Angostura,Papa,7,7759,23.6,4736,14.4,30.8,32946
+05038,Angostura,Hortalizas clima frio,8,12,0.0,20097,61.0,30.5,32946
+05038,Angostura,Yuca,9,1305,4.0,2030,6.2,7.1,32946
+05038,Angostura,Arroz,10,0,0.0,0,0.0,0.0,32946
+05038,Angostura,Ñame,11,0,0.0,41,0.1,0.0,32946
+05040,Anorí,Frijol arbustivo,1,31480,22.3,264,0.2,22.4,141154
+05040,Anorí,Maíz,2,3243,2.3,25144,17.8,11.2,141154
+05040,Anorí,Cebolla junca,3,0,0.0,18936,13.4,6.7,141154
+05040,Anorí,Tomate chonto,4,558,0.4,5986,4.2,2.5,141154
+05040,Anorí,Arroz,5,19,0.0,4708,3.3,1.6,141154
+05040,Anorí,Yuca,6,0,0.0,3283,2.3,1.2,141154
+05040,Anorí,Frijol voluble,7,0,0.0,1482,1.1,0.6,141154
+05040,Anorí,Maíz choclo,8,422,0.3,141,0.1,0.4,141154
+05040,Anorí,Ñame,9,29,0.0,1270,0.9,0.4,141154
+05040,Anorí,Hortalizas clima frio,10,0,0.0,286,0.2,0.1,141154
+05040,Anorí,Papa,11,0,0.0,0,0.0,0.0,141154
+05044,Anzá,Cebolla junca,1,966,3.8,10924,42.5,25.0,25728
+05044,Anzá,Frijol arbustivo,2,363,1.4,8468,32.9,17.8,25728
+05044,Anzá,Hortalizas clima frio,3,2435,9.5,3727,14.5,16.8,25728
+05044,Anzá,Maíz,4,497,1.9,6572,25.5,14.6,25728
+05044,Anzá,Frijol voluble,5,612,2.4,5862,22.8,13.8,25728
+05044,Anzá,Ñame,6,1748,6.8,2051,8.0,10.8,25728
+05044,Anzá,Tomate chonto,7,1,0.0,2903,11.3,5.6,25728
+05044,Anzá,Arroz,8,1,0.0,2706,10.5,5.2,25728
+05044,Anzá,Yuca,9,477,1.9,693,2.7,3.2,25728
+05044,Anzá,Maíz choclo,10,0,0.0,420,1.6,0.8,25728
+05044,Anzá,Papa,11,0,0.0,152,0.6,0.3,25728
+05045,Apartadó,Arroz,1,4,0.0,16389,30.6,15.3,53577
+05045,Apartadó,Maíz,2,2,0.0,6641,12.4,6.2,53577
+05045,Apartadó,Cebolla junca,3,0,0.0,25,0.1,0.0,53577
+05045,Apartadó,Frijol arbustivo,4,0,0.0,3,0.0,0.0,53577
+05045,Apartadó,Frijol voluble,5,0,0.0,0,0.0,0.0,53577
+05045,Apartadó,Hortalizas clima frio,6,0,0.0,0,0.0,0.0,53577
+05045,Apartadó,Maíz choclo,7,0,0.0,0,0.0,0.0,53577
+05045,Apartadó,Ñame,8,1,0.0,4,0.0,0.0,53577
+05045,Apartadó,Papa,9,0,0.0,0,0.0,0.0,53577
+05045,Apartadó,Tomate chonto,10,0,0.0,0,0.0,0.0,53577
+05045,Apartadó,Yuca,11,2,0.0,5,0.0,0.0,53577
+05051,Arboletes,Ñame,1,54481,71.0,15,0.0,71.0,76694
+05051,Arboletes,Maíz,2,53118,69.3,1393,1.8,70.2,76694
+05051,Arboletes,Frijol arbustivo,3,0,0.0,53353,69.6,34.8,76694
+05051,Arboletes,Arroz,4,11,0.0,20743,27.1,13.6,76694
+05051,Arboletes,Yuca,5,1824,2.4,1,0.0,2.4,76694
+05051,Arboletes,Cebolla junca,6,0,0.0,0,0.0,0.0,76694
+05051,Arboletes,Frijol voluble,7,0,0.0,0,0.0,0.0,76694
+05051,Arboletes,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,76694
+05051,Arboletes,Maíz choclo,9,0,0.0,0,0.0,0.0,76694
+05051,Arboletes,Papa,10,0,0.0,0,0.0,0.0,76694
+05051,Arboletes,Tomate chonto,11,0,0.0,0,0.0,0.0,76694
+05055,Argelia,Maíz,1,1,0.0,2912,11.9,6.0,24587
+05055,Argelia,Ñame,2,1,0.0,676,2.8,1.4,24587
+05055,Argelia,Tomate chonto,3,1,0.0,511,2.1,1.0,24587
+05055,Argelia,Frijol arbustivo,4,1,0.0,49,0.2,0.1,24587
+05055,Argelia,Arroz,5,0,0.0,0,0.0,0.0,24587
+05055,Argelia,Cebolla junca,6,0,0.0,5,0.0,0.0,24587
+05055,Argelia,Frijol voluble,7,0,0.0,4,0.0,0.0,24587
+05055,Argelia,Hortalizas clima frio,8,0,0.0,3,0.0,0.0,24587
+05055,Argelia,Maíz choclo,9,3,0.0,16,0.1,0.0,24587
+05055,Argelia,Papa,10,0,0.0,1,0.0,0.0,24587
+05055,Argelia,Yuca,11,1,0.0,0,0.0,0.0,24587
+05059,Armenia,Frijol arbustivo,1,4121,37.2,1757,15.9,45.2,11064
+05059,Armenia,Maíz,2,297,2.7,4283,38.7,22.0,11064
+05059,Armenia,Cebolla junca,3,0,0.0,4039,36.5,18.2,11064
+05059,Armenia,Ñame,4,0,0.0,2950,26.7,13.4,11064
+05059,Armenia,Arroz,5,1161,10.5,1,0.0,10.5,11064
+05059,Armenia,Yuca,6,0,0.0,479,4.3,2.2,11064
+05059,Armenia,Tomate chonto,7,1,0.0,438,4.0,2.0,11064
+05059,Armenia,Frijol voluble,8,0,0.0,207,1.9,1.0,11064
+05059,Armenia,Maíz choclo,9,0,0.0,157,1.4,0.7,11064
+05059,Armenia,Hortalizas clima frio,10,0,0.0,89,0.8,0.4,11064
+05059,Armenia,Papa,11,0,0.0,0,0.0,0.0,11064
+05079,Barbosa,Cebolla junca,1,18955,92.0,967,4.7,94.4,20613
+05079,Barbosa,Hortalizas clima frio,2,8915,43.3,270,1.3,43.9,20613
+05079,Barbosa,Frijol voluble,3,3256,15.8,7047,34.2,32.9,20613
+05079,Barbosa,Tomate chonto,4,326,1.6,11971,58.1,30.6,20613
+05079,Barbosa,Frijol arbustivo,5,0,0.0,6180,30.0,15.0,20613
+05079,Barbosa,Maíz choclo,6,4,0.0,2889,14.0,7.0,20613
+05079,Barbosa,Papa,7,0,0.0,718,3.5,1.8,20613
+05079,Barbosa,Arroz,8,0,0.0,0,0.0,0.0,20613
+05079,Barbosa,Maíz,9,0,0.0,14,0.1,0.0,20613
+05079,Barbosa,Ñame,10,0,0.0,1,0.0,0.0,20613
+05079,Barbosa,Yuca,11,0,0.0,2,0.0,0.0,20613
+05088,Bello,Cebolla junca,1,0,0.0,10818,73.0,36.5,14813
+05088,Bello,Hortalizas clima frio,2,622,4.2,8559,57.8,33.1,14813
+05088,Bello,Frijol voluble,3,0,0.0,5883,39.7,19.8,14813
+05088,Bello,Papa,4,0,0.0,1542,10.4,5.2,14813
+05088,Bello,Arroz,5,0,0.0,0,0.0,0.0,14813
+05088,Bello,Frijol arbustivo,6,0,0.0,0,0.0,0.0,14813
+05088,Bello,Maíz,7,0,0.0,4,0.0,0.0,14813
+05088,Bello,Maíz choclo,8,0,0.0,4,0.0,0.0,14813
+05088,Bello,Ñame,9,0,0.0,0,0.0,0.0,14813
+05088,Bello,Tomate chonto,10,0,0.0,0,0.0,0.0,14813
+05088,Bello,Yuca,11,0,0.0,0,0.0,0.0,14813
+05086,Belmira,Papa,1,8,0.0,10944,36.7,18.4,29809
+05086,Belmira,Frijol voluble,2,8,0.0,7477,25.1,12.6,29809
+05086,Belmira,Hortalizas clima frio,3,9,0.0,6492,21.8,10.9,29809
+05086,Belmira,Maíz choclo,4,6,0.0,4994,16.8,8.4,29809
+05086,Belmira,Cebolla junca,5,6,0.0,2485,8.3,4.2,29809
+05086,Belmira,Maíz,6,0,0.0,468,1.6,0.8,29809
+05086,Belmira,Arroz,7,0,0.0,0,0.0,0.0,29809
+05086,Belmira,Frijol arbustivo,8,0,0.0,0,0.0,0.0,29809
+05086,Belmira,Ñame,9,0,0.0,0,0.0,0.0,29809
+05086,Belmira,Tomate chonto,10,0,0.0,19,0.1,0.0,29809
+05086,Belmira,Yuca,11,0,0.0,0,0.0,0.0,29809
+05091,Betania,Cebolla junca,1,8564,49.9,848,4.9,52.4,17177
+05091,Betania,Maíz,2,8596,50.0,128,0.8,50.4,17177
+05091,Betania,Frijol arbustivo,3,8646,50.3,25,0.1,50.3,17177
+05091,Betania,Tomate chonto,4,3733,21.7,36,0.2,21.8,17177
+05091,Betania,Frijol voluble,5,1117,6.5,69,0.4,6.7,17177
+05091,Betania,Ñame,6,265,1.5,1712,10.0,6.5,17177
+05091,Betania,Yuca,7,1014,5.9,1,0.0,5.9,17177
+05091,Betania,Hortalizas clima frio,8,517,3.0,5,0.0,3.0,17177
+05091,Betania,Maíz choclo,9,76,0.4,0,0.0,0.4,17177
+05091,Betania,Arroz,10,0,0.0,0,0.0,0.0,17177
+05091,Betania,Papa,11,3,0.0,22,0.1,0.0,17177
+05093,Betulia,Frijol arbustivo,1,5335,19.3,6732,24.3,31.4,27690
+05093,Betulia,Cebolla junca,2,677,2.5,13789,49.8,27.4,27690
+05093,Betulia,Maíz,3,166,0.6,12698,45.9,23.6,27690
+05093,Betulia,Tomate chonto,4,0,0.0,8253,29.8,14.9,27690
+05093,Betulia,Hortalizas clima frio,5,1627,5.9,4555,16.5,14.2,27690
+05093,Betulia,Frijol voluble,6,502,1.8,6815,24.6,14.1,27690
+05093,Betulia,Maíz choclo,7,94,0.3,3140,11.3,6.0,27690
+05093,Betulia,Yuca,8,453,1.6,1,0.0,1.6,27690
+05093,Betulia,Ñame,9,101,0.4,643,2.3,1.5,27690
+05093,Betulia,Papa,10,0,0.0,731,2.6,1.3,27690
+05093,Betulia,Arroz,11,245,0.9,0,0.0,0.9,27690
+05107,Briceño,Cebolla junca,1,5734,15.1,0,0.0,15.1,37903
+05107,Briceño,Maíz,2,1167,3.1,7863,20.8,13.5,37903
+05107,Briceño,Frijol arbustivo,3,698,1.8,8497,22.4,13.0,37903
+05107,Briceño,Ñame,4,635,1.7,3854,10.2,6.8,37903
+05107,Briceño,Frijol voluble,5,1642,4.3,0,0.0,4.3,37903
+05107,Briceño,Hortalizas clima frio,6,1384,3.7,0,0.0,3.7,37903
+05107,Briceño,Tomate chonto,7,1,0.0,2516,6.6,3.3,37903
+05107,Briceño,Yuca,8,148,0.4,23,0.1,0.4,37903
+05107,Briceño,Arroz,9,0,0.0,188,0.5,0.2,37903
+05107,Briceño,Maíz choclo,10,0,0.0,75,0.2,0.1,37903
+05107,Briceño,Papa,11,1,0.0,85,0.2,0.1,37903
+05113,Buriticá,Frijol arbustivo,1,247,0.7,8093,22.4,11.9,36073
+05113,Buriticá,Maíz choclo,2,0,0.0,4350,12.1,6.0,36073
+05113,Buriticá,Papa,3,0,0.0,707,2.0,1.0,36073
+05113,Buriticá,Tomate chonto,4,1,0.0,562,1.6,0.8,36073
+05113,Buriticá,Maíz,5,0,0.0,81,0.2,0.1,36073
+05113,Buriticá,Arroz,6,0,0.0,0,0.0,0.0,36073
+05113,Buriticá,Cebolla junca,7,0,0.0,0,0.0,0.0,36073
+05113,Buriticá,Frijol voluble,8,0,0.0,2,0.0,0.0,36073
+05113,Buriticá,Hortalizas clima frio,9,0,0.0,1,0.0,0.0,36073
+05113,Buriticá,Ñame,10,0,0.0,38,0.1,0.0,36073
+05113,Buriticá,Yuca,11,0,0.0,0,0.0,0.0,36073
+05125,Caicedo,Cebolla junca,1,0,0.0,7172,36.9,18.4,19414
+05125,Caicedo,Hortalizas clima frio,2,0,0.0,6255,32.2,16.1,19414
+05125,Caicedo,Frijol voluble,3,0,0.0,5817,30.0,15.0,19414
+05125,Caicedo,Tomate chonto,4,0,0.0,2001,10.3,5.2,19414
+05125,Caicedo,Frijol arbustivo,5,0,0.0,1813,9.3,4.6,19414
+05125,Caicedo,Maíz choclo,6,0,0.0,1531,7.9,4.0,19414
+05125,Caicedo,Papa,7,0,0.0,127,0.7,0.4,19414
+05125,Caicedo,Arroz,8,0,0.0,0,0.0,0.0,19414
+05125,Caicedo,Maíz,9,0,0.0,12,0.1,0.0,19414
+05125,Caicedo,Ñame,10,0,0.0,0,0.0,0.0,19414
+05125,Caicedo,Yuca,11,0,0.0,27,0.1,0.0,19414
+05129,Caldas,Hortalizas clima frio,1,8672,65.0,277,2.1,66.0,13350
+05129,Caldas,Cebolla junca,2,6799,50.9,3084,23.1,62.4,13350
+05129,Caldas,Maíz choclo,3,3635,27.2,5075,38.0,46.2,13350
+05129,Caldas,Tomate chonto,4,742,5.6,7665,57.4,34.3,13350
+05129,Caldas,Frijol voluble,5,2303,17.3,4378,32.8,33.7,13350
+05129,Caldas,Maíz,6,116,0.9,8402,62.9,32.4,13350
+05129,Caldas,Frijol arbustivo,7,1889,14.2,4633,34.7,31.6,13350
+05129,Caldas,Papa,8,0,0.0,2893,21.7,10.8,13350
+05129,Caldas,Yuca,9,8,0.1,0,0.0,0.1,13350
+05129,Caldas,Arroz,10,0,0.0,0,0.0,0.0,13350
+05129,Caldas,Ñame,11,0,0.0,0,0.0,0.0,13350
+05134,Campamento,Frijol arbustivo,1,2069,10.2,4792,23.7,22.0,20198
+05134,Campamento,Maíz,2,3,0.0,5401,26.7,13.4,20198
+05134,Campamento,Maíz choclo,3,135,0.7,1911,9.5,5.4,20198
+05134,Campamento,Yuca,4,454,2.3,1019,5.1,4.8,20198
+05134,Campamento,Ñame,5,0,0.0,739,3.7,1.8,20198
+05134,Campamento,Tomate chonto,6,1,0.0,428,2.1,1.0,20198
+05134,Campamento,Arroz,7,0,0.0,0,0.0,0.0,20198
+05134,Campamento,Cebolla junca,8,0,0.0,4,0.0,0.0,20198
+05134,Campamento,Frijol voluble,9,0,0.0,1,0.0,0.0,20198
+05134,Campamento,Hortalizas clima frio,10,0,0.0,1,0.0,0.0,20198
+05134,Campamento,Papa,11,0,0.0,3,0.0,0.0,20198
+05142,Caracolí,Maíz,1,8961,34.0,744,2.8,35.4,26358
+05142,Caracolí,Frijol arbustivo,2,1,0.0,10159,38.5,19.2,26358
+05142,Caracolí,Arroz,3,3,0.0,9780,37.1,18.6,26358
+05142,Caracolí,Ñame,4,1,0.0,9535,36.2,18.1,26358
+05142,Caracolí,Yuca,5,4078,15.5,16,0.1,15.6,26358
+05142,Caracolí,Cebolla junca,6,0,0.0,0,0.0,0.0,26358
+05142,Caracolí,Frijol voluble,7,0,0.0,0,0.0,0.0,26358
+05142,Caracolí,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,26358
+05142,Caracolí,Maíz choclo,9,0,0.0,0,0.0,0.0,26358
+05142,Caracolí,Papa,10,0,0.0,0,0.0,0.0,26358
+05142,Caracolí,Tomate chonto,11,0,0.0,0,0.0,0.0,26358
+05145,Caramanta,Maíz,1,0,0.0,388,4.3,2.2,9052
+05145,Caramanta,Ñame,2,0,0.0,409,4.5,2.2,9052
+05145,Caramanta,Frijol arbustivo,3,0,0.0,190,2.1,1.0,9052
+05145,Caramanta,Arroz,4,0,0.0,0,0.0,0.0,9052
+05145,Caramanta,Cebolla junca,5,0,0.0,3,0.0,0.0,9052
+05145,Caramanta,Frijol voluble,6,0,0.0,0,0.0,0.0,9052
+05145,Caramanta,Hortalizas clima frio,7,0,0.0,0,0.0,0.0,9052
+05145,Caramanta,Maíz choclo,8,0,0.0,0,0.0,0.0,9052
+05145,Caramanta,Papa,9,0,0.0,0,0.0,0.0,9052
+05145,Caramanta,Tomate chonto,10,0,0.0,0,0.0,0.0,9052
+05145,Caramanta,Yuca,11,0,0.0,0,0.0,0.0,9052
+05147,Carepa,Maíz,1,0,0.0,17322,44.9,22.4,38594
+05147,Carepa,Yuca,2,0,0.0,14165,36.7,18.4,38594
+05147,Carepa,Ñame,3,0,0.0,717,1.9,1.0,38594
+05147,Carepa,Arroz,4,7,0.0,13,0.0,0.0,38594
+05147,Carepa,Cebolla junca,5,0,0.0,0,0.0,0.0,38594
+05147,Carepa,Frijol arbustivo,6,0,0.0,0,0.0,0.0,38594
+05147,Carepa,Frijol voluble,7,0,0.0,0,0.0,0.0,38594
+05147,Carepa,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,38594
+05147,Carepa,Maíz choclo,9,0,0.0,0,0.0,0.0,38594
+05147,Carepa,Papa,10,0,0.0,0,0.0,0.0,38594
+05147,Carepa,Tomate chonto,11,0,0.0,0,0.0,0.0,38594
+05148,Carmen de Viboral,Maíz choclo,1,11641,26.5,593,1.4,27.2,43953
+05148,Carmen de Viboral,Hortalizas clima frio,2,5041,11.5,8390,19.1,21.0,43953
+05148,Carmen de Viboral,Cebolla junca,3,3,0.0,17043,38.8,19.4,43953
+05148,Carmen de Viboral,Tomate chonto,4,6789,15.5,2676,6.1,18.6,43953
+05148,Carmen de Viboral,Maíz,5,1080,2.5,13134,29.9,17.4,43953
+05148,Carmen de Viboral,Papa,6,1,0.0,10679,24.3,12.2,43953
+05148,Carmen de Viboral,Frijol voluble,7,519,1.2,9644,21.9,12.1,43953
+05148,Carmen de Viboral,Frijol arbustivo,8,15,0.0,3220,7.3,3.6,43953
+05148,Carmen de Viboral,Ñame,9,93,0.2,1432,3.3,1.8,43953
+05148,Carmen de Viboral,Yuca,10,400,0.9,0,0.0,0.9,43953
+05148,Carmen de Viboral,Arroz,11,0,0.0,19,0.0,0.0,43953
+05150,Carolina,Tomate chonto,1,8249,46.0,3638,20.3,56.2,17933
+05150,Carolina,Cebolla junca,2,3760,21.0,9569,53.4,47.7,17933
+05150,Carolina,Frijol voluble,3,6,0.0,13337,74.4,37.2,17933
+05150,Carolina,Maíz choclo,4,211,1.2,12363,68.9,35.7,17933
+05150,Carolina,Hortalizas clima frio,5,6,0.0,11944,66.6,33.3,17933
+05150,Carolina,Maíz,6,1477,8.2,7951,44.3,30.4,17933
+05150,Carolina,Frijol arbustivo,7,2,0.0,7444,41.5,20.8,17933
+05150,Carolina,Papa,8,7,0.0,3301,18.4,9.2,17933
+05150,Carolina,Yuca,9,0,0.0,96,0.5,0.2,17933
+05150,Carolina,Arroz,10,0,0.0,0,0.0,0.0,17933
+05150,Carolina,Ñame,11,0,0.0,0,0.0,0.0,17933
+05154,Caucasia,Maíz,1,102323,74.8,1680,1.2,75.4,136745
+05154,Caucasia,Frijol arbustivo,2,6348,4.6,110824,81.0,45.1,136745
+05154,Caucasia,Arroz,3,747,0.6,119138,87.1,44.2,136745
+05154,Caucasia,Ñame,4,42804,31.3,17361,12.7,37.6,136745
+05154,Caucasia,Yuca,5,2,0.0,48926,35.8,17.9,136745
+05154,Caucasia,Cebolla junca,6,0,0.0,0,0.0,0.0,136745
+05154,Caucasia,Frijol voluble,7,0,0.0,0,0.0,0.0,136745
+05154,Caucasia,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,136745
+05154,Caucasia,Maíz choclo,9,0,0.0,0,0.0,0.0,136745
+05154,Caucasia,Papa,10,0,0.0,0,0.0,0.0,136745
+05154,Caucasia,Tomate chonto,11,0,0.0,0,0.0,0.0,136745
+05138,Cañasgordas,Cebolla junca,1,20133,55.8,81,0.2,55.9,36113
+05138,Cañasgordas,Frijol arbustivo,2,14479,40.1,3097,8.6,44.4,36113
+05138,Cañasgordas,Maíz,3,325,0.9,16824,46.6,24.2,36113
+05138,Cañasgordas,Frijol voluble,4,4087,11.3,198,0.6,11.6,36113
+05138,Cañasgordas,Tomate chonto,5,0,0.0,7698,21.3,10.6,36113
+05138,Cañasgordas,Hortalizas clima frio,6,3049,8.4,20,0.1,8.5,36113
+05138,Cañasgordas,Ñame,7,0,0.0,4052,11.2,5.6,36113
+05138,Cañasgordas,Yuca,8,0,0.0,1204,3.3,1.6,36113
+05138,Cañasgordas,Maíz choclo,9,0,0.0,904,2.5,1.2,36113
+05138,Cañasgordas,Papa,10,0,0.0,127,0.4,0.2,36113
+05138,Cañasgordas,Arroz,11,0,0.0,0,0.0,0.0,36113
+05172,Chigorodó,Arroz,1,35819,49.6,8794,12.2,55.7,72276
+05172,Chigorodó,Maíz,2,8,0.0,8389,11.6,5.8,72276
+05172,Chigorodó,Cebolla junca,3,0,0.0,0,0.0,0.0,72276
+05172,Chigorodó,Frijol arbustivo,4,2,0.0,12,0.0,0.0,72276
+05172,Chigorodó,Frijol voluble,5,0,0.0,0,0.0,0.0,72276
+05172,Chigorodó,Hortalizas clima frio,6,0,0.0,0,0.0,0.0,72276
+05172,Chigorodó,Maíz choclo,7,0,0.0,0,0.0,0.0,72276
+05172,Chigorodó,Ñame,8,0,0.0,3,0.0,0.0,72276
+05172,Chigorodó,Papa,9,0,0.0,0,0.0,0.0,72276
+05172,Chigorodó,Tomate chonto,10,0,0.0,0,0.0,0.0,72276
+05172,Chigorodó,Yuca,11,4,0.0,9,0.0,0.0,72276
+05190,Cisneros,Frijol arbustivo,1,6,0.1,4151,89.3,44.8,4646
+05190,Cisneros,Maíz,2,6,0.1,3432,73.9,37.1,4646
+05190,Cisneros,Tomate chonto,3,2,0.0,867,18.7,9.4,4646
+05190,Cisneros,Ñame,4,0,0.0,160,3.5,1.8,4646
+05190,Cisneros,Cebolla junca,5,3,0.1,4,0.1,0.2,4646
+05190,Cisneros,Yuca,6,4,0.1,3,0.1,0.2,4646
+05190,Cisneros,Arroz,7,0,0.0,0,0.0,0.0,4646
+05190,Cisneros,Frijol voluble,8,0,0.0,2,0.1,0.0,4646
+05190,Cisneros,Hortalizas clima frio,9,0,0.0,0,0.0,0.0,4646
+05190,Cisneros,Maíz choclo,10,0,0.0,1,0.0,0.0,4646
+05190,Cisneros,Papa,11,0,0.0,0,0.0,0.0,4646
+05101,Ciudad Bolívar,Cebolla junca,1,3,0.0,16750,64.5,32.2,25981
+05101,Ciudad Bolívar,Frijol arbustivo,2,223,0.9,15738,60.6,31.2,25981
+05101,Ciudad Bolívar,Maíz,3,2,0.0,7240,27.9,14.0,25981
+05101,Ciudad Bolívar,Tomate chonto,4,2,0.0,5334,20.5,10.2,25981
+05101,Ciudad Bolívar,Frijol voluble,5,1,0.0,2465,9.5,4.8,25981
+05101,Ciudad Bolívar,Hortalizas clima frio,6,1,0.0,1281,4.9,2.4,25981
+05101,Ciudad Bolívar,Maíz choclo,7,0,0.0,494,1.9,1.0,25981
+05101,Ciudad Bolívar,Ñame,8,0,0.0,425,1.6,0.8,25981
+05101,Ciudad Bolívar,Arroz,9,0,0.0,0,0.0,0.0,25981
+05101,Ciudad Bolívar,Papa,10,0,0.0,9,0.0,0.0,25981
+05101,Ciudad Bolívar,Yuca,11,1,0.0,1,0.0,0.0,25981
+05197,Cocorná,Cebolla junca,1,1,0.0,10225,45.6,22.8,22419
+05197,Cocorná,Frijol arbustivo,2,1045,4.7,7060,31.5,20.4,22419
+05197,Cocorná,Hortalizas clima frio,3,1824,8.1,1033,4.6,10.4,22419
+05197,Cocorná,Maíz,4,176,0.8,4008,17.9,9.8,22419
+05197,Cocorná,Frijol voluble,5,712,3.2,2781,12.4,9.4,22419
+05197,Cocorná,Maíz choclo,6,2,0.0,1862,8.3,4.2,22419
+05197,Cocorná,Tomate chonto,7,1,0.0,1262,5.6,2.8,22419
+05197,Cocorná,Ñame,8,1,0.0,837,3.7,1.8,22419
+05197,Cocorná,Arroz,9,0,0.0,108,0.5,0.2,22419
+05197,Cocorná,Papa,10,0,0.0,2,0.0,0.0,22419
+05197,Cocorná,Yuca,11,1,0.0,5,0.0,0.0,22419
+05206,Concepción,Tomate chonto,1,11646,65.1,4835,27.0,78.6,17878
+05206,Concepción,Maíz,2,2759,15.4,13664,76.4,53.6,17878
+05206,Concepción,Maíz choclo,3,2121,11.9,13652,76.4,50.1,17878
+05206,Concepción,Frijol arbustivo,4,0,0.0,10222,57.2,28.6,17878
+05206,Concepción,Cebolla junca,5,10,0.1,8341,46.7,23.5,17878
+05206,Concepción,Hortalizas clima frio,6,16,0.1,6718,37.6,18.9,17878
+05206,Concepción,Frijol voluble,7,11,0.1,6666,37.3,18.8,17878
+05206,Concepción,Papa,8,1,0.0,1910,10.7,5.4,17878
+05206,Concepción,Yuca,9,0,0.0,592,3.3,1.6,17878
+05206,Concepción,Arroz,10,0,0.0,0,0.0,0.0,17878
+05206,Concepción,Ñame,11,0,0.0,0,0.0,0.0,17878
+05209,Concordia,Cebolla junca,1,12390,51.6,2,0.0,51.6,24006
+05209,Concordia,Frijol voluble,2,3700,15.4,1,0.0,15.4,24006
+05209,Concordia,Hortalizas clima frio,3,2232,9.3,1,0.0,9.3,24006
+05209,Concordia,Arroz,4,119,0.5,2812,11.7,6.4,24006
+05209,Concordia,Maíz,5,17,0.1,1591,6.6,3.4,24006
+05209,Concordia,Frijol arbustivo,6,0,0.0,599,2.5,1.2,24006
+05209,Concordia,Maíz choclo,7,0,0.0,1,0.0,0.0,24006
+05209,Concordia,Ñame,8,0,0.0,0,0.0,0.0,24006
+05209,Concordia,Papa,9,0,0.0,0,0.0,0.0,24006
+05209,Concordia,Tomate chonto,10,0,0.0,1,0.0,0.0,24006
+05209,Concordia,Yuca,11,0,0.0,0,0.0,0.0,24006
+05212,Copacabana,Cebolla junca,1,0,0.0,88,1.3,0.6,6861
+05212,Copacabana,Arroz,2,0,0.0,0,0.0,0.0,6861
+05212,Copacabana,Frijol arbustivo,3,0,0.0,3,0.0,0.0,6861
+05212,Copacabana,Frijol voluble,4,0,0.0,4,0.1,0.0,6861
+05212,Copacabana,Hortalizas clima frio,5,0,0.0,9,0.1,0.0,6861
+05212,Copacabana,Maíz,6,0,0.0,1,0.0,0.0,6861
+05212,Copacabana,Maíz choclo,7,0,0.0,6,0.1,0.0,6861
+05212,Copacabana,Ñame,8,0,0.0,0,0.0,0.0,6861
+05212,Copacabana,Papa,9,0,0.0,4,0.1,0.0,6861
+05212,Copacabana,Tomate chonto,10,0,0.0,2,0.0,0.0,6861
+05212,Copacabana,Yuca,11,0,0.0,5,0.1,0.0,6861
+05120,Cáceres,Arroz,1,102873,53.6,47,0.0,53.6,191912
+05120,Cáceres,Maíz,2,81097,42.3,17913,9.3,46.9,191912
+05120,Cáceres,Frijol arbustivo,3,32899,17.1,76634,39.9,37.0,191912
+05120,Cáceres,Ñame,4,42746,22.3,1,0.0,22.3,191912
+05120,Cáceres,Yuca,5,35394,18.4,5,0.0,18.4,191912
+05120,Cáceres,Cebolla junca,6,0,0.0,0,0.0,0.0,191912
+05120,Cáceres,Frijol voluble,7,0,0.0,0,0.0,0.0,191912
+05120,Cáceres,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,191912
+05120,Cáceres,Maíz choclo,9,0,0.0,0,0.0,0.0,191912
+05120,Cáceres,Papa,10,0,0.0,0,0.0,0.0,191912
+05120,Cáceres,Tomate chonto,11,0,0.0,0,0.0,0.0,191912
+05234,Dabeiba,Frijol arbustivo,1,8546,4.2,16254,8.0,8.2,202210
+05234,Dabeiba,Maíz,2,331,0.2,20435,10.1,5.2,202210
+05234,Dabeiba,Ñame,3,0,0.0,3628,1.8,0.9,202210
+05234,Dabeiba,Arroz,4,0,0.0,2032,1.0,0.5,202210
+05234,Dabeiba,Maíz choclo,5,0,0.0,1027,0.5,0.2,202210
+05234,Dabeiba,Tomate chonto,6,1,0.0,630,0.3,0.2,202210
+05234,Dabeiba,Cebolla junca,7,1,0.0,0,0.0,0.0,202210
+05234,Dabeiba,Frijol voluble,8,0,0.0,0,0.0,0.0,202210
+05234,Dabeiba,Hortalizas clima frio,9,0,0.0,0,0.0,0.0,202210
+05234,Dabeiba,Papa,10,0,0.0,29,0.0,0.0,202210
+05234,Dabeiba,Yuca,11,0,0.0,0,0.0,0.0,202210
+05237,Don Matías,Maíz choclo,1,1902,9.4,10649,52.7,35.8,20193
+05237,Don Matías,Papa,2,2,0.0,9898,49.0,24.5,20193
+05237,Don Matías,Cebolla junca,3,13,0.1,8387,41.5,20.8,20193
+05237,Don Matías,Maíz,4,21,0.1,8063,39.9,20.0,20193
+05237,Don Matías,Frijol arbustivo,5,252,1.3,7099,35.2,18.9,20193
+05237,Don Matías,Tomate chonto,6,121,0.6,6237,30.9,16.0,20193
+05237,Don Matías,Frijol voluble,7,12,0.1,5848,29.0,14.6,20193
+05237,Don Matías,Hortalizas clima frio,8,14,0.1,4570,22.6,11.4,20193
+05237,Don Matías,Ñame,9,0,0.0,1046,5.2,2.6,20193
+05237,Don Matías,Yuca,10,0,0.0,647,3.2,1.6,20193
+05237,Don Matías,Arroz,11,0,0.0,0,0.0,0.0,20193
+05240,Ebéjico,Cebolla junca,1,6090,25.6,7139,30.0,40.6,23814
+05240,Ebéjico,Frijol arbustivo,2,319,1.3,14746,61.9,32.2,23814
+05240,Ebéjico,Maíz,3,1289,5.4,12182,51.2,31.0,23814
+05240,Ebéjico,Ñame,4,0,0.0,6650,27.9,14.0,23814
+05240,Ebéjico,Tomate chonto,5,4,0.0,4475,18.8,9.4,23814
+05240,Ebéjico,Arroz,6,2034,8.5,334,1.4,9.2,23814
+05240,Ebéjico,Hortalizas clima frio,7,1964,8.3,442,1.9,9.2,23814
+05240,Ebéjico,Frijol voluble,8,1000,4.2,2022,8.5,8.4,23814
+05240,Ebéjico,Maíz choclo,9,0,0.0,2562,10.8,5.4,23814
+05240,Ebéjico,Yuca,10,569,2.4,1443,6.1,5.4,23814
+05240,Ebéjico,Papa,11,0,0.0,511,2.2,1.1,23814
+05250,El Bagre,Arroz,1,41706,26.8,829,0.5,27.0,155416
+05250,El Bagre,Maíz,2,29159,18.8,1465,0.9,19.2,155416
+05250,El Bagre,Frijol arbustivo,3,1,0.0,35632,22.9,11.4,155416
+05250,El Bagre,Cebolla junca,4,0,0.0,0,0.0,0.0,155416
+05250,El Bagre,Frijol voluble,5,0,0.0,0,0.0,0.0,155416
+05250,El Bagre,Hortalizas clima frio,6,0,0.0,0,0.0,0.0,155416
+05250,El Bagre,Maíz choclo,7,0,0.0,0,0.0,0.0,155416
+05250,El Bagre,Ñame,8,0,0.0,5,0.0,0.0,155416
+05250,El Bagre,Papa,9,0,0.0,0,0.0,0.0,155416
+05250,El Bagre,Tomate chonto,10,0,0.0,0,0.0,0.0,155416
+05250,El Bagre,Yuca,11,0,0.0,3,0.0,0.0,155416
+05264,Entrerrios,Maíz choclo,1,5808,26.9,11420,52.8,53.3,21632
+05264,Entrerrios,Papa,2,1312,6.1,16535,76.4,44.3,21632
+05264,Entrerrios,Hortalizas clima frio,3,13,0.1,18579,85.9,43.1,21632
+05264,Entrerrios,Cebolla junca,4,9,0.0,18587,85.9,43.0,21632
+05264,Entrerrios,Frijol voluble,5,260,1.2,16886,78.1,40.2,21632
+05264,Entrerrios,Tomate chonto,6,5,0.0,6279,29.0,14.5,21632
+05264,Entrerrios,Arroz,7,0,0.0,0,0.0,0.0,21632
+05264,Entrerrios,Frijol arbustivo,8,0,0.0,0,0.0,0.0,21632
+05264,Entrerrios,Maíz,9,0,0.0,15,0.1,0.0,21632
+05264,Entrerrios,Ñame,10,0,0.0,0,0.0,0.0,21632
+05264,Entrerrios,Yuca,11,0,0.0,0,0.0,0.0,21632
+05266,Envigado,Arroz,1,0,0.0,0,0.0,0.0,4694
+05266,Envigado,Cebolla junca,2,0,0.0,0,0.0,0.0,4694
+05266,Envigado,Frijol arbustivo,3,0,0.0,0,0.0,0.0,4694
+05266,Envigado,Frijol voluble,4,0,0.0,0,0.0,0.0,4694
+05266,Envigado,Hortalizas clima frio,5,1,0.0,0,0.0,0.0,4694
+05266,Envigado,Maíz,6,0,0.0,0,0.0,0.0,4694
+05266,Envigado,Maíz choclo,7,0,0.0,1,0.0,0.0,4694
+05266,Envigado,Ñame,8,0,0.0,0,0.0,0.0,4694
+05266,Envigado,Papa,9,0,0.0,1,0.0,0.0,4694
+05266,Envigado,Tomate chonto,10,0,0.0,0,0.0,0.0,4694
+05266,Envigado,Yuca,11,0,0.0,0,0.0,0.0,4694
+05282,Fredonia,Maíz,1,20960,83.9,829,3.3,85.6,24990
+05282,Fredonia,Frijol arbustivo,2,9841,39.4,7444,29.8,54.3,24990
+05282,Fredonia,Ñame,3,6993,28.0,5063,20.3,38.2,24990
+05282,Fredonia,Yuca,4,5888,23.6,0,0.0,23.6,24990
+05282,Fredonia,Tomate chonto,5,5305,21.2,4,0.0,21.2,24990
+05282,Fredonia,Maíz choclo,6,1162,4.7,2880,11.5,10.4,24990
+05282,Fredonia,Arroz,7,1,0.0,4059,16.2,8.1,24990
+05282,Fredonia,Papa,8,0,0.0,338,1.4,0.7,24990
+05282,Fredonia,Cebolla junca,9,2,0.0,28,0.1,0.0,24990
+05282,Fredonia,Frijol voluble,10,1,0.0,3,0.0,0.0,24990
+05282,Fredonia,Hortalizas clima frio,11,1,0.0,2,0.0,0.0,24990
+05284,Frontino,Frijol arbustivo,1,21028,15.6,2434,1.8,16.5,134906
+05284,Frontino,Maíz,2,583,0.4,19915,14.8,7.8,134906
+05284,Frontino,Cebolla junca,3,0,0.0,15039,11.2,5.6,134906
+05284,Frontino,Tomate chonto,4,160,0.1,6979,5.2,2.7,134906
+05284,Frontino,Ñame,5,0,0.0,5244,3.9,2.0,134906
+05284,Frontino,Frijol voluble,6,0,0.0,2290,1.7,0.8,134906
+05284,Frontino,Maíz choclo,7,320,0.2,251,0.2,0.3,134906
+05284,Frontino,Hortalizas clima frio,8,0,0.0,713,0.5,0.2,134906
+05284,Frontino,Arroz,9,0,0.0,0,0.0,0.0,134906
+05284,Frontino,Papa,10,0,0.0,1,0.0,0.0,134906
+05284,Frontino,Yuca,11,0,0.0,64,0.1,0.0,134906
+05306,Giraldo,Tomate chonto,1,1,0.0,1553,12.4,6.2,12569
+05306,Giraldo,Maíz choclo,2,0,0.0,653,5.2,2.6,12569
+05306,Giraldo,Frijol arbustivo,3,2,0.0,630,5.0,2.5,12569
+05306,Giraldo,Papa,4,0,0.0,109,0.9,0.4,12569
+05306,Giraldo,Arroz,5,0,0.0,0,0.0,0.0,12569
+05306,Giraldo,Cebolla junca,6,0,0.0,0,0.0,0.0,12569
+05306,Giraldo,Frijol voluble,7,0,0.0,0,0.0,0.0,12569
+05306,Giraldo,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,12569
+05306,Giraldo,Maíz,9,0,0.0,10,0.1,0.0,12569
+05306,Giraldo,Ñame,10,0,0.0,1,0.0,0.0,12569
+05306,Giraldo,Yuca,11,0,0.0,16,0.1,0.0,12569
+05308,Girardota,Cebolla junca,1,2,0.0,7848,95.5,47.8,8216
+05308,Girardota,Hortalizas clima frio,2,553,6.7,3619,44.1,28.8,8216
+05308,Girardota,Frijol arbustivo,3,0,0.0,3910,47.6,23.8,8216
+05308,Girardota,Frijol voluble,4,4,0.1,3705,45.1,22.7,8216
+05308,Girardota,Maíz choclo,5,1,0.0,2831,34.5,17.2,8216
+05308,Girardota,Tomate chonto,6,0,0.0,1002,12.2,6.1,8216
+05308,Girardota,Papa,7,0,0.0,537,6.5,3.2,8216
+05308,Girardota,Arroz,8,0,0.0,0,0.0,0.0,8216
+05308,Girardota,Maíz,9,0,0.0,3,0.0,0.0,8216
+05308,Girardota,Ñame,10,0,0.0,0,0.0,0.0,8216
+05308,Girardota,Yuca,11,0,0.0,0,0.0,0.0,8216
+05313,Granada,Cebolla junca,1,7,0.0,14621,77.1,38.6,18955
+05313,Granada,Maíz choclo,2,3904,20.6,6643,35.1,38.2,18955
+05313,Granada,Frijol arbustivo,3,677,3.6,12821,67.6,37.4,18955
+05313,Granada,Tomate chonto,4,121,0.6,11305,59.6,30.4,18955
+05313,Granada,Frijol voluble,5,1139,6.0,8582,45.3,28.6,18955
+05313,Granada,Hortalizas clima frio,6,4001,21.1,2769,14.6,28.4,18955
+05313,Granada,Maíz,7,33,0.2,8818,46.5,23.4,18955
+05313,Granada,Yuca,8,3,0.0,1247,6.6,3.3,18955
+05313,Granada,Ñame,9,0,0.0,825,4.4,2.2,18955
+05313,Granada,Papa,10,0,0.0,779,4.1,2.0,18955
+05313,Granada,Arroz,11,0,0.0,0,0.0,0.0,18955
+05315,Guadalupe,Frijol arbustivo,1,5645,46.8,2053,17.0,55.3,12060
+05315,Guadalupe,Maíz,2,4856,40.3,2757,22.9,51.8,12060
+05315,Guadalupe,Maíz choclo,3,2979,24.7,759,6.3,27.8,12060
+05315,Guadalupe,Tomate chonto,4,1656,13.7,595,4.9,16.2,12060
+05315,Guadalupe,Cebolla junca,5,1,0.0,3222,26.7,13.4,12060
+05315,Guadalupe,Yuca,6,796,6.6,1,0.0,6.6,12060
+05315,Guadalupe,Ñame,7,19,0.2,1047,8.7,4.6,12060
+05315,Guadalupe,Hortalizas clima frio,8,0,0.0,42,0.4,0.2,12060
+05315,Guadalupe,Arroz,9,0,0.0,0,0.0,0.0,12060
+05315,Guadalupe,Frijol voluble,10,0,0.0,14,0.1,0.0,12060
+05315,Guadalupe,Papa,11,0,0.0,0,0.0,0.0,12060
+05318,Guarne,Hortalizas clima frio,1,2473,15.0,12863,78.2,54.1,16452
+05318,Guarne,Maíz choclo,2,318,1.9,14962,91.0,47.4,16452
+05318,Guarne,Cebolla junca,3,2,0.0,15335,93.2,46.6,16452
+05318,Guarne,Tomate chonto,4,532,3.2,13075,79.5,43.0,16452
+05318,Guarne,Frijol voluble,5,1253,7.6,9004,54.7,35.0,16452
+05318,Guarne,Maíz,6,0,0.0,3260,19.8,9.9,16452
+05318,Guarne,Papa,7,0,0.0,1539,9.4,4.7,16452
+05318,Guarne,Arroz,8,0,0.0,0,0.0,0.0,16452
+05318,Guarne,Frijol arbustivo,9,0,0.0,2,0.0,0.0,16452
+05318,Guarne,Ñame,10,0,0.0,0,0.0,0.0,16452
+05318,Guarne,Yuca,11,0,0.0,0,0.0,0.0,16452
+05321,Guatapé,Maíz choclo,1,6474,76.6,402,4.8,79.0,8451
+05321,Guatapé,Maíz,2,1063,12.6,5807,68.7,47.0,8451
+05321,Guatapé,Frijol arbustivo,3,749,8.9,5090,60.2,39.0,8451
+05321,Guatapé,Tomate chonto,4,3032,35.9,40,0.5,36.2,8451
+05321,Guatapé,Frijol voluble,5,9,0.1,2325,27.5,13.8,8451
+05321,Guatapé,Hortalizas clima frio,6,10,0.1,2324,27.5,13.8,8451
+05321,Guatapé,Papa,7,0,0.0,1037,12.3,6.2,8451
+05321,Guatapé,Cebolla junca,8,5,0.1,669,7.9,4.0,8451
+05321,Guatapé,Arroz,9,0,0.0,0,0.0,0.0,8451
+05321,Guatapé,Ñame,10,0,0.0,0,0.0,0.0,8451
+05321,Guatapé,Yuca,11,0,0.0,0,0.0,0.0,8451
+05310,Gómez Plata,Maíz,1,24349,73.7,484,1.5,74.4,33060
+05310,Gómez Plata,Cebolla junca,2,16583,50.2,7591,23.0,61.7,33060
+05310,Gómez Plata,Frijol arbustivo,3,4850,14.7,20649,62.5,46.0,33060
+05310,Gómez Plata,Tomate chonto,4,13713,41.5,0,0.0,41.5,33060
+05310,Gómez Plata,Frijol voluble,5,4,0.0,11370,34.4,17.2,33060
+05310,Gómez Plata,Yuca,6,5404,16.4,22,0.1,16.4,33060
+05310,Gómez Plata,Maíz choclo,7,81,0.3,10123,30.6,15.6,33060
+05310,Gómez Plata,Ñame,8,1565,4.7,5773,17.5,13.4,33060
+05310,Gómez Plata,Hortalizas clima frio,9,4,0.0,6988,21.1,10.6,33060
+05310,Gómez Plata,Papa,10,2,0.0,316,1.0,0.5,33060
+05310,Gómez Plata,Arroz,11,0,0.0,0,0.0,0.0,33060
+05347,Heliconia,Frijol arbustivo,1,0,0.0,5212,45.3,22.6,11510
+05347,Heliconia,Tomate chonto,2,0,0.0,1791,15.6,7.8,11510
+05347,Heliconia,Maíz choclo,3,0,0.0,497,4.3,2.2,11510
+05347,Heliconia,Ñame,4,0,0.0,287,2.5,1.2,11510
+05347,Heliconia,Maíz,5,0,0.0,207,1.8,0.9,11510
+05347,Heliconia,Arroz,6,0,0.0,124,1.1,0.6,11510
+05347,Heliconia,Papa,7,0,0.0,122,1.1,0.6,11510
+05347,Heliconia,Hortalizas clima frio,8,6,0.1,1,0.0,0.1,11510
+05347,Heliconia,Cebolla junca,9,2,0.0,4,0.0,0.0,11510
+05347,Heliconia,Frijol voluble,10,3,0.0,4,0.0,0.0,11510
+05347,Heliconia,Yuca,11,0,0.0,0,0.0,0.0,11510
+05353,Hispania,Frijol arbustivo,1,106,1.9,2739,48.9,26.4,5598
+05353,Hispania,Maíz,2,4,0.1,2575,46.0,23.1,5598
+05353,Hispania,Ñame,3,0,0.0,1657,29.6,14.8,5598
+05353,Hispania,Yuca,4,1,0.0,712,12.7,6.4,5598
+05353,Hispania,Tomate chonto,5,1,0.0,72,1.3,0.6,5598
+05353,Hispania,Maíz choclo,6,0,0.0,11,0.2,0.1,5598
+05353,Hispania,Arroz,7,0,0.0,0,0.0,0.0,5598
+05353,Hispania,Cebolla junca,8,2,0.0,1,0.0,0.0,5598
+05353,Hispania,Frijol voluble,9,0,0.0,0,0.0,0.0,5598
+05353,Hispania,Hortalizas clima frio,10,0,0.0,0,0.0,0.0,5598
+05353,Hispania,Papa,11,0,0.0,0,0.0,0.0,5598
+05360,Itagüí,Cebolla junca,1,1,0.0,555,25.5,12.8,2181
+05360,Itagüí,Frijol voluble,2,0,0.0,223,10.3,5.2,2181
+05360,Itagüí,Hortalizas clima frio,3,3,0.1,68,3.1,1.6,2181
+05360,Itagüí,Tomate chonto,4,0,0.0,8,0.4,0.2,2181
+05360,Itagüí,Arroz,5,0,0.0,0,0.0,0.0,2181
+05360,Itagüí,Frijol arbustivo,6,0,0.0,0,0.0,0.0,2181
+05360,Itagüí,Maíz,7,0,0.0,0,0.0,0.0,2181
+05360,Itagüí,Maíz choclo,8,0,0.0,0,0.0,0.0,2181
+05360,Itagüí,Ñame,9,0,0.0,0,0.0,0.0,2181
+05360,Itagüí,Papa,10,0,0.0,0,0.0,0.0,2181
+05360,Itagüí,Yuca,11,0,0.0,0,0.0,0.0,2181
+05361,Ituango,Maíz,1,44568,19.6,5105,2.3,20.8,226976
+05361,Ituango,Frijol arbustivo,2,25248,11.1,18401,8.1,15.2,226976
+05361,Ituango,Cebolla junca,3,1,0.0,50818,22.4,11.2,226976
+05361,Ituango,Tomate chonto,4,18299,8.1,15,0.0,8.1,226976
+05361,Ituango,Ñame,5,16318,7.2,611,0.3,7.4,226976
+05361,Ituango,Maíz choclo,6,6308,2.8,5704,2.5,4.0,226976
+05361,Ituango,Hortalizas clima frio,7,0,0.0,17207,7.6,3.8,226976
+05361,Ituango,Frijol voluble,8,0,0.0,15360,6.8,3.4,226976
+05361,Ituango,Papa,9,0,0.0,6393,2.8,1.4,226976
+05361,Ituango,Yuca,10,2018,0.9,0,0.0,0.9,226976
+05361,Ituango,Arroz,11,0,0.0,3,0.0,0.0,226976
+05364,Jardín,Maíz choclo,1,0,0.0,2804,14.0,7.0,20033
+05364,Jardín,Maíz,2,0,0.0,1072,5.4,2.7,20033
+05364,Jardín,Frijol arbustivo,3,1,0.0,816,4.1,2.0,20033
+05364,Jardín,Papa,4,0,0.0,742,3.7,1.8,20033
+05364,Jardín,Tomate chonto,5,0,0.0,681,3.4,1.7,20033
+05364,Jardín,Frijol voluble,6,0,0.0,338,1.7,0.8,20033
+05364,Jardín,Cebolla junca,7,0,0.0,138,0.7,0.4,20033
+05364,Jardín,Hortalizas clima frio,8,0,0.0,178,0.9,0.4,20033
+05364,Jardín,Arroz,9,0,0.0,0,0.0,0.0,20033
+05364,Jardín,Ñame,10,0,0.0,0,0.0,0.0,20033
+05364,Jardín,Yuca,11,1,0.0,0,0.0,0.0,20033
+05368,Jericó,Maíz,1,5572,27.4,10022,49.2,52.0,20353
+05368,Jericó,Cebolla junca,2,0,0.0,12157,59.7,29.8,20353
+05368,Jericó,Frijol voluble,3,2,0.0,10650,52.3,26.2,20353
+05368,Jericó,Hortalizas clima frio,4,3,0.0,10532,51.8,25.9,20353
+05368,Jericó,Tomate chonto,5,0,0.0,10047,49.4,24.7,20353
+05368,Jericó,Maíz choclo,6,3,0.0,4492,22.1,11.0,20353
+05368,Jericó,Ñame,7,1,0.0,3790,18.6,9.3,20353
+05368,Jericó,Arroz,8,351,1.7,21,0.1,1.8,20353
+05368,Jericó,Frijol arbustivo,9,3,0.0,635,3.1,1.6,20353
+05368,Jericó,Yuca,10,178,0.9,175,0.9,1.4,20353
+05368,Jericó,Papa,11,0,0.0,2,0.0,0.0,20353
+05376,La Ceja,Hortalizas clima frio,1,9950,73.6,1154,8.5,77.8,13514
+05376,La Ceja,Cebolla junca,2,589,4.4,10932,80.9,44.8,13514
+05376,La Ceja,Frijol voluble,3,2917,21.6,1699,12.6,27.9,13514
+05376,La Ceja,Maíz choclo,4,3,0.0,7343,54.3,27.2,13514
+05376,La Ceja,Tomate chonto,5,1,0.0,4652,34.4,17.2,13514
+05376,La Ceja,Maíz,6,0,0.0,35,0.3,0.2,13514
+05376,La Ceja,Arroz,7,0,0.0,0,0.0,0.0,13514
+05376,La Ceja,Frijol arbustivo,8,0,0.0,2,0.0,0.0,13514
+05376,La Ceja,Ñame,9,0,0.0,0,0.0,0.0,13514
+05376,La Ceja,Papa,10,1,0.0,6,0.1,0.0,13514
+05376,La Ceja,Yuca,11,0,0.0,4,0.0,0.0,13514
+05380,La Estrella,Maíz,1,0,0.0,175,4.7,2.4,3749
+05380,La Estrella,Hortalizas clima frio,2,7,0.2,58,1.6,1.0,3749
+05380,La Estrella,Cebolla junca,3,0,0.0,66,1.8,0.9,3749
+05380,La Estrella,Frijol voluble,4,0,0.0,65,1.7,0.8,3749
+05380,La Estrella,Tomate chonto,5,0,0.0,47,1.3,0.6,3749
+05380,La Estrella,Arroz,6,0,0.0,0,0.0,0.0,3749
+05380,La Estrella,Frijol arbustivo,7,0,0.0,2,0.0,0.0,3749
+05380,La Estrella,Maíz choclo,8,0,0.0,1,0.0,0.0,3749
+05380,La Estrella,Ñame,9,0,0.0,0,0.0,0.0,3749
+05380,La Estrella,Papa,10,0,0.0,0,0.0,0.0,3749
+05380,La Estrella,Yuca,11,0,0.0,0,0.0,0.0,3749
+05390,La Pintada,Maíz,1,2827,52.0,366,6.7,55.4,5442
+05390,La Pintada,Ñame,2,2629,48.3,483,8.9,52.8,5442
+05390,La Pintada,Yuca,3,2180,40.1,0,0.0,40.1,5442
+05390,La Pintada,Frijol arbustivo,4,890,16.4,2337,42.9,37.8,5442
+05390,La Pintada,Cebolla junca,5,79,1.5,410,7.5,5.2,5442
+05390,La Pintada,Arroz,6,1,0.0,0,0.0,0.0,5442
+05390,La Pintada,Frijol voluble,7,0,0.0,0,0.0,0.0,5442
+05390,La Pintada,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,5442
+05390,La Pintada,Maíz choclo,9,0,0.0,0,0.0,0.0,5442
+05390,La Pintada,Papa,10,0,0.0,0,0.0,0.0,5442
+05390,La Pintada,Tomate chonto,11,0,0.0,0,0.0,0.0,5442
+05400,La Unión,Hortalizas clima frio,1,3543,20.6,11119,64.5,52.8,17233
+05400,La Unión,Maíz choclo,2,2232,13.0,11950,69.3,47.6,17233
+05400,La Unión,Papa,3,353,2.1,14234,82.6,43.4,17233
+05400,La Unión,Cebolla junca,4,0,0.0,14660,85.1,42.6,17233
+05400,La Unión,Frijol voluble,5,2166,12.6,3458,20.1,22.6,17233
+05400,La Unión,Maíz,6,0,0.0,32,0.2,0.1,17233
+05400,La Unión,Arroz,7,0,0.0,0,0.0,0.0,17233
+05400,La Unión,Frijol arbustivo,8,0,0.0,0,0.0,0.0,17233
+05400,La Unión,Ñame,9,0,0.0,0,0.0,0.0,17233
+05400,La Unión,Tomate chonto,10,0,0.0,5,0.0,0.0,17233
+05400,La Unión,Yuca,11,0,0.0,0,0.0,0.0,17233
+05411,Liborina,Maíz choclo,1,0,0.0,1035,4.8,2.4,21635
+05411,Liborina,Frijol arbustivo,2,0,0.0,776,3.6,1.8,21635
+05411,Liborina,Papa,3,0,0.0,493,2.3,1.2,21635
+05411,Liborina,Frijol voluble,4,0,0.0,414,1.9,1.0,21635
+05411,Liborina,Hortalizas clima frio,5,0,0.0,304,1.4,0.7,21635
+05411,Liborina,Arroz,6,0,0.0,27,0.1,0.0,21635
+05411,Liborina,Cebolla junca,7,0,0.0,0,0.0,0.0,21635
+05411,Liborina,Maíz,8,0,0.0,0,0.0,0.0,21635
+05411,Liborina,Ñame,9,0,0.0,0,0.0,0.0,21635
+05411,Liborina,Tomate chonto,10,0,0.0,10,0.0,0.0,21635
+05411,Liborina,Yuca,11,0,0.0,0,0.0,0.0,21635
+05425,Maceo,Maíz,1,1721,4.5,20687,53.5,31.2,38673
+05425,Maceo,Ñame,2,7,0.0,13093,33.9,17.0,38673
+05425,Maceo,Frijol arbustivo,3,14,0.0,11981,31.0,15.5,38673
+05425,Maceo,Yuca,4,6,0.0,6172,16.0,8.0,38673
+05425,Maceo,Cebolla junca,5,0,0.0,73,0.2,0.1,38673
+05425,Maceo,Arroz,6,0,0.0,22,0.1,0.0,38673
+05425,Maceo,Frijol voluble,7,0,0.0,0,0.0,0.0,38673
+05425,Maceo,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,38673
+05425,Maceo,Maíz choclo,9,0,0.0,0,0.0,0.0,38673
+05425,Maceo,Papa,10,0,0.0,0,0.0,0.0,38673
+05425,Maceo,Tomate chonto,11,0,0.0,0,0.0,0.0,38673
+05440,Marinilla,Cebolla junca,1,11126,96.5,12,0.1,96.6,11530
+05440,Marinilla,Hortalizas clima frio,2,11125,96.5,11,0.1,96.6,11530
+05440,Marinilla,Frijol voluble,3,11103,96.3,25,0.2,96.4,11530
+05440,Marinilla,Tomate chonto,4,2965,25.7,8078,70.1,60.8,11530
+05440,Marinilla,Maíz,5,60,0.5,10670,92.6,46.8,11530
+05440,Marinilla,Maíz choclo,6,9,0.1,10690,92.7,46.4,11530
+05440,Marinilla,Arroz,7,0,0.0,0,0.0,0.0,11530
+05440,Marinilla,Frijol arbustivo,8,0,0.0,3,0.0,0.0,11530
+05440,Marinilla,Ñame,9,0,0.0,0,0.0,0.0,11530
+05440,Marinilla,Papa,10,0,0.0,7,0.1,0.0,11530
+05440,Marinilla,Yuca,11,0,0.0,0,0.0,0.0,11530
+05001,Medellín,Hortalizas clima frio,1,7859,21.3,5605,15.2,28.9,36889
+05001,Medellín,Cebolla junca,2,2950,8.0,12566,34.1,25.0,36889
+05001,Medellín,Frijol voluble,3,1719,4.7,5324,14.4,11.9,36889
+05001,Medellín,Tomate chonto,4,0,0.0,1686,4.6,2.3,36889
+05001,Medellín,Papa,5,0,0.0,128,0.4,0.2,36889
+05001,Medellín,Arroz,6,0,0.0,0,0.0,0.0,36889
+05001,Medellín,Frijol arbustivo,7,0,0.0,2,0.0,0.0,36889
+05001,Medellín,Maíz,8,0,0.0,2,0.0,0.0,36889
+05001,Medellín,Maíz choclo,9,0,0.0,6,0.0,0.0,36889
+05001,Medellín,Ñame,10,0,0.0,1,0.0,0.0,36889
+05001,Medellín,Yuca,11,0,0.0,21,0.1,0.0,36889
+05467,Montebello,Cebolla junca,1,0,0.0,6029,80.0,40.0,7537
+05467,Montebello,Hortalizas clima frio,2,0,0.0,3162,42.0,21.0,7537
+05467,Montebello,Frijol arbustivo,3,0,0.0,3112,41.3,20.6,7537
+05467,Montebello,Maíz choclo,4,0,0.0,2207,29.3,14.6,7537
+05467,Montebello,Frijol voluble,5,0,0.0,1603,21.3,10.6,7537
+05467,Montebello,Tomate chonto,6,0,0.0,1390,18.5,9.2,7537
+05467,Montebello,Ñame,7,0,0.0,499,6.6,3.3,7537
+05467,Montebello,Papa,8,0,0.0,220,2.9,1.4,7537
+05467,Montebello,Yuca,9,0,0.0,105,1.4,0.7,7537
+05467,Montebello,Arroz,10,0,0.0,0,0.0,0.0,7537
+05467,Montebello,Maíz,11,0,0.0,2,0.0,0.0,7537
+05475,Murindó,Maíz,1,843,0.7,5435,4.4,2.9,124532
+05475,Murindó,Frijol arbustivo,2,0,0.0,1444,1.2,0.6,124532
+05475,Murindó,Arroz,3,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Cebolla junca,4,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Frijol voluble,5,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Hortalizas clima frio,6,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Maíz choclo,7,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Ñame,8,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Papa,9,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Tomate chonto,10,0,0.0,0,0.0,0.0,124532
+05475,Murindó,Yuca,11,0,0.0,0,0.0,0.0,124532
+05480,Mutatá,Arroz,1,46720,39.0,0,0.0,39.0,119936
+05480,Mutatá,Frijol arbustivo,2,12763,10.6,31544,26.3,23.8,119936
+05480,Mutatá,Maíz,3,10721,8.9,15324,12.8,15.3,119936
+05480,Mutatá,Cebolla junca,4,75,0.1,4,0.0,0.1,119936
+05480,Mutatá,Ñame,5,0,0.0,258,0.2,0.1,119936
+05480,Mutatá,Tomate chonto,6,61,0.1,0,0.0,0.1,119936
+05480,Mutatá,Yuca,7,159,0.1,0,0.0,0.1,119936
+05480,Mutatá,Frijol voluble,8,43,0.0,0,0.0,0.0,119936
+05480,Mutatá,Hortalizas clima frio,9,2,0.0,0,0.0,0.0,119936
+05480,Mutatá,Maíz choclo,10,48,0.0,2,0.0,0.0,119936
+05480,Mutatá,Papa,11,0,0.0,0,0.0,0.0,119936
+05483,Nariño,Cebolla junca,1,2952,9.4,10309,32.7,25.8,31494
+05483,Nariño,Frijol voluble,2,0,0.0,3545,11.3,5.6,31494
+05483,Nariño,Hortalizas clima frio,3,3,0.0,2190,7.0,3.5,31494
+05483,Nariño,Tomate chonto,4,0,0.0,632,2.0,1.0,31494
+05483,Nariño,Frijol arbustivo,5,0,0.0,197,0.6,0.3,31494
+05483,Nariño,Arroz,6,0,0.0,129,0.4,0.2,31494
+05483,Nariño,Ñame,7,0,0.0,133,0.4,0.2,31494
+05483,Nariño,Maíz choclo,8,0,0.0,49,0.2,0.1,31494
+05483,Nariño,Maíz,9,0,0.0,2,0.0,0.0,31494
+05483,Nariño,Papa,10,0,0.0,46,0.1,0.0,31494
+05483,Nariño,Yuca,11,0,0.0,0,0.0,0.0,31494
+05495,Nechí,Maíz,1,29038,30.8,4405,4.7,33.2,94326
+05495,Nechí,Arroz,2,7,0.0,25228,26.8,13.4,94326
+05495,Nechí,Ñame,3,1,0.0,4467,4.7,2.4,94326
+05495,Nechí,Frijol arbustivo,4,0,0.0,1367,1.5,0.8,94326
+05495,Nechí,Yuca,5,0,0.0,1097,1.2,0.6,94326
+05495,Nechí,Cebolla junca,6,0,0.0,0,0.0,0.0,94326
+05495,Nechí,Frijol voluble,7,0,0.0,0,0.0,0.0,94326
+05495,Nechí,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,94326
+05495,Nechí,Maíz choclo,9,0,0.0,0,0.0,0.0,94326
+05495,Nechí,Papa,10,0,0.0,0,0.0,0.0,94326
+05495,Nechí,Tomate chonto,11,0,0.0,0,0.0,0.0,94326
+05490,Necoclí,Ñame,1,20229,16.0,53136,41.9,37.0,126709
+05490,Necoclí,Maíz,2,13,0.0,39169,30.9,15.4,126709
+05490,Necoclí,Arroz,3,13,0.0,17430,13.8,6.9,126709
+05490,Necoclí,Cebolla junca,4,0,0.0,0,0.0,0.0,126709
+05490,Necoclí,Frijol arbustivo,5,0,0.0,15,0.0,0.0,126709
+05490,Necoclí,Frijol voluble,6,0,0.0,0,0.0,0.0,126709
+05490,Necoclí,Hortalizas clima frio,7,0,0.0,0,0.0,0.0,126709
+05490,Necoclí,Maíz choclo,8,0,0.0,0,0.0,0.0,126709
+05490,Necoclí,Papa,9,0,0.0,0,0.0,0.0,126709
+05490,Necoclí,Tomate chonto,10,0,0.0,0,0.0,0.0,126709
+05490,Necoclí,Yuca,11,8,0.0,0,0.0,0.0,126709
+05501,Olaya,Maíz,1,245,2.9,2218,26.0,15.9,8532
+05501,Olaya,Ñame,2,0,0.0,1068,12.5,6.2,8532
+05501,Olaya,Yuca,3,0,0.0,464,5.4,2.7,8532
+05501,Olaya,Arroz,4,0,0.0,0,0.0,0.0,8532
+05501,Olaya,Cebolla junca,5,0,0.0,1,0.0,0.0,8532
+05501,Olaya,Frijol arbustivo,6,0,0.0,0,0.0,0.0,8532
+05501,Olaya,Frijol voluble,7,0,0.0,0,0.0,0.0,8532
+05501,Olaya,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,8532
+05501,Olaya,Maíz choclo,9,0,0.0,0,0.0,0.0,8532
+05501,Olaya,Papa,10,0,0.0,0,0.0,0.0,8532
+05501,Olaya,Tomate chonto,11,0,0.0,0,0.0,0.0,8532
+05543,Peque,Maíz choclo,1,3,0.0,6492,14.9,7.4,43617
+05543,Peque,Frijol voluble,2,0,0.0,4560,10.5,5.2,43617
+05543,Peque,Hortalizas clima frio,3,0,0.0,3311,7.6,3.8,43617
+05543,Peque,Tomate chonto,4,2,0.0,3255,7.5,3.8,43617
+05543,Peque,Frijol arbustivo,5,3,0.0,1883,4.3,2.2,43617
+05543,Peque,Papa,6,0,0.0,1064,2.4,1.2,43617
+05543,Peque,Cebolla junca,7,0,0.0,518,1.2,0.6,43617
+05543,Peque,Maíz,8,4,0.0,398,0.9,0.4,43617
+05543,Peque,Arroz,9,0,0.0,0,0.0,0.0,43617
+05543,Peque,Ñame,10,1,0.0,1,0.0,0.0,43617
+05543,Peque,Yuca,11,0,0.0,0,0.0,0.0,43617
+05541,Peñol,Cebolla junca,1,13491,94.9,3,0.0,94.9,14213
+05541,Peñol,Frijol voluble,2,13227,93.1,13,0.1,93.1,14213
+05541,Peñol,Hortalizas clima frio,3,12971,91.3,3,0.0,91.3,14213
+05541,Peñol,Tomate chonto,4,3577,25.2,5813,40.9,45.6,14213
+05541,Peñol,Maíz,5,2,0.0,4059,28.6,14.3,14213
+05541,Peñol,Maíz choclo,6,14,0.1,8,0.1,0.2,14213
+05541,Peñol,Arroz,7,0,0.0,0,0.0,0.0,14213
+05541,Peñol,Frijol arbustivo,8,0,0.0,12,0.1,0.0,14213
+05541,Peñol,Ñame,9,0,0.0,0,0.0,0.0,14213
+05541,Peñol,Papa,10,0,0.0,12,0.1,0.0,14213
+05541,Peñol,Yuca,11,0,0.0,0,0.0,0.0,14213
+05576,Pueblorrico,Maíz,1,0,0.0,3346,44.4,22.2,7542
+05576,Pueblorrico,Tomate chonto,2,0,0.0,923,12.2,6.1,7542
+05576,Pueblorrico,Frijol arbustivo,3,3,0.0,835,11.1,5.6,7542
+05576,Pueblorrico,Maíz choclo,4,0,0.0,189,2.5,1.2,7542
+05576,Pueblorrico,Arroz,5,0,0.0,0,0.0,0.0,7542
+05576,Pueblorrico,Cebolla junca,6,0,0.0,4,0.1,0.0,7542
+05576,Pueblorrico,Frijol voluble,7,0,0.0,6,0.1,0.0,7542
+05576,Pueblorrico,Hortalizas clima frio,8,0,0.0,5,0.1,0.0,7542
+05576,Pueblorrico,Ñame,9,0,0.0,1,0.0,0.0,7542
+05576,Pueblorrico,Papa,10,0,0.0,0,0.0,0.0,7542
+05576,Pueblorrico,Yuca,11,0,0.0,1,0.0,0.0,7542
+05579,Puerto Berrío,Maíz,1,28861,23.7,31124,25.5,36.4,121991
+05579,Puerto Berrío,Arroz,2,12605,10.3,58158,47.7,34.2,121991
+05579,Puerto Berrío,Ñame,3,33275,27.3,11066,9.1,31.8,121991
+05579,Puerto Berrío,Yuca,4,32967,27.0,1381,1.1,27.6,121991
+05579,Puerto Berrío,Frijol arbustivo,5,8,0.0,60129,49.3,24.6,121991
+05579,Puerto Berrío,Cebolla junca,6,2,0.0,0,0.0,0.0,121991
+05579,Puerto Berrío,Frijol voluble,7,0,0.0,0,0.0,0.0,121991
+05579,Puerto Berrío,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,121991
+05579,Puerto Berrío,Maíz choclo,9,0,0.0,0,0.0,0.0,121991
+05579,Puerto Berrío,Papa,10,0,0.0,0,0.0,0.0,121991
+05579,Puerto Berrío,Tomate chonto,11,0,0.0,0,0.0,0.0,121991
+05585,Puerto Nare,Ñame,1,5,0.0,10070,17.5,8.8,57688
+05585,Puerto Nare,Maíz,2,1,0.0,10033,17.4,8.7,57688
+05585,Puerto Nare,Arroz,3,0,0.0,327,0.6,0.3,57688
+05585,Puerto Nare,Cebolla junca,4,0,0.0,0,0.0,0.0,57688
+05585,Puerto Nare,Frijol arbustivo,5,2,0.0,7,0.0,0.0,57688
+05585,Puerto Nare,Frijol voluble,6,0,0.0,0,0.0,0.0,57688
+05585,Puerto Nare,Hortalizas clima frio,7,0,0.0,0,0.0,0.0,57688
+05585,Puerto Nare,Maíz choclo,8,0,0.0,0,0.0,0.0,57688
+05585,Puerto Nare,Papa,9,0,0.0,0,0.0,0.0,57688
+05585,Puerto Nare,Tomate chonto,10,0,0.0,0,0.0,0.0,57688
+05585,Puerto Nare,Yuca,11,5,0.0,1,0.0,0.0,57688
+05591,Puerto Triunfo,Maíz,1,7,0.0,20756,55.8,27.9,37169
+05591,Puerto Triunfo,Ñame,2,8,0.0,20497,55.2,27.6,37169
+05591,Puerto Triunfo,Arroz,3,0,0.0,91,0.3,0.2,37169
+05591,Puerto Triunfo,Cebolla junca,4,0,0.0,0,0.0,0.0,37169
+05591,Puerto Triunfo,Frijol arbustivo,5,3,0.0,7,0.0,0.0,37169
+05591,Puerto Triunfo,Frijol voluble,6,0,0.0,0,0.0,0.0,37169
+05591,Puerto Triunfo,Hortalizas clima frio,7,0,0.0,0,0.0,0.0,37169
+05591,Puerto Triunfo,Maíz choclo,8,0,0.0,0,0.0,0.0,37169
+05591,Puerto Triunfo,Papa,9,0,0.0,0,0.0,0.0,37169
+05591,Puerto Triunfo,Tomate chonto,10,0,0.0,0,0.0,0.0,37169
+05591,Puerto Triunfo,Yuca,11,7,0.0,6,0.0,0.0,37169
+05604,Remedios,Maíz,1,18709,9.4,77232,38.7,28.8,199472
+05604,Remedios,Frijol arbustivo,2,449,0.2,80356,40.3,20.3,199472
+05604,Remedios,Ñame,3,1,0.0,2460,1.2,0.6,199472
+05604,Remedios,Cebolla junca,4,0,0.0,732,0.4,0.2,199472
+05604,Remedios,Arroz,5,12,0.0,9,0.0,0.0,199472
+05604,Remedios,Frijol voluble,6,0,0.0,0,0.0,0.0,199472
+05604,Remedios,Hortalizas clima frio,7,0,0.0,0,0.0,0.0,199472
+05604,Remedios,Maíz choclo,8,0,0.0,0,0.0,0.0,199472
+05604,Remedios,Papa,9,0,0.0,0,0.0,0.0,199472
+05604,Remedios,Tomate chonto,10,0,0.0,0,0.0,0.0,199472
+05604,Remedios,Yuca,11,1,0.0,33,0.0,0.0,199472
+05607,Retiro,Maíz choclo,1,0,0.0,13319,50.1,25.0,26603
+05607,Retiro,Tomate chonto,2,0,0.0,5054,19.0,9.5,26603
+05607,Retiro,Papa,3,0,0.0,2892,10.9,5.4,26603
+05607,Retiro,Frijol voluble,4,0,0.0,858,3.2,1.6,26603
+05607,Retiro,Hortalizas clima frio,5,5,0.0,91,0.3,0.2,26603
+05607,Retiro,Arroz,6,0,0.0,0,0.0,0.0,26603
+05607,Retiro,Cebolla junca,7,0,0.0,11,0.0,0.0,26603
+05607,Retiro,Frijol arbustivo,8,0,0.0,2,0.0,0.0,26603
+05607,Retiro,Maíz,9,0,0.0,0,0.0,0.0,26603
+05607,Retiro,Ñame,10,0,0.0,0,0.0,0.0,26603
+05607,Retiro,Yuca,11,0,0.0,0,0.0,0.0,26603
+05615,Rionegro,Hortalizas clima frio,1,411,2.1,17738,89.5,46.8,19815
+05615,Rionegro,Cebolla junca,2,5,0.0,18159,91.6,45.8,19815
+05615,Rionegro,Frijol voluble,3,376,1.9,12513,63.2,33.5,19815
+05615,Rionegro,Maíz choclo,4,9,0.1,546,2.8,1.5,19815
+05615,Rionegro,Arroz,5,0,0.0,0,0.0,0.0,19815
+05615,Rionegro,Frijol arbustivo,6,0,0.0,3,0.0,0.0,19815
+05615,Rionegro,Maíz,7,0,0.0,11,0.1,0.0,19815
+05615,Rionegro,Ñame,8,0,0.0,0,0.0,0.0,19815
+05615,Rionegro,Papa,9,0,0.0,6,0.0,0.0,19815
+05615,Rionegro,Tomate chonto,10,4,0.0,10,0.1,0.0,19815
+05615,Rionegro,Yuca,11,0,0.0,0,0.0,0.0,19815
+05628,Sabanalarga,Frijol arbustivo,1,262,1.0,6509,24.7,13.4,26351
+05628,Sabanalarga,Maíz choclo,2,0,0.0,2124,8.1,4.0,26351
+05628,Sabanalarga,Maíz,3,2,0.0,1688,6.4,3.2,26351
+05628,Sabanalarga,Ñame,4,0,0.0,1476,5.6,2.8,26351
+05628,Sabanalarga,Papa,5,0,0.0,836,3.2,1.6,26351
+05628,Sabanalarga,Tomate chonto,6,2,0.0,471,1.8,0.9,26351
+05628,Sabanalarga,Arroz,7,0,0.0,0,0.0,0.0,26351
+05628,Sabanalarga,Cebolla junca,8,0,0.0,4,0.0,0.0,26351
+05628,Sabanalarga,Frijol voluble,9,0,0.0,2,0.0,0.0,26351
+05628,Sabanalarga,Hortalizas clima frio,10,0,0.0,2,0.0,0.0,26351
+05628,Sabanalarga,Yuca,11,0,0.0,0,0.0,0.0,26351
+05631,Sabaneta,Frijol arbustivo,1,0,0.0,63,4.1,2.0,1539
+05631,Sabaneta,Arroz,2,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Cebolla junca,3,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Frijol voluble,4,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Hortalizas clima frio,5,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Maíz,6,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Maíz choclo,7,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Ñame,8,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Papa,9,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Tomate chonto,10,0,0.0,0,0.0,0.0,1539
+05631,Sabaneta,Yuca,11,0,0.0,0,0.0,0.0,1539
+05642,Salgar,Cebolla junca,1,2297,7.9,10687,36.7,26.2,29140
+05642,Salgar,Maíz,2,5,0.0,6027,20.7,10.4,29140
+05642,Salgar,Frijol arbustivo,3,0,0.0,5009,17.2,8.6,29140
+05642,Salgar,Frijol voluble,4,893,3.1,2207,7.6,6.9,29140
+05642,Salgar,Hortalizas clima frio,5,661,2.3,620,2.1,3.4,29140
+05642,Salgar,Ñame,6,0,0.0,1501,5.2,2.6,29140
+05642,Salgar,Tomate chonto,7,0,0.0,1469,5.0,2.5,29140
+05642,Salgar,Arroz,8,0,0.0,1095,3.8,1.9,29140
+05642,Salgar,Yuca,9,0,0.0,496,1.7,0.8,29140
+05642,Salgar,Maíz choclo,10,0,0.0,114,0.4,0.2,29140
+05642,Salgar,Papa,11,0,0.0,3,0.0,0.0,29140
+05647,San Andrés,Cebolla junca,1,5,0.0,11012,50.2,25.1,21923
+05647,San Andrés,Maíz,2,4109,18.7,1662,7.6,22.5,21923
+05647,San Andrés,Frijol arbustivo,3,2054,9.4,2555,11.7,15.2,21923
+05647,San Andrés,Hortalizas clima frio,4,6,0.0,6607,30.1,15.0,21923
+05647,San Andrés,Papa,5,154,0.7,5731,26.1,13.8,21923
+05647,San Andrés,Tomate chonto,6,2355,10.7,2,0.0,10.7,21923
+05647,San Andrés,Ñame,7,1619,7.4,1,0.0,7.4,21923
+05647,San Andrés,Frijol voluble,8,4,0.0,2668,12.2,6.1,21923
+05647,San Andrés,Maíz choclo,9,722,3.3,721,3.3,4.9,21923
+05647,San Andrés,Yuca,10,201,0.9,0,0.0,0.9,21923
+05647,San Andrés,Arroz,11,0,0.0,0,0.0,0.0,21923
+05649,San Carlos,Frijol arbustivo,1,7507,10.4,16385,22.8,21.8,71934
+05649,San Carlos,Maíz,2,5813,8.1,16801,23.4,19.8,71934
+05649,San Carlos,Cebolla junca,3,11946,16.6,8,0.0,16.6,71934
+05649,San Carlos,Ñame,4,1,0.0,10784,15.0,7.5,71934
+05649,San Carlos,Arroz,5,873,1.2,4761,6.6,4.5,71934
+05649,San Carlos,Frijol voluble,6,2002,2.8,3,0.0,2.8,71934
+05649,San Carlos,Tomate chonto,7,362,0.5,2626,3.7,2.4,71934
+05649,San Carlos,Hortalizas clima frio,8,1652,2.3,2,0.0,2.3,71934
+05649,San Carlos,Maíz choclo,9,1,0.0,1779,2.5,1.2,71934
+05649,San Carlos,Yuca,10,4,0.0,557,0.8,0.4,71934
+05649,San Carlos,Papa,11,0,0.0,218,0.3,0.2,71934
+05652,San Francisco,Maíz,1,2646,7.4,3701,10.4,12.6,35759
+05652,San Francisco,Frijol arbustivo,2,848,2.4,5733,16.0,10.4,35759
+05652,San Francisco,Ñame,3,590,1.7,5995,16.8,10.1,35759
+05652,San Francisco,Yuca,4,2,0.0,1616,4.5,2.2,35759
+05652,San Francisco,Arroz,5,2,0.0,268,0.8,0.4,35759
+05652,San Francisco,Cebolla junca,6,0,0.0,1,0.0,0.0,35759
+05652,San Francisco,Frijol voluble,7,0,0.0,0,0.0,0.0,35759
+05652,San Francisco,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,35759
+05652,San Francisco,Maíz choclo,9,0,0.0,0,0.0,0.0,35759
+05652,San Francisco,Papa,10,0,0.0,0,0.0,0.0,35759
+05652,San Francisco,Tomate chonto,11,0,0.0,16,0.0,0.0,35759
+05656,San Jerónimo,Frijol arbustivo,1,1740,10.6,5348,32.4,26.8,16485
+05656,San Jerónimo,Maíz,2,851,5.2,7063,42.9,26.6,16485
+05656,San Jerónimo,Maíz choclo,3,2108,12.8,1668,10.1,17.8,16485
+05656,San Jerónimo,Ñame,4,0,0.0,4501,27.3,13.6,16485
+05656,San Jerónimo,Tomate chonto,5,8,0.1,4128,25.0,12.6,16485
+05656,San Jerónimo,Papa,6,0,0.0,2822,17.1,8.6,16485
+05656,San Jerónimo,Cebolla junca,7,0,0.0,2319,14.1,7.0,16485
+05656,San Jerónimo,Yuca,8,0,0.0,1741,10.6,5.3,16485
+05656,San Jerónimo,Frijol voluble,9,0,0.0,1131,6.9,3.4,16485
+05656,San Jerónimo,Hortalizas clima frio,10,1,0.0,1141,6.9,3.4,16485
+05656,San Jerónimo,Arroz,11,0,0.0,372,2.3,1.2,16485
+05658,San José de la Montaña,Cebolla junca,1,7725,61.4,14,0.1,61.4,12591
+05658,San José de la Montaña,Hortalizas clima frio,2,7667,60.9,5,0.0,60.9,12591
+05658,San José de la Montaña,Papa,3,4977,39.5,2643,21.0,50.0,12591
+05658,San José de la Montaña,Frijol voluble,4,5484,43.6,3,0.0,43.6,12591
+05658,San José de la Montaña,Maíz choclo,5,851,6.8,0,0.0,6.8,12591
+05658,San José de la Montaña,Maíz,6,0,0.0,851,6.8,3.4,12591
+05658,San José de la Montaña,Tomate chonto,7,17,0.1,1,0.0,0.1,12591
+05658,San José de la Montaña,Arroz,8,0,0.0,0,0.0,0.0,12591
+05658,San José de la Montaña,Frijol arbustivo,9,0,0.0,0,0.0,0.0,12591
+05658,San José de la Montaña,Ñame,10,0,0.0,0,0.0,0.0,12591
+05658,San José de la Montaña,Yuca,11,0,0.0,0,0.0,0.0,12591
+05659,San Juan de Urabá,Maíz,1,13,0.1,17273,68.7,34.4,25135
+05659,San Juan de Urabá,Yuca,2,1,0.0,6012,23.9,12.0,25135
+05659,San Juan de Urabá,Frijol arbustivo,3,0,0.0,5945,23.7,11.8,25135
+05659,San Juan de Urabá,Ñame,4,15,0.1,4808,19.1,9.6,25135
+05659,San Juan de Urabá,Arroz,5,0,0.0,4520,18.0,9.0,25135
+05659,San Juan de Urabá,Cebolla junca,6,0,0.0,0,0.0,0.0,25135
+05659,San Juan de Urabá,Frijol voluble,7,0,0.0,0,0.0,0.0,25135
+05659,San Juan de Urabá,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,25135
+05659,San Juan de Urabá,Maíz choclo,9,0,0.0,0,0.0,0.0,25135
+05659,San Juan de Urabá,Papa,10,0,0.0,0,0.0,0.0,25135
+05659,San Juan de Urabá,Tomate chonto,11,0,0.0,0,0.0,0.0,25135
+05660,San Luis,Frijol arbustivo,1,17899,34.8,1009,2.0,35.8,51487
+05660,San Luis,Maíz,2,14024,27.2,4355,8.5,31.4,51487
+05660,San Luis,Ñame,3,12770,24.8,2108,4.1,26.8,51487
+05660,San Luis,Yuca,4,5282,10.3,4,0.0,10.3,51487
+05660,San Luis,Arroz,5,3076,6.0,4295,8.3,10.2,51487
+05660,San Luis,Cebolla junca,6,3033,5.9,2920,5.7,8.8,51487
+05660,San Luis,Tomate chonto,7,96,0.2,491,1.0,0.7,51487
+05660,San Luis,Maíz choclo,8,1,0.0,191,0.4,0.2,51487
+05660,San Luis,Frijol voluble,9,0,0.0,64,0.1,0.0,51487
+05660,San Luis,Hortalizas clima frio,10,0,0.0,10,0.0,0.0,51487
+05660,San Luis,Papa,11,0,0.0,0,0.0,0.0,51487
+05664,San Pedro,Papa,1,86,0.4,20822,94.8,47.8,21971
+05664,San Pedro,Maíz,2,2730,12.4,14452,65.8,45.3,21971
+05664,San Pedro,Maíz choclo,3,514,2.3,16722,76.1,40.3,21971
+05664,San Pedro,Tomate chonto,4,0,0.0,8708,39.6,19.8,21971
+05664,San Pedro,Hortalizas clima frio,5,0,0.0,6108,27.8,13.9,21971
+05664,San Pedro,Frijol voluble,6,0,0.0,6061,27.6,13.8,21971
+05664,San Pedro,Cebolla junca,7,0,0.0,90,0.4,0.2,21971
+05664,San Pedro,Arroz,8,0,0.0,0,0.0,0.0,21971
+05664,San Pedro,Frijol arbustivo,9,0,0.0,0,0.0,0.0,21971
+05664,San Pedro,Ñame,10,0,0.0,0,0.0,0.0,21971
+05664,San Pedro,Yuca,11,0,0.0,0,0.0,0.0,21971
+05665,San Pedro de Urabá,Ñame,1,44739,75.5,2,0.0,75.5,59235
+05665,San Pedro de Urabá,Maíz,2,26045,44.0,18696,31.6,59.8,59235
+05665,San Pedro de Urabá,Frijol arbustivo,3,8329,14.1,36011,60.8,44.5,59235
+05665,San Pedro de Urabá,Arroz,4,21567,36.4,43,0.1,36.4,59235
+05665,San Pedro de Urabá,Yuca,5,13003,22.0,0,0.0,22.0,59235
+05665,San Pedro de Urabá,Cebolla junca,6,0,0.0,0,0.0,0.0,59235
+05665,San Pedro de Urabá,Frijol voluble,7,0,0.0,0,0.0,0.0,59235
+05665,San Pedro de Urabá,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,59235
+05665,San Pedro de Urabá,Maíz choclo,9,0,0.0,0,0.0,0.0,59235
+05665,San Pedro de Urabá,Papa,10,0,0.0,0,0.0,0.0,59235
+05665,San Pedro de Urabá,Tomate chonto,11,0,0.0,0,0.0,0.0,59235
+05667,San Rafael,Frijol arbustivo,1,19459,54.0,353,1.0,54.5,36035
+05667,San Rafael,Maíz,2,5989,16.6,13598,37.7,35.4,36035
+05667,San Rafael,Cebolla junca,3,9,0.0,14537,40.3,20.2,36035
+05667,San Rafael,Ñame,4,2183,6.1,9876,27.4,19.8,36035
+05667,San Rafael,Yuca,5,5262,14.6,1606,4.5,16.8,36035
+05667,San Rafael,Tomate chonto,6,940,2.6,2434,6.8,6.0,36035
+05667,San Rafael,Maíz choclo,7,1739,4.8,676,1.9,5.8,36035
+05667,San Rafael,Frijol voluble,8,2,0.0,369,1.0,0.5,36035
+05667,San Rafael,Hortalizas clima frio,9,2,0.0,309,0.9,0.4,36035
+05667,San Rafael,Arroz,10,0,0.0,3,0.0,0.0,36035
+05667,San Rafael,Papa,11,0,0.0,16,0.0,0.0,36035
+05670,San Roque,Frijol arbustivo,1,26769,62.8,205,0.5,63.0,42611
+05670,San Roque,Maíz,2,5702,13.4,20658,48.5,37.6,42611
+05670,San Roque,Cebolla junca,3,4,0.0,21906,51.4,25.7,42611
+05670,San Roque,Yuca,4,9391,22.0,9,0.0,22.0,42611
+05670,San Roque,Ñame,5,3214,7.5,10498,24.6,19.8,42611
+05670,San Roque,Tomate chonto,6,0,0.0,4007,9.4,4.7,42611
+05670,San Roque,Arroz,7,0,0.0,1890,4.4,2.2,42611
+05670,San Roque,Maíz choclo,8,0,0.0,1690,4.0,2.0,42611
+05670,San Roque,Frijol voluble,9,0,0.0,571,1.3,0.6,42611
+05670,San Roque,Hortalizas clima frio,10,1,0.0,48,0.1,0.0,42611
+05670,San Roque,Papa,11,0,0.0,0,0.0,0.0,42611
+05674,San Vicente,Hortalizas clima frio,1,20441,93.8,111,0.5,94.0,21793
+05674,San Vicente,Maíz choclo,2,19933,91.5,436,2.0,92.5,21793
+05674,San Vicente,Cebolla junca,3,18170,83.4,2379,10.9,88.9,21793
+05674,San Vicente,Tomate chonto,4,16640,76.4,3839,17.6,85.2,21793
+05674,San Vicente,Frijol voluble,5,18079,83.0,418,1.9,84.0,21793
+05674,San Vicente,Maíz,6,18,0.1,20280,93.1,46.6,21793
+05674,San Vicente,Papa,7,293,1.3,18657,85.6,44.1,21793
+05674,San Vicente,Frijol arbustivo,8,16,0.1,10690,49.1,24.7,21793
+05674,San Vicente,Arroz,9,0,0.0,0,0.0,0.0,21793
+05674,San Vicente,Ñame,10,0,0.0,0,0.0,0.0,21793
+05674,San Vicente,Yuca,11,0,0.0,0,0.0,0.0,21793
+05679,Santa Bárbara,Cebolla junca,1,0,0.0,15298,72.9,36.4,20982
+05679,Santa Bárbara,Frijol arbustivo,2,2,0.0,12051,57.4,28.7,20982
+05679,Santa Bárbara,Hortalizas clima frio,3,1,0.0,5305,25.3,12.6,20982
+05679,Santa Bárbara,Frijol voluble,4,1,0.0,4456,21.2,10.6,20982
+05679,Santa Bárbara,Arroz,5,1237,5.9,818,3.9,7.8,20982
+05679,Santa Bárbara,Maíz choclo,6,12,0.1,3046,14.5,7.4,20982
+05679,Santa Bárbara,Maíz,7,4,0.0,2459,11.7,5.8,20982
+05679,Santa Bárbara,Papa,8,0,0.0,977,4.7,2.4,20982
+05679,Santa Bárbara,Ñame,9,1,0.0,957,4.6,2.3,20982
+05679,Santa Bárbara,Tomate chonto,10,2,0.0,2,0.0,0.0,20982
+05679,Santa Bárbara,Yuca,11,1,0.0,3,0.0,0.0,20982
+05042,Santa Fe de Antioquia,Frijol arbustivo,1,10227,20.6,3263,6.6,23.9,49765
+05042,Santa Fe de Antioquia,Maíz,2,2094,4.2,10364,20.8,14.6,49765
+05042,Santa Fe de Antioquia,Tomate chonto,3,5405,10.9,235,0.5,11.2,49765
+05042,Santa Fe de Antioquia,Ñame,4,11,0.0,3043,6.1,3.0,49765
+05042,Santa Fe de Antioquia,Yuca,5,1080,2.2,561,1.1,2.8,49765
+05042,Santa Fe de Antioquia,Papa,6,0,0.0,1707,3.4,1.7,49765
+05042,Santa Fe de Antioquia,Maíz choclo,7,530,1.1,232,0.5,1.4,49765
+05042,Santa Fe de Antioquia,Arroz,8,0,0.0,0,0.0,0.0,49765
+05042,Santa Fe de Antioquia,Cebolla junca,9,0,0.0,1,0.0,0.0,49765
+05042,Santa Fe de Antioquia,Frijol voluble,10,0,0.0,2,0.0,0.0,49765
+05042,Santa Fe de Antioquia,Hortalizas clima frio,11,0,0.0,3,0.0,0.0,49765
+05686,Santa Rosa de Osos,Cebolla junca,1,75282,87.4,297,0.3,87.6,86124
+05686,Santa Rosa de Osos,Frijol voluble,2,71298,82.8,422,0.5,83.0,86124
+05686,Santa Rosa de Osos,Hortalizas clima frio,3,70666,82.1,74,0.1,82.1,86124
+05686,Santa Rosa de Osos,Papa,4,65231,75.7,1338,1.6,76.5,86124
+05686,Santa Rosa de Osos,Maíz choclo,5,44522,51.7,179,0.2,51.8,86124
+05686,Santa Rosa de Osos,Tomate chonto,6,26791,31.1,2504,2.9,32.6,86124
+05686,Santa Rosa de Osos,Maíz,7,7175,8.3,40770,47.3,32.0,86124
+05686,Santa Rosa de Osos,Frijol arbustivo,8,6715,7.8,5022,5.8,10.7,86124
+05686,Santa Rosa de Osos,Ñame,9,963,1.1,258,0.3,1.2,86124
+05686,Santa Rosa de Osos,Yuca,10,929,1.1,73,0.1,1.2,86124
+05686,Santa Rosa de Osos,Arroz,11,0,0.0,0,0.0,0.0,86124
+05690,Santo Domingo,Cebolla junca,1,22420,84.7,3018,11.4,90.4,26483
+05690,Santo Domingo,Maíz,2,116,0.4,24972,94.3,47.6,26483
+05690,Santo Domingo,Hortalizas clima frio,3,11122,42.0,202,0.8,42.4,26483
+05690,Santo Domingo,Frijol arbustivo,4,11,0.0,17461,65.9,33.0,26483
+05690,Santo Domingo,Frijol voluble,5,75,0.3,14680,55.4,28.0,26483
+05690,Santo Domingo,Maíz choclo,6,0,0.0,6540,24.7,12.4,26483
+05690,Santo Domingo,Yuca,7,6,0.0,3424,12.9,6.4,26483
+05690,Santo Domingo,Ñame,8,0,0.0,2828,10.7,5.4,26483
+05690,Santo Domingo,Tomate chonto,9,2,0.0,1225,4.6,2.3,26483
+05690,Santo Domingo,Arroz,10,0,0.0,0,0.0,0.0,26483
+05690,Santo Domingo,Papa,11,0,0.0,0,0.0,0.0,26483
+05697,Santuario,Hortalizas clima frio,1,4933,63.9,93,1.2,64.5,7721
+05697,Santuario,Frijol voluble,2,4329,56.1,303,3.9,58.0,7721
+05697,Santuario,Cebolla junca,3,3381,43.8,1662,21.5,54.6,7721
+05697,Santuario,Tomate chonto,4,43,0.6,4617,59.8,30.5,7721
+05697,Santuario,Maíz choclo,5,3,0.0,2458,31.8,15.9,7721
+05697,Santuario,Papa,6,0,0.0,743,9.6,4.8,7721
+05697,Santuario,Maíz,7,0,0.0,40,0.5,0.2,7721
+05697,Santuario,Arroz,8,0,0.0,0,0.0,0.0,7721
+05697,Santuario,Frijol arbustivo,9,0,0.0,0,0.0,0.0,7721
+05697,Santuario,Ñame,10,0,0.0,0,0.0,0.0,7721
+05697,Santuario,Yuca,11,0,0.0,0,0.0,0.0,7721
+05736,Segovia,Frijol arbustivo,1,29475,26.4,2864,2.6,27.7,111871
+05736,Segovia,Arroz,2,25361,22.7,6496,5.8,25.6,111871
+05736,Segovia,Maíz,3,21902,19.6,6836,6.1,22.7,111871
+05736,Segovia,Ñame,4,555,0.5,84,0.1,0.6,111871
+05736,Segovia,Yuca,5,0,0.0,315,0.3,0.2,111871
+05736,Segovia,Cebolla junca,6,0,0.0,0,0.0,0.0,111871
+05736,Segovia,Frijol voluble,7,0,0.0,0,0.0,0.0,111871
+05736,Segovia,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,111871
+05736,Segovia,Maíz choclo,9,0,0.0,0,0.0,0.0,111871
+05736,Segovia,Papa,10,0,0.0,0,0.0,0.0,111871
+05736,Segovia,Tomate chonto,11,0,0.0,0,0.0,0.0,111871
+05756,Sonsón,Maíz,1,23424,17.4,28612,21.3,28.0,134589
+05756,Sonsón,Frijol arbustivo,2,14665,10.9,29906,22.2,22.0,134589
+05756,Sonsón,Ñame,3,25559,19.0,6458,4.8,21.4,134589
+05756,Sonsón,Yuca,4,19978,14.8,3,0.0,14.8,134589
+05756,Sonsón,Cebolla junca,5,1,0.0,35413,26.3,13.2,134589
+05756,Sonsón,Maíz choclo,6,16524,12.3,43,0.0,12.3,134589
+05756,Sonsón,Papa,7,3293,2.5,17419,12.9,9.0,134589
+05756,Sonsón,Hortalizas clima frio,8,55,0.0,23983,17.8,8.9,134589
+05756,Sonsón,Frijol voluble,9,0,0.0,17229,12.8,6.4,134589
+05756,Sonsón,Tomate chonto,10,4093,3.0,6486,4.8,5.4,134589
+05756,Sonsón,Arroz,11,0,0.0,118,0.1,0.0,134589
+05761,Sopetrán,Cebolla junca,1,0,0.0,8532,39.6,19.8,21534
+05761,Sopetrán,Hortalizas clima frio,2,0,0.0,4819,22.4,11.2,21534
+05761,Sopetrán,Frijol voluble,3,0,0.0,3508,16.3,8.2,21534
+05761,Sopetrán,Maíz,4,89,0.4,2320,10.8,5.8,21534
+05761,Sopetrán,Ñame,5,0,0.0,2428,11.3,5.6,21534
+05761,Sopetrán,Tomate chonto,6,0,0.0,1328,6.2,3.1,21534
+05761,Sopetrán,Arroz,7,0,0.0,0,0.0,0.0,21534
+05761,Sopetrán,Frijol arbustivo,8,1,0.0,19,0.1,0.0,21534
+05761,Sopetrán,Maíz choclo,9,0,0.0,0,0.0,0.0,21534
+05761,Sopetrán,Papa,10,0,0.0,2,0.0,0.0,21534
+05761,Sopetrán,Yuca,11,0,0.0,2,0.0,0.0,21534
+05790,Tarazá,Maíz,1,42280,24.6,8781,5.1,27.2,171785
+05790,Tarazá,Frijol arbustivo,2,12722,7.4,41092,23.9,19.4,171785
+05790,Tarazá,Ñame,3,14640,8.5,4138,2.4,9.7,171785
+05790,Tarazá,Arroz,4,229,0.1,30657,17.9,9.0,171785
+05790,Tarazá,Yuca,5,5353,3.1,24,0.0,3.1,171785
+05790,Tarazá,Cebolla junca,6,1634,1.0,342,0.2,1.1,171785
+05790,Tarazá,Frijol voluble,7,158,0.1,173,0.1,0.2,171785
+05790,Tarazá,Hortalizas clima frio,8,265,0.2,7,0.0,0.2,171785
+05790,Tarazá,Tomate chonto,9,345,0.2,4,0.0,0.2,171785
+05790,Tarazá,Maíz choclo,10,1,0.0,35,0.0,0.0,171785
+05790,Tarazá,Papa,11,0,0.0,13,0.0,0.0,171785
+05792,Tarso,Frijol arbustivo,1,6543,54.6,1039,8.7,59.0,11978
+05792,Tarso,Maíz,2,212,1.8,6120,51.1,27.4,11978
+05792,Tarso,Cebolla junca,3,0,0.0,5840,48.8,24.4,11978
+05792,Tarso,Ñame,4,0,0.0,3560,29.7,14.8,11978
+05792,Tarso,Arroz,5,796,6.6,844,7.1,10.1,11978
+05792,Tarso,Yuca,6,1,0.0,1984,16.6,8.3,11978
+05792,Tarso,Tomate chonto,7,89,0.7,1037,8.7,5.0,11978
+05792,Tarso,Maíz choclo,8,128,1.1,480,4.0,3.1,11978
+05792,Tarso,Frijol voluble,9,0,0.0,476,4.0,2.0,11978
+05792,Tarso,Hortalizas clima frio,10,0,0.0,177,1.5,0.8,11978
+05792,Tarso,Papa,11,0,0.0,0,0.0,0.0,11978
+05809,Titiribí,Yuca,1,0,0.0,1039,7.4,3.7,14126
+05809,Titiribí,Arroz,2,1,0.0,856,6.1,3.0,14126
+05809,Titiribí,Maíz,3,0,0.0,350,2.5,1.2,14126
+05809,Titiribí,Ñame,4,0,0.0,332,2.4,1.2,14126
+05809,Titiribí,Cebolla junca,5,0,0.0,1,0.0,0.0,14126
+05809,Titiribí,Frijol arbustivo,6,1,0.0,4,0.0,0.0,14126
+05809,Titiribí,Frijol voluble,7,0,0.0,0,0.0,0.0,14126
+05809,Titiribí,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,14126
+05809,Titiribí,Maíz choclo,9,0,0.0,0,0.0,0.0,14126
+05809,Titiribí,Papa,10,0,0.0,0,0.0,0.0,14126
+05809,Titiribí,Tomate chonto,11,0,0.0,0,0.0,0.0,14126
+05819,Toledo,Maíz,1,645,5.3,4498,37.0,23.8,12164
+05819,Toledo,Cebolla junca,2,0,0.0,5101,41.9,21.0,12164
+05819,Toledo,Frijol arbustivo,3,1,0.0,4086,33.6,16.8,12164
+05819,Toledo,Ñame,4,1,0.0,1407,11.6,5.8,12164
+05819,Toledo,Hortalizas clima frio,5,0,0.0,875,7.2,3.6,12164
+05819,Toledo,Tomate chonto,6,1,0.0,835,6.9,3.4,12164
+05819,Toledo,Frijol voluble,7,0,0.0,469,3.9,2.0,12164
+05819,Toledo,Maíz choclo,8,0,0.0,162,1.3,0.6,12164
+05819,Toledo,Arroz,9,0,0.0,0,0.0,0.0,12164
+05819,Toledo,Papa,10,0,0.0,0,0.0,0.0,12164
+05819,Toledo,Yuca,11,1,0.0,0,0.0,0.0,12164
+05837,Turbo,Arroz,1,72083,24.5,840,0.3,24.6,294775
+05837,Turbo,Maíz,2,22682,7.7,94805,32.2,23.8,294775
+05837,Turbo,Ñame,3,37504,12.7,39269,13.3,19.4,294775
+05837,Turbo,Yuca,4,22903,7.8,1,0.0,7.8,294775
+05837,Turbo,Frijol arbustivo,5,0,0.0,26164,8.9,4.4,294775
+05837,Turbo,Cebolla junca,6,0,0.0,0,0.0,0.0,294775
+05837,Turbo,Frijol voluble,7,0,0.0,0,0.0,0.0,294775
+05837,Turbo,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,294775
+05837,Turbo,Maíz choclo,9,0,0.0,0,0.0,0.0,294775
+05837,Turbo,Papa,10,0,0.0,0,0.0,0.0,294775
+05837,Turbo,Tomate chonto,11,0,0.0,0,0.0,0.0,294775
+05789,Támesis,Maíz,1,4144,16.3,11868,46.6,39.6,25470
+05789,Támesis,Cebolla junca,2,3330,13.1,10194,40.0,33.1,25470
+05789,Támesis,Frijol arbustivo,3,3687,14.5,5152,20.2,24.6,25470
+05789,Támesis,Hortalizas clima frio,4,4831,19.0,1996,7.8,22.9,25470
+05789,Támesis,Frijol voluble,5,3687,14.5,3010,11.8,20.4,25470
+05789,Támesis,Maíz choclo,6,2349,9.2,2288,9.0,13.7,25470
+05789,Támesis,Ñame,7,40,0.2,5981,23.5,12.0,25470
+05789,Támesis,Papa,8,0,0.0,4021,15.8,7.9,25470
+05789,Támesis,Tomate chonto,9,12,0.1,3491,13.7,7.0,25470
+05789,Támesis,Yuca,10,411,1.6,2395,9.4,6.3,25470
+05789,Támesis,Arroz,11,625,2.5,183,0.7,2.8,25470
+05842,Uramita,Frijol arbustivo,1,10893,40.8,1586,5.9,43.8,26695
+05842,Uramita,Maíz,2,312,1.2,10583,39.6,21.0,26695
+05842,Uramita,Tomate chonto,3,0,0.0,3934,14.7,7.4,26695
+05842,Uramita,Ñame,4,0,0.0,3820,14.3,7.2,26695
+05842,Uramita,Maíz choclo,5,0,0.0,1076,4.0,2.0,26695
+05842,Uramita,Papa,6,0,0.0,135,0.5,0.2,26695
+05842,Uramita,Arroz,7,0,0.0,1,0.0,0.0,26695
+05842,Uramita,Cebolla junca,8,5,0.0,2,0.0,0.0,26695
+05842,Uramita,Frijol voluble,9,1,0.0,0,0.0,0.0,26695
+05842,Uramita,Hortalizas clima frio,10,1,0.0,0,0.0,0.0,26695
+05842,Uramita,Yuca,11,0,0.0,1,0.0,0.0,26695
+05847,Urrao,Cebolla junca,1,0,0.0,20268,7.9,4.0,255547
+05847,Urrao,Frijol voluble,2,10,0.0,19127,7.5,3.8,255547
+05847,Urrao,Hortalizas clima frio,3,38,0.0,19523,7.6,3.8,255547
+05847,Urrao,Tomate chonto,4,1817,0.7,10100,4.0,2.7,255547
+05847,Urrao,Frijol arbustivo,5,422,0.2,9787,3.8,2.1,255547
+05847,Urrao,Maíz,6,234,0.1,7542,3.0,1.6,255547
+05847,Urrao,Maíz choclo,7,0,0.0,7452,2.9,1.4,255547
+05847,Urrao,Arroz,8,0,0.0,5016,2.0,1.0,255547
+05847,Urrao,Papa,9,0,0.0,3718,1.5,0.8,255547
+05847,Urrao,Ñame,10,0,0.0,2003,0.8,0.4,255547
+05847,Urrao,Yuca,11,0,0.0,44,0.0,0.0,255547
+05854,Valdivia,Maíz,1,8136,14.4,10112,17.8,23.3,56685
+05854,Valdivia,Ñame,2,1,0.0,2224,3.9,2.0,56685
+05854,Valdivia,Cebolla junca,3,0,0.0,881,1.6,0.8,56685
+05854,Valdivia,Frijol arbustivo,4,2,0.0,153,0.3,0.2,56685
+05854,Valdivia,Tomate chonto,5,39,0.1,146,0.3,0.2,56685
+05854,Valdivia,Arroz,6,0,0.0,130,0.2,0.1,56685
+05854,Valdivia,Frijol voluble,7,0,0.0,84,0.2,0.1,56685
+05854,Valdivia,Hortalizas clima frio,8,0,0.0,87,0.2,0.1,56685
+05854,Valdivia,Maíz choclo,9,0,0.0,1,0.0,0.0,56685
+05854,Valdivia,Papa,10,0,0.0,0,0.0,0.0,56685
+05854,Valdivia,Yuca,11,0,0.0,19,0.0,0.0,56685
+05856,Valparaiso,Frijol arbustivo,1,2,0.0,7155,56.6,28.3,12647
+05856,Valparaiso,Maíz,2,3,0.0,6139,48.5,24.2,12647
+05856,Valparaiso,Maíz choclo,3,0,0.0,50,0.4,0.2,12647
+05856,Valparaiso,Tomate chonto,4,0,0.0,20,0.2,0.1,12647
+05856,Valparaiso,Arroz,5,1,0.0,0,0.0,0.0,12647
+05856,Valparaiso,Cebolla junca,6,0,0.0,1,0.0,0.0,12647
+05856,Valparaiso,Frijol voluble,7,0,0.0,0,0.0,0.0,12647
+05856,Valparaiso,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,12647
+05856,Valparaiso,Ñame,9,3,0.0,9,0.1,0.0,12647
+05856,Valparaiso,Papa,10,0,0.0,0,0.0,0.0,12647
+05856,Valparaiso,Yuca,11,2,0.0,1,0.0,0.0,12647
+05858,Vegachí,Frijol arbustivo,1,26011,49.4,12501,23.8,61.3,52616
+05858,Vegachí,Maíz,2,1625,3.1,32136,61.1,33.6,52616
+05858,Vegachí,Cebolla junca,3,5,0.0,12227,23.2,11.6,52616
+05858,Vegachí,Ñame,4,1753,3.3,4996,9.5,8.0,52616
+05858,Vegachí,Yuca,5,1654,3.1,2745,5.2,5.7,52616
+05858,Vegachí,Arroz,6,0,0.0,8,0.0,0.0,52616
+05858,Vegachí,Frijol voluble,7,0,0.0,0,0.0,0.0,52616
+05858,Vegachí,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,52616
+05858,Vegachí,Maíz choclo,9,0,0.0,0,0.0,0.0,52616
+05858,Vegachí,Papa,10,0,0.0,0,0.0,0.0,52616
+05858,Vegachí,Tomate chonto,11,0,0.0,2,0.0,0.0,52616
+05861,Venecia,Maíz,1,5,0.0,545,3.9,2.0,14097
+05861,Venecia,Ñame,2,1,0.0,530,3.8,1.9,14097
+05861,Venecia,Frijol arbustivo,3,3,0.0,48,0.3,0.2,14097
+05861,Venecia,Arroz,4,0,0.0,0,0.0,0.0,14097
+05861,Venecia,Cebolla junca,5,0,0.0,0,0.0,0.0,14097
+05861,Venecia,Frijol voluble,6,0,0.0,0,0.0,0.0,14097
+05861,Venecia,Hortalizas clima frio,7,0,0.0,0,0.0,0.0,14097
+05861,Venecia,Maíz choclo,8,0,0.0,0,0.0,0.0,14097
+05861,Venecia,Papa,9,0,0.0,0,0.0,0.0,14097
+05861,Venecia,Tomate chonto,10,1,0.0,0,0.0,0.0,14097
+05861,Venecia,Yuca,11,2,0.0,0,0.0,0.0,14097
+05873,Vigia del Fuerte,Maíz,1,0,0.0,1236,0.7,0.4,166352
+05873,Vigia del Fuerte,Arroz,2,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Cebolla junca,3,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Frijol arbustivo,4,0,0.0,1,0.0,0.0,166352
+05873,Vigia del Fuerte,Frijol voluble,5,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Hortalizas clima frio,6,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Maíz choclo,7,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Ñame,8,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Papa,9,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Tomate chonto,10,0,0.0,0,0.0,0.0,166352
+05873,Vigia del Fuerte,Yuca,11,0,0.0,0,0.0,0.0,166352
+05885,Yalí,Frijol arbustivo,1,10138,22.9,15584,35.1,40.4,44366
+05885,Yalí,Maíz,2,6495,14.6,18292,41.2,35.2,44366
+05885,Yalí,Arroz,3,0,0.0,11580,26.1,13.0,44366
+05885,Yalí,Ñame,4,3707,8.4,3508,7.9,12.4,44366
+05885,Yalí,Cebolla junca,5,103,0.2,8133,18.3,9.4,44366
+05885,Yalí,Yuca,6,2706,6.1,737,1.7,7.0,44366
+05885,Yalí,Frijol voluble,7,0,0.0,0,0.0,0.0,44366
+05885,Yalí,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,44366
+05885,Yalí,Maíz choclo,9,0,0.0,0,0.0,0.0,44366
+05885,Yalí,Papa,10,0,0.0,0,0.0,0.0,44366
+05885,Yalí,Tomate chonto,11,0,0.0,0,0.0,0.0,44366
+05887,Yarumal,Papa,1,15619,21.8,8435,11.8,27.7,71729
+05887,Yarumal,Maíz choclo,2,11173,15.6,4750,6.6,18.9,71729
+05887,Yarumal,Tomate chonto,3,607,0.9,10167,14.2,8.0,71729
+05887,Yarumal,Frijol arbustivo,4,2235,3.1,6059,8.5,7.4,71729
+05887,Yarumal,Maíz,5,197,0.3,4747,6.6,3.6,71729
+05887,Yarumal,Ñame,6,2,0.0,1023,1.4,0.7,71729
+05887,Yarumal,Cebolla junca,7,17,0.0,474,0.7,0.4,71729
+05887,Yarumal,Frijol voluble,8,6,0.0,473,0.7,0.4,71729
+05887,Yarumal,Hortalizas clima frio,9,17,0.0,456,0.6,0.3,71729
+05887,Yarumal,Yuca,10,1,0.0,345,0.5,0.2,71729
+05887,Yarumal,Arroz,11,0,0.0,0,0.0,0.0,71729
+05890,Yolombó,Frijol arbustivo,1,72333,71.2,31,0.0,71.2,101619
+05890,Yolombó,Maíz,2,62922,61.9,7506,7.4,65.6,101619
+05890,Yolombó,Cebolla junca,3,19593,19.3,39479,38.9,38.8,101619
+05890,Yolombó,Yuca,4,21287,21.0,6,0.0,21.0,101619
+05890,Yolombó,Ñame,5,9898,9.7,10312,10.2,14.8,101619
+05890,Yolombó,Tomate chonto,6,8429,8.3,887,0.9,8.8,101619
+05890,Yolombó,Arroz,7,0,0.0,7874,7.8,3.9,101619
+05890,Yolombó,Maíz choclo,8,1145,1.1,413,0.4,1.3,101619
+05890,Yolombó,Frijol voluble,9,1,0.0,974,1.0,0.5,101619
+05890,Yolombó,Hortalizas clima frio,10,0,0.0,159,0.2,0.1,101619
+05890,Yolombó,Papa,11,0,0.0,0,0.0,0.0,101619
+05893,Yondó (Casabe),Maíz,1,93332,49.2,3563,1.9,50.2,189595
+05893,Yondó (Casabe),Yuca,2,50673,26.7,490,0.3,26.8,189595
+05893,Yondó (Casabe),Ñame,3,41478,21.9,13908,7.3,25.5,189595
+05893,Yondó (Casabe),Frijol arbustivo,4,0,0.0,56789,30.0,15.0,189595
+05893,Yondó (Casabe),Arroz,5,0,0.0,7186,3.8,1.9,189595
+05893,Yondó (Casabe),Cebolla junca,6,0,0.0,0,0.0,0.0,189595
+05893,Yondó (Casabe),Frijol voluble,7,0,0.0,0,0.0,0.0,189595
+05893,Yondó (Casabe),Hortalizas clima frio,8,0,0.0,0,0.0,0.0,189595
+05893,Yondó (Casabe),Maíz choclo,9,0,0.0,0,0.0,0.0,189595
+05893,Yondó (Casabe),Papa,10,0,0.0,0,0.0,0.0,189595
+05893,Yondó (Casabe),Tomate chonto,11,0,0.0,0,0.0,0.0,189595
+05895,Zaragoza,Maíz,1,41008,34.9,6,0.0,34.9,117615
+05895,Zaragoza,Arroz,2,82,0.1,47131,40.1,20.2,117615
+05895,Zaragoza,Frijol arbustivo,3,13,0.0,45705,38.9,19.4,117615
+05895,Zaragoza,Ñame,4,0,0.0,972,0.8,0.4,117615
+05895,Zaragoza,Yuca,5,0,0.0,971,0.8,0.4,117615
+05895,Zaragoza,Cebolla junca,6,0,0.0,0,0.0,0.0,117615
+05895,Zaragoza,Frijol voluble,7,0,0.0,0,0.0,0.0,117615
+05895,Zaragoza,Hortalizas clima frio,8,0,0.0,0,0.0,0.0,117615
+05895,Zaragoza,Maíz choclo,9,0,0.0,0,0.0,0.0,117615
+05895,Zaragoza,Papa,10,0,0.0,0,0.0,0.0,117615
+05895,Zaragoza,Tomate chonto,11,0,0.0,0,0.0,0.0,117615

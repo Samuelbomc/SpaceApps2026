@@ -1,0 +1,178 @@
+{
+  "municipio": "La Unión",
+  "zona": "fria",
+  "temperatura_supuesta_C": 15.0,
+  "lluvias": "bimodal",
+  "pesos": {
+    "ingreso": 0.42,
+    "riesgo": 0.12,
+    "suelo": 0.35,
+    "trabajo": 0.12
+  },
+  "n_rotaciones_validas": 42,
+  "rotaciones": [
+    {
+      "puesto": 1,
+      "puntaje": 0.619,
+      "secuencia": [
+        {
+          "temporada": "Mar-May",
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
+        },
+        {
+          "temporada": "Jun-Ago",
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
+        },
+        {
+          "temporada": "Sep-Nov",
+          "cultivo": "brocoli",
+          "nombre": "brócoli",
+          "familia": "Brassicaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
+        },
+        {
+          "temporada": "Dic-Feb",
+          "cultivo": "zanahoria",
+          "nombre": "zanahoria",
+          "familia": "Apiaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
+        }
+      ],
+      "componentes": {
+        "ingreso": 0.68,
+        "riesgo_clima": 0.16,
+        "suelo": 0.57,
+        "trabajo": 0.68,
+        "aptitud_ecocrop": 0.94
+      },
+      "explicacion": "Se recomienda porque le deja buena plata.",
+      "alertas": [
+        "El fríjol voluble crece más lento con esta temperatura (le va mejor desde 16 °C): use semilla adaptada a la zona."
+      ]
+    },
+    {
+      "puesto": 2,
+      "puntaje": 0.619,
+      "secuencia": [
+        {
+          "temporada": "Mar-May",
+          "cultivo": "brocoli",
+          "nombre": "brócoli",
+          "familia": "Brassicaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
+        },
+        {
+          "temporada": "Jun-Ago",
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
+        },
+        {
+          "temporada": "Sep-Nov",
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
+        },
+        {
+          "temporada": "Dic-Feb",
+          "cultivo": "zanahoria",
+          "nombre": "zanahoria",
+          "familia": "Apiaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
+        }
+      ],
+      "componentes": {
+        "ingreso": 0.68,
+        "riesgo_clima": 0.16,
+        "suelo": 0.57,
+        "trabajo": 0.68,
+        "aptitud_ecocrop": 0.94
+      },
+      "explicacion": "Se recomienda porque le deja buena plata.",
+      "alertas": [
+        "El fríjol voluble crece más lento con esta temperatura (le va mejor desde 16 °C): use semilla adaptada a la zona."
+      ]
+    },
+    {
+      "puesto": 3,
+      "puntaje": 0.618,
+      "secuencia": [
+        {
+          "temporada": "Mar-May",
+          "cultivo": "brocoli",
+          "nombre": "brócoli",
+          "familia": "Brassicaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
+        },
+        {
+          "temporada": "Jun-Ago",
+          "cultivo": "zanahoria",
+          "nombre": "zanahoria",
+          "familia": "Apiaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
+        },
+        {
+          "temporada": "Sep-Nov",
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
+        },
+        {
+          "temporada": "Dic-Feb",
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
+        }
+      ],
+      "componentes": {
+        "ingreso": 0.68,
+        "riesgo_clima": 0.17,
+        "suelo": 0.57,
+        "trabajo": 0.68,
+        "aptitud_ecocrop": 0.94
+      },
+      "explicacion": "Se recomienda porque le deja buena plata.",
+      "alertas": [
+        "El fríjol voluble crece más lento con esta temperatura (le va mejor desde 16 °C): use semilla adaptada a la zona."
+      ]
+    }
+  ],
+  "cultivos_descartados": {
+    "maiz": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
+    "arroz": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
+    "frijol_arbustivo": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
+    "yuca": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
+    "name_criollo": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
+    "name_espino": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
+    "repollo": "el agricultor no puede sembrarlo (semilla, precio o comprador)",
+    "descanso_cubierto": "el agricultor no puede dejar una temporada sin vender"
+  },
+  "alertas_generales": [
+    "Tiene gusano blanco: no vuelva a sembrar papa en este lote hasta completar la rotación.",
+    "Tiene gota: no siembre papa ni tomate en la temporada de más lluvia y elimine las plantas de papa que salgan solas.",
+    "Este lote viene de papa repetido: lo más importante ahora es cambiar de familia de planta."
+  ],
+  "aviso": "Clima: zona dicha por el agricultor + rangos FAO ECOCROP. Aptitud del municipio: UPRA. Tolerancia a hongos, aporte al suelo, ingreso y trabajo son ESTIMADOS (datos/cultivos.csv)."
+}

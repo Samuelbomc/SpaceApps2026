@@ -1,0 +1,13 @@
+{
+  "_nota": "Respuestas inventadas para probar. Mismo formato que guarda entrevista.py.",
+  "finca": {"nombre": "La Esperanza", "municipio": "La Unión", "zona": "fria", "lluvias": "bimodal"},
+  "lote": {"nombre": "Lote de arriba", "pendiente": "alta", "drenaje": "encharca", "riego": false,
+           "labranza": "tractor", "descanso": "desnudo"},
+  "historial": {"ultimos_cultivos": ["papa", "papa", "papa"]},
+  "suelo": {"produccion": "menos", "se_lava": "mucho", "abono": "quimico", "coberturas": false},
+  "plagas_recurrentes": ["gota", "gusano blanco"],
+  "plagas_fumigaciones": 8,
+  "restricciones": {"sin_semilla_o_comprador": ["repollo"], "aguanta_temporada_sin_venta": false, "mano_obra": "media"},
+  "mercado": {"tiene_ganado": true},
+  "prioridad_principal": "ingreso"
+}

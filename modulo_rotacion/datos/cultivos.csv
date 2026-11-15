@@ -1,0 +1,14 @@
+CULTIVO,CADENA_UPRA,ESPECIE_ECOCROP,FAMILIA,TIPO,TEMPORADAS_CICLO,TOLERANCIA_HONGOS,FIJA_NITROGENO,APORTE_SUELO,INGRESO_REL,TRABAJO_REL,ESTADO_PARAMETROS_AGRONOMICOS
+maiz,Maíz,Zea mays ssp. mays,Poaceae,ingreso,2,alta,0,0.5,0.5,0.5,ESTIMADO
+arroz,Arroz,Oryza sativa,Poaceae,ingreso,2,media,0,0.4,0.6,0.6,ESTIMADO
+frijol_arbustivo,Frijol arbustivo,Phaseolus vulgaris,Fabaceae,restaura,1,media,1,0.6,0.6,0.6,ESTIMADO
+frijol_voluble,Frijol voluble,Phaseolus vulgaris,Fabaceae,restaura,2,media,1,0.6,0.7,0.7,ESTIMADO
+yuca,Yuca,Manihot esculenta,Euphorbiaceae,ingreso,3,alta,0,0.3,0.6,0.4,ESTIMADO
+name_criollo,Ñame,Dioscorea alata,Dioscoreaceae,ingreso,3,media,0,0.3,0.7,0.6,ESTIMADO
+name_espino,Ñame,Dioscorea rotundata,Dioscoreaceae,ingreso,3,media,0,0.3,0.7,0.6,ESTIMADO
+cebolla_junca,Cebolla junca,Allium fistulosum,Amaryllidaceae,ingreso,2,media,0,0.2,0.8,0.8,ESTIMADO
+brocoli,Hortalizas clima frio,Brassica oleracea var. italica,Brassicaceae,ingreso,1,media,0,0.4,0.7,0.7,ESTIMADO
+repollo,Hortalizas clima frio,Brassica oleracea var. capitata,Brassicaceae,ingreso,1,media,0,0.4,0.6,0.6,ESTIMADO
+zanahoria,Hortalizas clima frio,Daucus carota,Apiaceae,ingreso,1,media,0,0.3,0.6,0.6,ESTIMADO
+lechuga,Hortalizas clima frio,Lactuca sativa var. capitata,Asteraceae,ingreso,1,media,0,0.3,0.5,0.6,ESTIMADO
+descanso_cubierto,,,Ninguna,cobertura,1,alta,0,0.5,0.0,0.1,ESTIMADO
