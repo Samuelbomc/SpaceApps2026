@@ -8,5 +8,12 @@ from .power import PowerRepository
 from .smap import SMAPRepository
 from .srtm import SRTMRepository
 
-__all__ = ["PowerRepository", "GPMRepository", "SMAPRepository", "SRTMRepository",
-           "GRACERepository", "ECOSTRESSRepository", "LandsatRepository"]
+__all__ = [
+    "PowerRepository",
+    "GPMRepository",
+    "SMAPRepository",
+    "SRTMRepository",
+    "GRACERepository",
+    "ECOSTRESSRepository",
+    "LandsatRepository",
+]

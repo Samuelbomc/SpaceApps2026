@@ -1,6 +1,6 @@
 # Cliente compartido de FastAPI
 
-Cliente Fetch sin React, Next.js, Angular ni dependencias de ejecución. Los tipos
+Cliente Fetch independiente del framework, sin dependencias de ejecución. Los tipos
 proceden de `packages/contracts/api.generated.ts`; se regeneran con
 `python -m scripts.export_openapi`, no se mantienen DTOs paralelos en cada UI.
 

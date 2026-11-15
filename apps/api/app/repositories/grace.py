@@ -1,7 +1,8 @@
 """Repositorio de acceso a GRACE/GRACE-FO."""
 
-from ._satellite import SatelliteRepository
 from pipelines.ingestion.sources.nasa.grace import GRACEClient
+
+from ._satellite import SatelliteRepository
 
 
 class GRACERepository(SatelliteRepository):

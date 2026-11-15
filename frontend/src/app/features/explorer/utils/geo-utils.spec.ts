@@ -19,7 +19,18 @@ describe('geo-utils', () => {
       type: 'Feature',
       id: 1,
       properties: {},
-      geometry: { type: 'Polygon', coordinates: [[[-76, 5], [-75, 5], [-75, 6], [-76, 6], [-76, 5]]] },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-76, 5],
+            [-75, 5],
+            [-75, 6],
+            [-76, 6],
+            [-76, 5],
+          ],
+        ],
+      },
     };
     const multi: BoundaryFeature<unknown> = {
       type: 'Feature',
@@ -28,8 +39,22 @@ describe('geo-utils', () => {
       geometry: {
         type: 'MultiPolygon',
         coordinates: [
-          [[[-74, 4], [-73, 4], [-73, 5], [-74, 4]]],
-          [[[-72, 7], [-71, 7], [-71, 8], [-72, 7]]],
+          [
+            [
+              [-74, 4],
+              [-73, 4],
+              [-73, 5],
+              [-74, 4],
+            ],
+          ],
+          [
+            [
+              [-72, 7],
+              [-71, 7],
+              [-71, 8],
+              [-72, 7],
+            ],
+          ],
         ],
       },
     };

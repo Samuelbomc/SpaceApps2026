@@ -15,7 +15,9 @@
     margin-block: var(--sp-2);
   }
 
-  p { color: var(--c-ink-muted); }
+  p {
+    color: var(--c-ink-muted);
+  }
 }
 
 .resume {
@@ -51,7 +53,9 @@
   gap: var(--sp-3);
   margin-bottom: var(--sp-4);
 
-  h2 { font-size: var(--fs-lg); }
+  h2 {
+    font-size: var(--fs-lg);
+  }
 }
 
 .empty {
@@ -64,5 +68,7 @@
   background: var(--c-surface-sunken);
   font-size: var(--fs-sm);
 
-  strong { color: var(--c-ink); }
+  strong {
+    color: var(--c-ink);
+  }
 }

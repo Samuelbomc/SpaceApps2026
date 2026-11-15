@@ -1,7 +1,8 @@
 """Repositorio de acceso a SMAP."""
 
-from ._satellite import SatelliteRepository
 from pipelines.ingestion.sources.nasa.smap import SMAPClient
+
+from ._satellite import SatelliteRepository
 
 
 class SMAPRepository(SatelliteRepository):

@@ -12,6 +12,7 @@ Durante la entrevista:
   - escriba ? para saber por que se hace la pregunta
   - presione Enter para saltarla
 """
+
 import argparse
 import json
 import unicodedata
@@ -29,8 +30,13 @@ else:
     from motor_rotacion import recomendar
 
 DATOS = Path(__file__).parent / "datos"
-DEFECTOS = {"lote.nombre": "Lote 1", "finca.zona": "templada", "lote.pendiente": "media",
-            "mercado.tiene_ganado": False, "restricciones.sin_semilla_o_comprador": []}
+DEFECTOS = {
+    "lote.nombre": "Lote 1",
+    "finca.zona": "templada",
+    "lote.pendiente": "media",
+    "mercado.tiene_ganado": False,
+    "restricciones.sin_semilla_o_comprador": [],
+}
 
 
 def _norm(t):
@@ -107,7 +113,9 @@ def preguntar(p, banco, lista_muni):
                 return False, None
             print("   Escriba 1 (Sí) o 2 (No).")
         elif t == "municipio":
-            enc = [m for m in lista_muni if _norm(m) == _norm(r)] or [m for m in lista_muni if _norm(r) in _norm(m)]
+            enc = [m for m in lista_muni if _norm(m) == _norm(r)] or [
+                m for m in lista_muni if _norm(r) in _norm(m)
+            ]
             if len(enc) == 1:
                 print(f"   ✓ {enc[0]}")
                 return enc[0], None
@@ -118,7 +126,9 @@ def preguntar(p, banco, lista_muni):
                 if e.isdigit() and 1 <= int(e) <= len(enc[:9]):
                     return enc[int(e) - 1], None
             else:
-                print("   No encontramos ese municipio de Antioquia. Escríbalo de nuevo (o Enter para saltar).")
+                print(
+                    "   No encontramos ese municipio de Antioquia. Escríbalo de nuevo (o Enter para saltar)."
+                )
         else:
             return r, None
 
@@ -146,12 +156,17 @@ def cargar_banco():
             continue
         extra = json.loads(f.read_text(encoding="utf-8"))
         ids = [p["id"] for p in preguntas]
-        pos = ids.index(extra["insertar_despues_de"]) + 1 if extra.get("insertar_despues_de") in ids else len(preguntas)
+        pos = (
+            ids.index(extra["insertar_despues_de"]) + 1
+            if extra.get("insertar_despues_de") in ids
+            else len(preguntas)
+        )
         preguntas = preguntas[:pos] + extra["preguntas"] + preguntas[pos:]
     vistos, unicas = set(), []
     for p in preguntas:
         if p["campo"] not in vistos:
-            vistos.add(p["campo"]); unicas.append(p)
+            vistos.add(p["campo"])
+            unicas.append(p)
     banco["preguntas"] = unicas
     return banco
 
@@ -185,8 +200,8 @@ def entrevistar(completa=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--completa", action="store_true", help="agrega las preguntas opcionales")
-    ap.add_argument('--analisis', type=Path, help='AnalysisResult precalculado de XGBoost')
-    ap.add_argument('--region-id', help='Región explícitamente asociada al lote')
+    ap.add_argument("--analisis", type=Path, help="AnalysisResult precalculado de XGBoost")
+    ap.add_argument("--region-id", help="Región explícitamente asociada al lote")
     a = ap.parse_args()
 
     resp = entrevistar(a.completa)
@@ -196,7 +211,9 @@ def main():
     print("\n" + "=" * 55)
     print(resumen_texto(resp, diag, rec).replace("*", ""))
     print("=" * 55)
-    finca = leer("\n¿Quiere guardar este lote? Escriba el nombre de la finca (Enter = no guardar): ")
+    finca = leer(
+        "\n¿Quiere guardar este lote? Escriba el nombre de la finca (Enter = no guardar): "
+    )
     if finca:
         poner(resp, "finca.nombre", finca)
         fj, ft = guardar(resp, diag, rec)

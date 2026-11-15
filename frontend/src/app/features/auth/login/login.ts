@@ -13,7 +13,7 @@ import { safeReturnUrl } from '../../../core/auth/auth.guards';
 import { AuthLayout } from '../auth-layout/auth-layout';
 import { MIN_PASSWORD_LENGTH, focusFirstInvalid, messageFor, showError } from '../form-helpers';
 
-/** Login screen (demonstration authentication). */
+/** Login screen backed by the HTTP authentication gateway. */
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink, AuthLayout],

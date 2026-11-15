@@ -79,7 +79,11 @@ const KIND_ORDER: Record<GeoSearchKind, number> = { region: 0, municipality: 1, 
  * starts with > contains; ties broken by kind (region, municipality, department)
  * and then alphabetically.
  */
-export function searchGeo(index: readonly GeoSearchEntry[], query: string, limit = 8): GeoSearchEntry[] {
+export function searchGeo(
+  index: readonly GeoSearchEntry[],
+  query: string,
+  limit = 8,
+): GeoSearchEntry[] {
   const q = normalizeName(query);
   if (q.length < 2) return [];
   const score = (key: string): number => {

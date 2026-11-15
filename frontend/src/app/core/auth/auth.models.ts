@@ -7,8 +7,6 @@ export interface UserProfile {
 
 export interface UserSession {
   user: UserProfile;
-  /** True for the frontend-only demonstration session. */
-  isDemo: boolean;
   startedAt: string;
 }
 

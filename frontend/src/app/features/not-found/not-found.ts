@@ -6,9 +6,17 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
-    .wrap { max-width: 36rem; }
-    h1 { font-size: var(--fs-2xl); margin-block: var(--sp-3); }
-    p { color: var(--c-ink-muted); margin-bottom: var(--sp-5); }
+    .wrap {
+      max-width: 36rem;
+    }
+    h1 {
+      font-size: var(--fs-2xl);
+      margin-block: var(--sp-3);
+    }
+    p {
+      color: var(--c-ink-muted);
+      margin-bottom: var(--sp-5);
+    }
   `,
   template: `
     <section class="section">

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -11,7 +18,7 @@ import {
   showError,
 } from '../form-helpers';
 
-/** Account registration screen (demonstration: no account is created). */
+/** Account registration screen backed by FastAPI. */
 @Component({
   selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink, AuthLayout],

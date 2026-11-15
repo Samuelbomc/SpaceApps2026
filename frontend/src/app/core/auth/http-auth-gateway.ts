@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createAPIClient, APIError, type AuthSession } from '@field-shift/api-client';
 import { AuthGateway } from './auth-gateway';
-import { AuthError, LoginRequest, RegisterRequest, UserProfile, UserSession } from './auth.models';
+import { LoginRequest, RegisterRequest, UserSession } from './auth.models';
 @Injectable()
 export class HttpAuthGateway extends AuthGateway {
   private readonly client = createAPIClient();
@@ -15,7 +15,6 @@ export class HttpAuthGateway extends AuthGateway {
         name: session.user.display_name,
         email: session.user.email,
       },
-      isDemo: false,
       startedAt: session.user.created_at,
     };
   }
@@ -65,11 +64,5 @@ export class HttpAuthGateway extends AuthGateway {
       if (!(error instanceof APIError && error.status === 401)) throw error;
     }
     this.current = null;
-  }
-  override async requestPasswordReset(): Promise<void> {
-    throw new AuthError('La recuperación de contraseña todavía no está disponible.');
-  }
-  override async updateProfile(_changes: Pick<UserProfile, 'name'>): Promise<UserSession> {
-    throw new AuthError('La edición de nombre todavía no está disponible.');
   }
 }

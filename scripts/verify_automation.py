@@ -12,10 +12,14 @@ from pathlib import Path
 def main():
     from pymongo import MongoClient
     from pymongo.errors import PyMongoError
+
     from scripts.verify_postgres import main as verify_postgres
+
     binary = shutil.which("mongod")
     if not binary:
-        raise SystemExit("Instala mongod o ejecuta la suite con TEST_DATABASE_URL y TEST_MONGODB_URI de pruebas.")
+        raise SystemExit(
+            "Instala mongod o ejecuta la suite con TEST_DATABASE_URL y TEST_MONGODB_URI de pruebas."
+        )
     with tempfile.TemporaryDirectory(prefix="fs-automation-") as folder:
         with socket.socket() as reservation:
             reservation.bind(("127.0.0.1", 0))
@@ -24,8 +28,22 @@ def main():
         database = directory / "mongo"
         database.mkdir()
         with (directory / "mongo.log").open("w") as log:
-            process = subprocess.Popen([binary, "--dbpath", str(database), "--bind_ip", "127.0.0.1", "--port", str(port),
-                                        "--wiredTigerCacheSizeGB", "0.25", "--quiet"], stdout=log, stderr=log)
+            process = subprocess.Popen(
+                [
+                    binary,
+                    "--dbpath",
+                    str(database),
+                    "--bind_ip",
+                    "127.0.0.1",
+                    "--port",
+                    str(port),
+                    "--wiredTigerCacheSizeGB",
+                    "0.25",
+                    "--quiet",
+                ],
+                stdout=log,
+                stderr=log,
+            )
             uri = f"mongodb://127.0.0.1:{port}"
             client = MongoClient(uri, serverSelectionTimeoutMS=300)
             try:
@@ -36,7 +54,7 @@ def main():
                         client.admin.command("ping")
                         break
                     except PyMongoError:
-                        time.sleep(.2)
+                        time.sleep(0.2)
                 else:
                     raise RuntimeError("MongoDB temporal no respondió.")
                 previous = os.environ.get("TEST_MONGODB_URI")

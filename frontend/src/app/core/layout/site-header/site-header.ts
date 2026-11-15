@@ -27,7 +27,9 @@ export class SiteHeader {
   private readonly journey = inject(AnalysisJourneyStore);
   private readonly router = inject(Router);
 
-  protected readonly navItems = computed(() => (this.auth.isAuthenticated() ? APP_NAV : PUBLIC_NAV));
+  protected readonly navItems = computed(() =>
+    this.auth.isAuthenticated() ? APP_NAV : PUBLIC_NAV,
+  );
   protected readonly menuOpen = signal(false);
   protected readonly initials = computed(() =>
     (this.auth.user()?.name ?? '')

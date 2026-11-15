@@ -41,12 +41,11 @@ import math
 import sys
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 SERVICE = (
-    "https://geoportal.dane.gov.co/mparcgis/rest/services/"
-    "MGN2025/Serv_CapasMGN_2025/FeatureServer"
+    "https://geoportal.dane.gov.co/mparcgis/rest/services/MGN2025/Serv_CapasMGN_2025/FeatureServer"
 )
 MGN_VERSION = "MGN 2025"
 LAYER_DEPARTMENTS = 319
@@ -167,11 +166,7 @@ def label_point(geom: dict, grid: int = 24) -> list[float]:
             y = min(ys) + (max(ys) - min(ys)) * j / grid
             if not point_in_ring(x, y, outer) or any(point_in_ring(x, y, h) for h in poly[1:]):
                 continue
-            d = min(
-                dist_to_segment(x, y, *a, *b)
-                for ring in poly
-                for a, b in zip(ring, ring[1:])
-            )
+            d = min(dist_to_segment(x, y, *a, *b) for ring in poly for a, b in zip(ring, ring[1:]))
             if d > best_d:
                 best, best_d = [x, y], d
     if best is None:  # extremely thin shape: fall back to first vertex
@@ -180,7 +175,9 @@ def label_point(geom: dict, grid: int = 24) -> list[float]:
 
 
 # -------------------------------------------------------------------- validation
-def validate(features: list[dict], code_key: str, name_key: str, expected: int, area_key: str | None):
+def validate(
+    features: list[dict], code_key: str, name_key: str, expected: int, area_key: str | None
+):
     report = {"count": len(features), "expected": expected, "errors": [], "warnings": []}
     if len(features) != expected:
         report["errors"].append(f"Expected {expected} features, got {len(features)}")
@@ -196,8 +193,13 @@ def validate(features: list[dict], code_key: str, name_key: str, expected: int, 
                 if ring[0] != ring[-1] or len(ring) < 4:
                     report["errors"].append(f"Invalid ring in {p[code_key]}")
                 for lon, lat in ring:
-                    if not (COLOMBIA_BBOX[0] <= lon <= COLOMBIA_BBOX[2] and COLOMBIA_BBOX[1] <= lat <= COLOMBIA_BBOX[3]):
-                        report["errors"].append(f"Coordinate outside Colombia bbox in {p[code_key]}")
+                    if not (
+                        COLOMBIA_BBOX[0] <= lon <= COLOMBIA_BBOX[2]
+                        and COLOMBIA_BBOX[1] <= lat <= COLOMBIA_BBOX[3]
+                    ):
+                        report["errors"].append(
+                            f"Coordinate outside Colombia bbox in {p[code_key]}"
+                        )
                         break
     if area_key:
         deviations = []
@@ -205,7 +207,9 @@ def validate(features: list[dict], code_key: str, name_key: str, expected: int, 
             official = f["properties"].get(area_key)
             if official:
                 computed = geometry_area_km2(f["geometry"])
-                deviations.append((abs(computed - official) / official * 100, f["properties"][code_key]))
+                deviations.append(
+                    (abs(computed - official) / official * 100, f["properties"][code_key])
+                )
         if deviations:
             deviations.sort(reverse=True)
             report["areaDeviationPct"] = {
@@ -215,67 +219,84 @@ def validate(features: list[dict], code_key: str, name_key: str, expected: int, 
                 "note": "Simplified-geometry spherical area vs. DANE official area field.",
             }
             if deviations[0][0] > 2.0:
-                report["warnings"].append("Some features changed area by more than 2% after simplification.")
+                report["warnings"].append(
+                    "Some features changed area by more than 2% after simplification."
+                )
     return report
 
 
 # -------------------------------------------------------------------------- main
 def build(out_dir: Path) -> None:
-    retrieved = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    retrieved = datetime.now(UTC).isoformat(timespec="seconds")
 
     deps_raw = query(
-        LAYER_DEPARTMENTS, "DPTO_CCDGO IS NOT NULL", "DPTO_CCDGO,DPTO_CNMBRE,DPTO_NAREA",
-        DEPT_TOLERANCE_DEG, DEPT_PRECISION,
+        LAYER_DEPARTMENTS,
+        "DPTO_CCDGO IS NOT NULL",
+        "DPTO_CCDGO,DPTO_CNMBRE,DPTO_NAREA",
+        DEPT_TOLERANCE_DEG,
+        DEPT_PRECISION,
     )
     departments = []
     for f in deps_raw["features"]:
         a = f["attributes"]
         geom = esri_rings_to_geojson(f["geometry"]["rings"])
-        departments.append({
-            "type": "Feature",
-            "id": int(a["DPTO_CCDGO"]),  # numeric id enables MapLibre feature-state
-            "properties": {
-                "code": a["DPTO_CCDGO"],
-                "name": a["DPTO_CNMBRE"],
-                "areaKm2": round(a["DPTO_NAREA"], 1) if a.get("DPTO_NAREA") else None,
-                "isPilot": a["DPTO_CCDGO"] == PILOT_DEPARTMENT_CODE,
-                "labelLon": label_point(geom)[0],
-                "labelLat": label_point(geom)[1],
-            },
-            "geometry": geom,
-        })
+        departments.append(
+            {
+                "type": "Feature",
+                "id": int(a["DPTO_CCDGO"]),  # numeric id enables MapLibre feature-state
+                "properties": {
+                    "code": a["DPTO_CCDGO"],
+                    "name": a["DPTO_CNMBRE"],
+                    "areaKm2": round(a["DPTO_NAREA"], 1) if a.get("DPTO_NAREA") else None,
+                    "isPilot": a["DPTO_CCDGO"] == PILOT_DEPARTMENT_CODE,
+                    "labelLon": label_point(geom)[0],
+                    "labelLat": label_point(geom)[1],
+                },
+                "geometry": geom,
+            }
+        )
     departments.sort(key=lambda f: f["properties"]["code"])
 
     munis_raw = query(
-        LAYER_MUNICIPALITIES, f"DPTO_CCDGO='{PILOT_DEPARTMENT_CODE}'",
+        LAYER_MUNICIPALITIES,
+        f"DPTO_CCDGO='{PILOT_DEPARTMENT_CODE}'",
         "DPTO_CCDGO,MPIO_CDPMP,MPIO_CNMBRE,MPIO_TIPO,MPIO_NAREA",
-        MUNI_TOLERANCE_DEG, MUNI_PRECISION,
+        MUNI_TOLERANCE_DEG,
+        MUNI_PRECISION,
     )
     municipalities = []
     for f in munis_raw["features"]:
         a = f["attributes"]
         geom = esri_rings_to_geojson(f["geometry"]["rings"])
         lp = label_point(geom)
-        municipalities.append({
-            "type": "Feature",
-            "id": int(a["MPIO_CDPMP"]),
-            "properties": {
-                "code": a["MPIO_CDPMP"],
-                "departmentCode": a["DPTO_CCDGO"],
-                "name": a["MPIO_CNMBRE"],
-                "type": a.get("MPIO_TIPO"),
-                "areaKm2": round(a["MPIO_NAREA"], 1) if a.get("MPIO_NAREA") else None,
-                "labelLon": lp[0],
-                "labelLat": lp[1],
-            },
-            "geometry": geom,
-        })
+        municipalities.append(
+            {
+                "type": "Feature",
+                "id": int(a["MPIO_CDPMP"]),
+                "properties": {
+                    "code": a["MPIO_CDPMP"],
+                    "departmentCode": a["DPTO_CCDGO"],
+                    "name": a["MPIO_CNMBRE"],
+                    "type": a.get("MPIO_TIPO"),
+                    "areaKm2": round(a["MPIO_NAREA"], 1) if a.get("MPIO_NAREA") else None,
+                    "labelLon": lp[0],
+                    "labelLat": lp[1],
+                },
+                "geometry": geom,
+            }
+        )
     municipalities.sort(key=lambda f: f["properties"]["code"])
 
     dep_report = validate(departments, "code", "name", EXPECTED_DEPARTMENTS, "areaKm2")
     mun_report = validate(municipalities, "code", "name", EXPECTED_PILOT_MUNICIPALITIES, "areaKm2")
     if dep_report["errors"] or mun_report["errors"]:
-        print(json.dumps({"departments": dep_report, "municipalities": mun_report}, indent=2, ensure_ascii=False))
+        print(
+            json.dumps(
+                {"departments": dep_report, "municipalities": mun_report},
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
         sys.exit("Validation failed; nothing written.")
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -285,7 +306,11 @@ def build(out_dir: Path) -> None:
     }
     for name, feats in files.items():
         (out_dir / name).write_text(
-            json.dumps({"type": "FeatureCollection", "features": feats}, ensure_ascii=False, separators=(",", ":")),
+            json.dumps(
+                {"type": "FeatureCollection", "features": feats},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
             encoding="utf-8",
         )
 
@@ -328,6 +353,8 @@ def build(out_dir: Path) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--out", default="frontend/public/geo", type=Path)
     build(parser.parse_args().out)

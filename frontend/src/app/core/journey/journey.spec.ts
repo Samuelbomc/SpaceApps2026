@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AuthGateway } from '../auth/auth-gateway';
-import { MockAuthGateway } from '../auth/mock-auth-gateway';
+import { MockAuthGateway } from '../../testing/mock-auth-gateway';
 import { AuthService } from '../auth/auth.service';
 import { AnalysisJourneyStore } from './analysis-journey.store';
 import { JOURNEY } from './journey';
@@ -11,7 +11,17 @@ import { PILOT_TERRITORY } from '../catalog/pilot-territory';
 
 const plotIn = (code: string): PlotSelection => ({
   municipalityCode: code,
-  geometry: { type: 'Polygon', coordinates: [[[-75.36, 5.97], [-75.35, 5.97], [-75.35, 5.98], [-75.36, 5.97]]] },
+  geometry: {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [-75.36, 5.97],
+        [-75.35, 5.97],
+        [-75.35, 5.98],
+        [-75.36, 5.97],
+      ],
+    ],
+  },
   areaM2: 5000,
   perimeterM: 300,
   centroid: [-75.355, 5.975],
@@ -33,7 +43,13 @@ describe('Analysis journey', () => {
   });
 
   it('has five steps, with municipality and plot merged into one', () => {
-    expect(JOURNEY.map((s) => s.id)).toEqual(['cuenta', 'explorar', 'lote', 'caracterizacion', 'analisis']);
+    expect(JOURNEY.map((s) => s.id)).toEqual([
+      'cuenta',
+      'explorar',
+      'lote',
+      'caracterizacion',
+      'analisis',
+    ]);
     expect(JOURNEY[2].label).toBe('Municipio y lote');
     expect(JOURNEY.some((s) => (s.id as string) === 'municipio')).toBe(false);
   });
@@ -43,7 +59,9 @@ describe('Analysis journey', () => {
     expect(r.municipalityCodes.length).toBe(23);
     expect(new Set(r.municipalityCodes).size).toBe(23);
     expect(r.municipalityCodes.every((c) => /^05\d{3}$/.test(c))).toBe(true);
-    expect(r.membershipSource?.urls.every((u) => u.startsWith('https://www.antioquia.gov.co/'))).toBe(true);
+    expect(
+      r.membershipSource?.urls.every((u) => u.startsWith('https://www.antioquia.gov.co/')),
+    ).toBe(true);
   });
 
   it('derives support from the verified list and sets department and region', () => {

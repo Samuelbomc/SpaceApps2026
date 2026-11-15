@@ -27,7 +27,12 @@ class EcologicalRequirement(Contract):
 
     @model_validator(mode="after")
     def nested(self):
-        if not self.absolute.minimum <= self.optimal.minimum <= self.optimal.maximum <= self.absolute.maximum:
+        if (
+            not self.absolute.minimum
+            <= self.optimal.minimum
+            <= self.optimal.maximum
+            <= self.absolute.maximum
+        ):
             raise ValueError("El rango óptimo debe estar dentro del rango absoluto.")
         if self.unit == "pH" and not 0 <= self.absolute.minimum <= self.absolute.maximum <= 14:
             raise ValueError("El pH debe estar entre 0 y 14.")
@@ -63,12 +68,22 @@ class CropProfile(Contract):
     @model_validator(mode="after")
     def identities_and_units(self):
         url = urlparse(self.source_url)
-        if (url.scheme != "https" or url.netloc != "ecocrop.apps.fao.org"
-                or url.path != "/ecocrop/srv/en/dataSheet" or parse_qs(url.query).get("id") != [str(self.ecocrop_code)]):
+        if (
+            url.scheme != "https"
+            or url.netloc != "ecocrop.apps.fao.org"
+            or url.path != "/ecocrop/srv/en/dataSheet"
+            or parse_qs(url.query).get("id") != [str(self.ecocrop_code)]
+        ):
             raise ValueError("El enlace de fuente debe corresponder al código ECOCROP.")
-        if (self.temperature.unit, self.annual_rainfall.unit, self.soil_ph.unit) != ("C", "mm/year", "pH"):
+        if (self.temperature.unit, self.annual_rainfall.unit, self.soil_ph.unit) != (
+            "C",
+            "mm/year",
+            "pH",
+        ):
             raise ValueError("Las unidades no corresponden a los requisitos del cultivo.")
-        if self.cycle_days.minimum <= 0 or any(value != int(value) for value in (self.cycle_days.minimum, self.cycle_days.maximum)):
+        if self.cycle_days.minimum <= 0 or any(
+            value != int(value) for value in (self.cycle_days.minimum, self.cycle_days.maximum)
+        ):
             raise ValueError("El ciclo requiere días enteros positivos.")
         return self
 
@@ -78,7 +93,9 @@ class CropCatalog(Contract):
     normalizer_version: Literal["ecocrop_tsv_v1"] = "ecocrop_tsv_v1"
     version: str
     source_sha256: str
-    review_status: Literal["format_validated_agronomic_review_pending"] = "format_validated_agronomic_review_pending"
+    review_status: Literal["format_validated_agronomic_review_pending"] = (
+        "format_validated_agronomic_review_pending"
+    )
     crops: list[CropProfile] = Field(min_length=1)
     limitations: list[str]
 
@@ -114,7 +131,9 @@ class AnnualRainfallEvidence(Contract):
     def annual_period(self):
         days = (self.end - self.start).days + 1
         if days not in (365, 366) or self.valid_days > days:
-            raise ValueError("La lluvia anual requiere un periodo de 365/366 días y cobertura explícita.")
+            raise ValueError(
+                "La lluvia anual requiere un periodo de 365/366 días y cobertura explícita."
+            )
         return self
 
 

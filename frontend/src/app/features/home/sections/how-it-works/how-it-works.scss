@@ -58,7 +58,9 @@
   background: var(--c-surface);
   border: 1px solid var(--c-border);
 
-  h3 { font-size: var(--fs-lg); }
+  h3 {
+    font-size: var(--fs-lg);
+  }
 
   p {
     max-width: 40rem;

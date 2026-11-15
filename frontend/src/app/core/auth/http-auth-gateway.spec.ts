@@ -28,7 +28,6 @@ describe('FastAPI authentication gateway', () => {
     expect(auth.isAuthenticated()).toBe(false);
     await auth.ready;
     expect(auth.user()?.name).toBe('Ana real');
-    expect(auth.isDemo()).toBe(false);
     expect(auth.csrfHeaders()['X-CSRF-Token']).toBe('test-csrf');
   });
   it('registers with the real payload, sends CSRF on logout and handles 204', async () => {

@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { APP_IDENTITY } from './core/config/app-identity';
 import { AuthGateway } from './core/auth/auth-gateway';
-import { MockAuthGateway } from './core/auth/mock-auth-gateway';
+import { MockAuthGateway } from './testing/mock-auth-gateway';
 import { AuthService } from './core/auth/auth.service';
 
 describe('App shell', () => {
@@ -44,14 +44,17 @@ describe('App shell', () => {
     expect(all.filter((t) => t === 'Fuentes y métodos').length).toBe(1);
   });
 
-  it('switches to the personal navigation after signing in, flagged as demo', async () => {
+  it('switches to the personal navigation after signing in', async () => {
     const fixture = TestBed.createComponent(App);
-    await TestBed.inject(AuthService).login({ email: 'ana.gomez@correo.co', password: 'secreta123' });
+    await TestBed.inject(AuthService).login({
+      email: 'ana.gomez@correo.co',
+      password: 'secreta123',
+    });
     await fixture.whenStable();
     const header = (fixture.nativeElement as HTMLElement).querySelector('header')!.textContent!;
     expect(header).toContain('Mi panel');
     expect(header).toContain('Ana gomez');
-    expect(header).toContain('Demo');
+    expect(header).not.toContain('Demo');
     expect(header).toContain('Cerrar sesión');
     expect(header).not.toContain('Crear cuenta');
   });
@@ -59,7 +62,9 @@ describe('App shell', () => {
   it('toggles the mobile menu and exposes aria-expanded', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    const toggle = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.menu-toggle')!;
+    const toggle = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      '.menu-toggle',
+    )!;
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
     toggle.click();
     await fixture.whenStable();

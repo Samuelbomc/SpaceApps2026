@@ -17,8 +17,11 @@ class Database:
     @contextmanager
     def connect(self, *, autocommit=False):
         try:
-            with psycopg.connect(self.url, connect_timeout=5, row_factory=dict_row,
-                                 autocommit=autocommit) as connection:
+            with psycopg.connect(
+                self.url, connect_timeout=5, row_factory=dict_row, autocommit=autocommit
+            ) as connection:
                 yield connection
         except (psycopg.OperationalError, psycopg.errors.UndefinedTable):
-            raise DatabaseUnavailable("PostgreSQL no está disponible; revisa conexión y migraciones.") from None
+            raise DatabaseUnavailable(
+                "PostgreSQL no está disponible; revisa conexión y migraciones."
+            ) from None

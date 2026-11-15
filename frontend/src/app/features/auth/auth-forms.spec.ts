@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { AuthGateway } from '../../core/auth/auth-gateway';
-import { MockAuthGateway } from '../../core/auth/mock-auth-gateway';
+import { MockAuthGateway } from '../../testing/mock-auth-gateway';
 import { AuthService } from '../../core/auth/auth.service';
 import { Login } from './login/login';
 import { Register } from './register/register';

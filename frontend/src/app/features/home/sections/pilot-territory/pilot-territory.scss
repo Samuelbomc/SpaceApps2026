@@ -29,7 +29,11 @@
   font-size: var(--fs-sm);
   color: var(--c-ink-muted);
 
-  li { display: flex; gap: var(--sp-2); align-items: baseline; }
+  li {
+    display: flex;
+    gap: var(--sp-2);
+    align-items: baseline;
+  }
 }
 
 .scope__dot {
@@ -38,8 +42,13 @@
   height: 0.7rem;
   border-radius: 2px;
 
-  &--explore { border: 1px solid var(--c-border-strong); background: var(--c-surface); }
-  &--pilot { background: var(--c-green-600); }
+  &--explore {
+    border: 1px solid var(--c-border-strong);
+    background: var(--c-surface);
+  }
+  &--pilot {
+    background: var(--c-green-600);
+  }
 }
 
 .pilot__selection {

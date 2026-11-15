@@ -9,7 +9,9 @@ import { InteractiveMap } from './interactive-map';
  */
 describe('InteractiveMap without WebGL', () => {
   it('shows an accessible fallback message and keeps camera buttons disabled', async () => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     const fixture = TestBed.createComponent(InteractiveMap);
     await fixture.whenStable();
     await new Promise((r) => setTimeout(r));
@@ -19,6 +21,8 @@ describe('InteractiveMap without WebGL', () => {
     const alert = el.querySelector('[role="alert"]');
     expect(alert?.textContent).toContain('WebGL');
     expect(alert?.textContent).toContain('lista');
-    el.querySelectorAll<HTMLButtonElement>('.views button').forEach((b) => expect(b.disabled).toBe(true));
+    el.querySelectorAll<HTMLButtonElement>('.views button').forEach((b) =>
+      expect(b.disabled).toBe(true),
+    );
   });
 });

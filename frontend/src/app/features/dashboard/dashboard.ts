@@ -6,8 +6,7 @@ import { JOURNEY } from '../../core/journey/journey';
 
 /**
  * Personal dashboard: entry point after signing in.
- * Saved farms and analysis history need persistent storage, which does not exist
- * yet, so they show honest empty states (mock farms arrive in Increment 6).
+ * Restores the current journey and links to private farms and stored analyses.
  */
 @Component({
   selector: 'app-dashboard',

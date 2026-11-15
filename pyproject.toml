@@ -18,6 +18,7 @@ test = ["httpx>=0.27,<1", "pymongo>=4.14,<5"]
 local = ["embedded-postgres>=18.6,<19"]
 mongo = ["pymongo>=4.14,<5"]
 ml = ["xgboost>=3.1,<4", "numpy>=2,<3"]
+dev = ["ruff==0.17.5"]
 
 [project.scripts]
 spaceapps-ingest = "scripts.ingest:main"
@@ -31,3 +32,11 @@ exclude = ["*.tests", "*.tests.*"]
 [tool.setuptools.package-data]
 "packages.contracts" = ["*.schema.json", "openapi.json", "*.ts"]
 "ml.configs" = ["*.json"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["data", "tools", ".venv-data", "frontend/node_modules"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP"]

@@ -2,7 +2,7 @@
 
 import os
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from apps.api.app.repositories.operational import OperationalRepository
@@ -32,7 +32,10 @@ class WeeklyIngestionJob:
             raise ValueError("Ventana reciente entre 7 y 366 días; latencia entre 1 y 30 días.")
         point = GeoPoint(region["latitude"], region["longitude"])
         requested_on = datetime.now(ZoneInfo("America/Bogota")).date()
-        end = min(datetime.now(timezone.utc).date() - timedelta(days=lag), requested_on - timedelta(days=1))
+        end = min(
+            datetime.now(UTC).date() - timedelta(days=lag),
+            requested_on - timedelta(days=1),
+        )
         period = DateRange(end - timedelta(days=lookback - 1), end)
         query = DataQuery(point=point, period=period, limit=3)
         run_id = str(uuid.uuid4())
@@ -48,8 +51,11 @@ class WeeklyIngestionJob:
                         failures.append("power")
                 except Exception as exc:
                     failures.append("power")
-                    summary["power"] = {"status": "failed", "error_type": type(exc).__name__,
-                                        "retry_after_seconds": getattr(exc, "retry_after_seconds", 0)}
+                    summary["power"] = {
+                        "status": "failed",
+                        "error_type": type(exc).__name__,
+                        "retry_after_seconds": getattr(exc, "retry_after_seconds", 0),
+                    }
             # Aislar cada fuente también ante errores inesperados o de persistencia.
             for source in selected:
                 if source == "power":
@@ -57,20 +63,29 @@ class WeeklyIngestionJob:
                 try:
                     payload = self.catalogs.fetch(query, sources=(source,))["sources"][source]
                     self.repository.snapshot(run_id, source, payload)
-                    summary[source] = {"status": payload["status"], "data_kind": payload["data_kind"],
-                                       "granules": len((payload.get("data") or {}).get("granules", [])),
-                                       "retry_after_seconds": payload.get("metadata", {}).get("retry_after_seconds", 0)}
+                    summary[source] = {
+                        "status": payload["status"],
+                        "data_kind": payload["data_kind"],
+                        "granules": len((payload.get("data") or {}).get("granules", [])),
+                        "retry_after_seconds": payload.get("metadata", {}).get(
+                            "retry_after_seconds", 0
+                        ),
+                    }
                     if payload["status"] == "error":
                         failures.append(source)
                 except Exception as exc:
                     failures.append(source)
                     summary[source] = {"status": "failed", "error_type": type(exc).__name__}
-            summary["downstream"] = {"status": "retry_sources" if failures else "history_updated",
-                                     "message": "El entrenamiento y las recomendaciones se coordinan en jobs independientes."}
+            summary["downstream"] = {
+                "status": "retry_sources" if failures else "history_updated",
+                "message": "El entrenamiento y las recomendaciones se coordinan en jobs independientes.",
+            }
             status = "partial" if failures else "ok"
             summary["failed_sources"] = failures
             self.repository.finish_run(run_id, status, summary)
             return {"run_id": run_id, "status": status, "summary": summary}
         except Exception:
-            self.repository.finish_run(run_id, "failed", {"error": "La ejecución no pudo completarse."})
+            self.repository.finish_run(
+                run_id, "failed", {"error": "La ejecución no pudo completarse."}
+            )
             raise

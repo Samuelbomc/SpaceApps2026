@@ -9,7 +9,9 @@
   justify-content: space-between;
   gap: var(--sp-3);
 
-  h2 { font-size: var(--fs-lg); }
+  h2 {
+    font-size: var(--fs-lg);
+  }
 }
 
 .figures {
@@ -18,9 +20,19 @@
   gap: var(--sp-3);
   margin: 0;
 
-  div { display: grid; gap: 2px; }
-  dt { font-size: var(--fs-xs); color: var(--c-ink-subtle); }
-  dd { margin: 0; font-family: var(--font-mono); font-weight: 700; }
+  div {
+    display: grid;
+    gap: 2px;
+  }
+  dt {
+    font-size: var(--fs-xs);
+    color: var(--c-ink-subtle);
+  }
+  dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
 }
 
 .figures__big {
@@ -45,7 +57,11 @@
 .coords {
   font-size: var(--fs-sm);
 
-  summary { cursor: pointer; font-weight: 600; color: var(--c-forest-700); }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--c-forest-700);
+  }
 
   ol {
     max-height: 10rem;
@@ -63,4 +79,6 @@
   color: var(--c-ink-subtle);
 }
 
-.empty { font-size: var(--fs-sm); }
+.empty {
+  font-size: var(--fs-sm);
+}

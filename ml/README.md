@@ -1,30 +1,44 @@
-# Model workspace
+# Modelos y experimentación
 
-Los cinco modelos del equipo ya tienen [integración de inferencia](../docs/xgboost-integration.md):
-catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren 7, 15, 30 y 60
-días y conservan su estado experimental; los pronósticos actuales requieren
-entradas recientes completas de su receta.
+`ml/` contiene recetas, entrenamiento, evaluación e inferencia XGBoost para cinco
+objetivos y horizontes 7/15/30/60. Los artefactos experimentales y los modelos del
+registro operativo tienen contratos de publicación distintos.
 
-- `artifacts/`: saved XGBoost models, experiment reports, partitions and predictions.
-- `docs/`: dataset recipes, reproduction instructions, moisture-change design and limitations.
-- `scripts/`: dataset preparation, validation and experiment training entry points.
-- `inference/`: prediction adapters, including baseline-plus-change moisture inference.
-- `training/`: reusable trainer contracts, XGBoost adapter and verified artifact storage for application pipelines.
-- `evaluation/`: temporal splitting, MAE and model-promotion decisions for application pipelines.
-- `recommendations/`: crop-catalog loading and explainable suitability screening.
-- `configs/`: packaged crop catalog used by `recommendations/` and the API.
+| Carpeta | Responsabilidad |
+| --- | --- |
+| configs | Receta de entrenamiento, bundle y catálogos/reglas empaquetados |
+| features | Snapshots recientes de entrada para inferencia |
+| training | Constructor multiespacial, trainer residual y artefactos inmutables |
+| evaluation | Particiones con purga, MAE y promoción |
+| inference | Interfaces y carga de modelos registrados/experimentales |
+| recommendations | Evaluación de requisitos y rotación |
+| scripts | Preparación, ajuste y reproducción de experimentos |
+| artifacts | Boosters, metadatos, predicciones y métricas científicas |
 
-Folder dependencies and the distinction between experiment artifacts and registered application models are documented in [architecture.md](docs/architecture.md). Current test results are in [model-results.md](docs/model-results.md).
+## Contratos de aplicación
 
-The separately trained 15-, 30- and 60-day variants are documented in [horizon-results.md](docs/horizon-results.md), with datasets under `data/prepared/horizons/` and artifacts under `ml/artifacts/forecasts/`.
+- [Entrenamiento](../docs/reference/model-training.md): configuración, fuentes,
+  disponibilidad temporal, muestras, particiones y publicación.
+- [Inferencia](../docs/reference/model-inference.md): fechas, columnas, unidades,
+  versión y reconstrucción residual.
+- [Componentes ML](../docs/reference/ml/components.md).
+- [Rotación](../docs/reference/crop-rotation.md) y
+  [personalización de finca](../docs/architecture/farm-personalization.md).
 
-Run commands as Python modules from the repository root:
+El runtime conecta constructor, trainer, políticas y factory de campeones. La
+publicación exige revisión científica. Los pronósticos actuales necesitan
+snapshots recientes completos; las muestras históricas no los sustituyen.
 
-```powershell
-.\.venv-data\Scripts\python.exe -m ml.scripts.prepare_expanded_datasets
-.\.venv-data\Scripts\python.exe -m ml.scripts.train_prepared_models --manifest data/prepared/expanded/manifest.json --output ml/artifacts/environmental_conditions --max-depth 3 --max-rounds 800
-.\.venv-data\Scripts\python.exe -m ml.scripts.train_moisture_change
-.\.venv-data\Scripts\python.exe -m ml.scripts.validate_expanded_datasets
-```
+## Metodología y reproducción
 
-Current datasets are under `data/prepared/expanded/`, and source downloaders remain under `scripts/`. Detailed recipes are in `ml/docs/expanded-datasets.md`; test results for all five models are in `ml/docs/model-results.md`. The moisture-change experiment requires the inference wrapper to add its recent-observation baseline. Superseded short-dataset work is documented only in the Previous iterations section of that results document.
+Los comandos se ejecutan desde la raíz. La preparación científica utiliza numpy,
+pandas, rasterio y h5py además de XGBoost. Consultar:
+
+- [Receta de datos](../docs/reference/ml/datasets.md).
+- [Evaluación de siete días](../docs/reference/ml/seven-day-results.md).
+- [Evaluaciones 15/30/60](../docs/reference/ml/horizon-results.md).
+- [Humedad residual](../docs/reference/ml/moisture-model.md).
+- [Adquisición de raster](../docs/guides/data-acquisition.md).
+
+Los reportes indican el archivo evaluado y su partición. Un modelo reajustado con
+todo el dataset no hereda una evaluación independiente posterior al reajuste.

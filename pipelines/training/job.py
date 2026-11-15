@@ -13,7 +13,12 @@ class ModelTrainingJob:
         outcomes = []
         for region in self.regions.regions():
             outcomes.extend(self.pipeline.run(region, cutoff))
-        self.pipeline.registry.record_outcomes([outcome.model_dump(mode="json") for outcome in outcomes])
+        self.pipeline.registry.record_outcomes(
+            [outcome.model_dump(mode="json") for outcome in outcomes]
+        )
         # El estado es informativo: pending_configuration no es una caída de red.
-        return {"status": "ok", "published": sum(outcome.status == "published" for outcome in outcomes),
-                "outcomes": [outcome.model_dump(mode="json") for outcome in outcomes]}
+        return {
+            "status": "ok",
+            "published": sum(outcome.status == "published" for outcome in outcomes),
+            "outcomes": [outcome.model_dump(mode="json") for outcome in outcomes],
+        }

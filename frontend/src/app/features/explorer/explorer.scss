@@ -35,8 +35,12 @@
   gap: var(--sp-3);
   border-top: 4px solid var(--c-green-600);
 
-  h2 { font-size: var(--fs-md); }
-  p { font-size: var(--fs-sm); }
+  h2 {
+    font-size: var(--fs-md);
+  }
+  p {
+    font-size: var(--fs-sm);
+  }
 }
 
 .next__hint {

@@ -1,7 +1,8 @@
 """Repositorio de acceso a SRTM; su consulta es estática."""
 
-from ._satellite import SatelliteRepository
 from pipelines.ingestion.sources.nasa.srtm import SRTMClient
+
+from ._satellite import SatelliteRepository
 
 
 class SRTMRepository(SatelliteRepository):

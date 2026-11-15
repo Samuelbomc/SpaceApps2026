@@ -58,7 +58,10 @@ export class NavDropdown {
 
   constructor() {
     inject(Router)
-      .events.pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed())
+      .events.pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
       .subscribe(() => this.close());
     inject(DestroyRef).onDestroy(() => clearTimeout(this.leaveTimer));
   }
@@ -86,7 +89,8 @@ export class NavDropdown {
     const i = links.indexOf(document.activeElement as HTMLAnchorElement);
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
-      const next = event.key === 'ArrowDown' ? (i + 1) % links.length : (i - 1 + links.length) % links.length;
+      const next =
+        event.key === 'ArrowDown' ? (i + 1) % links.length : (i - 1 + links.length) % links.length;
       links[next]?.focus();
     }
   }
@@ -133,7 +137,9 @@ export class NavDropdown {
   }
 
   private links(): HTMLAnchorElement[] {
-    return Array.from(this.host.nativeElement.querySelectorAll<HTMLAnchorElement>('.dropdown__link'));
+    return Array.from(
+      this.host.nativeElement.querySelectorAll<HTMLAnchorElement>('.dropdown__link'),
+    );
   }
 
   private isMobileLayout(): boolean {

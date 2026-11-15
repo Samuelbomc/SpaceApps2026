@@ -9,15 +9,6 @@
       <a class="btn btn--primary" routerLink="/explorar">Analizar un lote nuevo</a>
     </header>
 
-    @if (auth.isDemo()) {
-      <p class="notice notice--demo" role="note">
-        <span>
-          <strong>Sesión de demostración.</strong> Lo que hagas aquí vive solo en esta pestaña del
-          navegador; no se guarda en ninguna base de datos.
-        </span>
-      </p>
-    }
-
     @if (resume(); as r) {
       <article class="card resume">
         <div>

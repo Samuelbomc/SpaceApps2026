@@ -104,16 +104,6 @@
   font-weight: 700;
 }
 
-.demo-chip {
-  padding: 0 0.4rem;
-  border: 1px dashed var(--c-demo-border);
-  border-radius: var(--radius-sm);
-  background: var(--c-demo-bg);
-  color: var(--c-demo-ink);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
 .nav__link {
   display: block;
   padding: var(--sp-2) var(--sp-3);
@@ -122,7 +112,9 @@
   font-weight: 600;
   color: var(--c-ink-muted);
   text-decoration: none;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
 
   &:hover {
     color: var(--c-forest-900);
@@ -156,7 +148,9 @@
   height: 2px;
   border-radius: 2px;
   background: var(--c-forest-900);
-  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
 .menu-toggle__icon {
@@ -169,15 +163,23 @@
     left: 0;
   }
 
-  &::before { top: -6px; }
-  &::after { top: 6px; }
+  &::before {
+    top: -6px;
+  }
+  &::after {
+    top: 6px;
+  }
 }
 
 .header--open .menu-toggle__icon {
   background: transparent;
 
-  &::before { transform: translateY(6px) rotate(45deg); }
-  &::after { transform: translateY(-6px) rotate(-45deg); }
+  &::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+  &::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
 }
 
 @media (max-width: 900px) {

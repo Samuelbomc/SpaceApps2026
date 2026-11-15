@@ -1,4 +1,10 @@
-import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent, MapTouchEvent, PointLike } from 'maplibre-gl';
+import type {
+  GeoJSONSource,
+  Map as MapLibreMap,
+  MapMouseEvent,
+  MapTouchEvent,
+  PointLike,
+} from 'maplibre-gl';
 import { LngLat, closeRing } from '../../../../shared/geo/geodesy';
 import { PolygonEditor } from './polygon-editor';
 
@@ -36,11 +42,44 @@ export class MapDrawingLayer {
 
   attach(): void {
     const map = this.map;
-    map.addSource(SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } as never });
-    map.addLayer({ id: L.fill, type: 'fill', source: SOURCE, filter: ['==', ['get', 'role'], 'polygon'], paint: { 'fill-color': COLOR.fill, 'fill-opacity': 0.25 } });
-    map.addLayer({ id: L.line, type: 'line', source: SOURCE, filter: ['in', ['get', 'role'], ['literal', ['polygon', 'path']]], paint: { 'line-color': COLOR.stroke, 'line-width': 3 } });
-    map.addLayer({ id: L.rubber, type: 'line', source: SOURCE, filter: ['==', ['get', 'role'], 'rubber'], paint: { 'line-color': COLOR.stroke, 'line-width': 2, 'line-dasharray': [2, 2] } });
-    map.addLayer({ id: L.mid, type: 'circle', source: SOURCE, filter: ['==', ['get', 'role'], 'mid'], paint: { 'circle-radius': 5, 'circle-color': COLOR.stroke, 'circle-opacity': 0.85, 'circle-stroke-color': '#1b231f', 'circle-stroke-width': 1 } });
+    map.addSource(SOURCE, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] } as never,
+    });
+    map.addLayer({
+      id: L.fill,
+      type: 'fill',
+      source: SOURCE,
+      filter: ['==', ['get', 'role'], 'polygon'],
+      paint: { 'fill-color': COLOR.fill, 'fill-opacity': 0.25 },
+    });
+    map.addLayer({
+      id: L.line,
+      type: 'line',
+      source: SOURCE,
+      filter: ['in', ['get', 'role'], ['literal', ['polygon', 'path']]],
+      paint: { 'line-color': COLOR.stroke, 'line-width': 3 },
+    });
+    map.addLayer({
+      id: L.rubber,
+      type: 'line',
+      source: SOURCE,
+      filter: ['==', ['get', 'role'], 'rubber'],
+      paint: { 'line-color': COLOR.stroke, 'line-width': 2, 'line-dasharray': [2, 2] },
+    });
+    map.addLayer({
+      id: L.mid,
+      type: 'circle',
+      source: SOURCE,
+      filter: ['==', ['get', 'role'], 'mid'],
+      paint: {
+        'circle-radius': 5,
+        'circle-color': COLOR.stroke,
+        'circle-opacity': 0.85,
+        'circle-stroke-color': '#1b231f',
+        'circle-stroke-width': 1,
+      },
+    });
     map.addLayer({
       id: L.vertex,
       type: 'circle',
@@ -77,16 +116,30 @@ export class MapDrawingLayer {
       features.push(feature('polygon', { type: 'Polygon', coordinates: [closeRing(v)] }));
       v.forEach((p, i) => {
         const q = v[(i + 1) % v.length];
-        features.push(feature('mid', { type: 'Point', coordinates: [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2] }, { edge: i }));
+        features.push(
+          feature(
+            'mid',
+            { type: 'Point', coordinates: [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2] },
+            { edge: i },
+          ),
+        );
       });
     } else if (mode === 'drawing' && v.length >= 2) {
       features.push(feature('path', { type: 'LineString', coordinates: v }));
     }
     if (mode === 'drawing' && v.length && this.cursor) {
-      features.push(feature('rubber', { type: 'LineString', coordinates: [v[v.length - 1], this.cursor] }));
+      features.push(
+        feature('rubber', { type: 'LineString', coordinates: [v[v.length - 1], this.cursor] }),
+      );
     }
     v.forEach((p, i) =>
-      features.push(feature('vertex', { type: 'Point', coordinates: p }, { index: i, selected: i === selected, first: mode === 'drawing' && i === 0 })),
+      features.push(
+        feature(
+          'vertex',
+          { type: 'Point', coordinates: p },
+          { index: i, selected: i === selected, first: mode === 'drawing' && i === 0 },
+        ),
+      ),
     );
     src.setData({ type: 'FeatureCollection', features } as never);
   }
@@ -170,7 +223,13 @@ export class MapDrawingLayer {
     if (!this.map.getLayer(layer)) return undefined;
     const [x, y] = Array.isArray(point) ? point : [point.x, point.y];
     const pad = 6;
-    return this.map.queryRenderedFeatures([[x - pad, y - pad], [x + pad, y + pad]], { layers: [layer] })[0];
+    return this.map.queryRenderedFeatures(
+      [
+        [x - pad, y - pad],
+        [x + pad, y + pad],
+      ],
+      { layers: [layer] },
+    )[0];
   }
 
   private isNearFirstVertex(point: { x: number; y: number }): boolean {
@@ -207,6 +266,10 @@ interface DrawFeature {
   geometry: DrawGeometry;
 }
 
-function feature(role: string, geometry: DrawGeometry, props: Record<string, unknown> = {}): DrawFeature {
+function feature(
+  role: string,
+  geometry: DrawGeometry,
+  props: Record<string, unknown> = {},
+): DrawFeature {
   return { type: 'Feature', properties: { role, ...props }, geometry };
 }

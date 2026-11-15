@@ -19,7 +19,9 @@ describe('NavDropdown', () => {
   it('opens on hover and closes when the pointer leaves, only with a mouse-like pointer', async () => {
     const original = globalThis.matchMedia;
     // Desktop: hover-capable fine pointer, wide viewport.
-    globalThis.matchMedia = ((query: string) => ({ matches: !query.includes('max-width') })) as typeof matchMedia;
+    globalThis.matchMedia = ((query: string) => ({
+      matches: !query.includes('max-width'),
+    })) as typeof matchMedia;
     try {
       const { fixture, el, trigger } = await render();
       el.dispatchEvent(new MouseEvent('mouseenter'));
@@ -60,7 +62,11 @@ describe('NavDropdown', () => {
   it('lists Inicio, Cómo funciona and Fuentes y métodos with correct targets', async () => {
     const { el } = await render();
     const links = [...el.querySelectorAll<HTMLAnchorElement>('.dropdown__link')];
-    expect(links.map((a) => a.textContent?.trim())).toEqual(['Inicio', 'Cómo funciona', 'Fuentes y métodos']);
+    expect(links.map((a) => a.textContent?.trim())).toEqual([
+      'Inicio',
+      'Cómo funciona',
+      'Fuentes y métodos',
+    ]);
     expect(links.map((a) => a.getAttribute('href'))).toEqual(['/', '/#como-funciona', '/#fuentes']);
   });
 
@@ -84,10 +90,14 @@ describe('NavDropdown', () => {
     expect(document.activeElement?.classList).toContain('dropdown__link');
     expect(document.activeElement?.textContent?.trim()).toBe('Inicio');
 
-    el.querySelector('.dropdown__menu')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    el.querySelector('.dropdown__menu')!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }),
+    );
     expect(document.activeElement?.textContent?.trim()).toBe('Cómo funciona');
 
-    document.activeElement!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    document.activeElement!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+    );
     await fixture.whenStable();
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
     expect(document.activeElement).toBe(trigger);

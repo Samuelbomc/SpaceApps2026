@@ -4,14 +4,14 @@ import argparse
 import logging
 import signal
 import threading
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from psycopg.types.json import Jsonb
 
 from apps.api.app.config import Settings
 from apps.api.app.db.postgres import Database
-from scripts.migrate import migrate
 from pipelines.scheduling.runner import next_slot, poll_background
+from scripts.migrate import migrate
 from scripts.runtime import build_jobs
 
 LOG = logging.getLogger("fieldshift.worker")
@@ -20,12 +20,16 @@ LOCK_ID = 1546052065
 
 
 def poll_once(database: Database, job, *, force=False, now=None):
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     with database.connect(autocommit=True) as conn:
-        if not conn.execute("SELECT pg_try_advisory_lock(%s) AS locked", (LOCK_ID,)).fetchone()["locked"]:
+        if not conn.execute("SELECT pg_try_advisory_lock(%s) AS locked", (LOCK_ID,)).fetchone()[
+            "locked"
+        ]:
             return "locked"
         try:
-            schedule = conn.execute("SELECT * FROM job_schedules WHERE job_key=%s", (JOB_KEY,)).fetchone()
+            schedule = conn.execute(
+                "SELECT * FROM job_schedules WHERE job_key=%s", (JOB_KEY,)
+            ).fetchone()
             if schedule is None:
                 raise RuntimeError("Job sin registrar; ejecuta migraciones.")
             due_at = schedule["retry_at"] or schedule["next_run_at"]
@@ -43,32 +47,59 @@ def poll_once(database: Database, job, *, force=False, now=None):
                 failures = result.get("summary", {}).get("failed_sources", [])
                 if result["status"] != "ok":
                     pending = failures or pending
-                    raise RuntimeError("Ingesta parcial; se reintentará sin perder datos persistidos.")
+                    raise RuntimeError(
+                        "Ingesta parcial; se reintentará sin perder datos persistidos."
+                    )
             except Exception as exc:
                 attempts = schedule["consecutive_failures"] + 1
                 # Backoff durable: 1, 2, 4, 8, 16 y luego 24 horas entre intentos.
                 delay = min(86400, 3600 * 2 ** min(attempts - 1, 5))
                 if result is not None:
-                    delay = max(delay, max((entry.get("retry_after_seconds", 0)
-                                           for entry in result.get("summary", {}).values()
-                                           if isinstance(entry, dict)), default=0))
-                finished = datetime.now(timezone.utc)
-                following = (next_slot(schedule["next_run_at"], finished, schedule["interval_seconds"])
-                             if weekly_due else schedule["next_run_at"])
-                conn.execute("""UPDATE job_schedules SET last_error=%s,retry_at=%s,next_run_at=%s,
+                    delay = max(
+                        delay,
+                        max(
+                            (
+                                entry.get("retry_after_seconds", 0)
+                                for entry in result.get("summary", {}).values()
+                                if isinstance(entry, dict)
+                            ),
+                            default=0,
+                        ),
+                    )
+                finished = datetime.now(UTC)
+                following = (
+                    next_slot(schedule["next_run_at"], finished, schedule["interval_seconds"])
+                    if weekly_due
+                    else schedule["next_run_at"]
+                )
+                conn.execute(
+                    """UPDATE job_schedules SET last_error=%s,retry_at=%s,next_run_at=%s,
                              consecutive_failures=%s,pending_sources=%s WHERE job_key=%s""",
-                             (f"Ingesta incompleta ({type(exc).__name__}); revisar ejecución.",
-                              finished + timedelta(seconds=delay), following,
-                              attempts, Jsonb(list(pending)), JOB_KEY))
-                LOG.error("El job requiere reintento en %s segundos (%s)", delay, type(exc).__name__)
+                    (
+                        f"Ingesta incompleta ({type(exc).__name__}); revisar ejecución.",
+                        finished + timedelta(seconds=delay),
+                        following,
+                        attempts,
+                        Jsonb(list(pending)),
+                        JOB_KEY,
+                    ),
+                )
+                LOG.error(
+                    "El job requiere reintento en %s segundos (%s)", delay, type(exc).__name__
+                )
                 return "retry_scheduled"
-            finished = datetime.now(timezone.utc)
+            finished = datetime.now(UTC)
             # Un disparo manual previo al próximo slot no cambia el calendario.
             due = schedule["next_run_at"]
-            following = next_slot(due, finished, schedule["interval_seconds"]) if due <= finished else due
-            conn.execute("""UPDATE job_schedules SET next_run_at=%s,last_success_at=%s,last_error=NULL,retry_at=NULL,
+            following = (
+                next_slot(due, finished, schedule["interval_seconds"]) if due <= finished else due
+            )
+            conn.execute(
+                """UPDATE job_schedules SET next_run_at=%s,last_success_at=%s,last_error=NULL,retry_at=NULL,
                          consecutive_failures=0,pending_sources='[]'::jsonb
-                         WHERE job_key=%s""", (following, finished, JOB_KEY))
+                         WHERE job_key=%s""",
+                (following, finished, JOB_KEY),
+            )
             return "completed"
         finally:
             conn.execute("SELECT pg_advisory_unlock(%s)", (LOCK_ID,))
@@ -76,9 +107,13 @@ def poll_once(database: Database, job, *, force=False, now=None):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--once", action="store_true", help="Ejecutar una vez ahora bajo el mismo bloqueo")
+    parser.add_argument(
+        "--once", action="store_true", help="Ejecutar una vez ahora bajo el mismo bloqueo"
+    )
     parser.add_argument("--poll-seconds", type=int, default=60)
-    parser.add_argument("--job", choices=("all", "ingestion", "training", "recommendations"), default="all")
+    parser.add_argument(
+        "--job", choices=("all", "ingestion", "training", "recommendations"), default="all"
+    )
     args = parser.parse_args(argv)
     if args.poll_seconds < 1:
         parser.error("poll-seconds debe ser positivo")

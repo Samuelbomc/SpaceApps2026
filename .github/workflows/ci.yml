@@ -1,0 +1,69 @@
+name: Quality checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: fieldshift_test
+          POSTGRES_PASSWORD: test_only
+          POSTGRES_DB: fieldshift_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U fieldshift_test -d fieldshift_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+      mongo:
+        image: mongo:8.0
+        ports: ['27017:27017']
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1})'"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://fieldshift_test:test_only@localhost:5432/fieldshift_test
+      TEST_DATABASE_URL: postgresql://fieldshift_test:test_only@localhost:5432/fieldshift_test
+      TEST_MONGODB_URI: mongodb://localhost:27017
+      MONGODB_URI: mongodb://localhost:27017
+      MONGODB_DATABASE: fieldshift_ci
+      RESULTS_BACKEND: postgresql
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+      - run: python -m pip install '.[api,storage,geospatial,mongo,ml,test,dev]'
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python -m scripts.check_repository
+      - run: python -m scripts.export_openapi --check
+      - run: python -m unittest discover -s . -p 'test_*.py' -v
+      - run: docker compose config --quiet
+  frontend:
+    runs-on: ubuntu-latest
+    env:
+      NG_CLI_ANALYTICS: 'false'
+      NG_BUILD_MAX_WORKERS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --prefix frontend
+      - name: Check frontend format
+        working-directory: frontend
+        run: npx --no-install prettier --check --config .prettierrc 'src/**/*.{ts,html,scss}' '../packages/api-client/src/**/*.ts'
+      - run: npm test --prefix packages/api-client
+      - run: npm test --prefix frontend -- --watch=false
+      - run: npm run build --prefix frontend

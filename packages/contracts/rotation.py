@@ -16,22 +16,24 @@ class WaterRequirement(Contract):
     surface_moisture_max: FiniteFloat = Field(ge=0, le=1)
     source: str = Field(min_length=1)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def ordered(self):
-        if (self.precipitation_min_mm > self.precipitation_max_mm or
-                self.surface_moisture_min > self.surface_moisture_max):
-            raise ValueError('Los límites de agua deben estar ordenados.')
+        if (
+            self.precipitation_min_mm > self.precipitation_max_mm
+            or self.surface_moisture_min > self.surface_moisture_max
+        ):
+            raise ValueError("Los límites de agua deben estar ordenados.")
         return self
 
 
 class RotationWaterRules(Contract):
     version: str = Field(min_length=1)
-    review_status: Literal['pending', 'reviewed']
+    review_status: Literal["pending", "reviewed"]
     requirements: list[WaterRequirement] = Field(default_factory=list)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def unique_rules(self):
         keys = [(r.crop_id, r.horizon_days) for r in self.requirements]
         if len(set(keys)) != len(keys):
-            raise ValueError('Hay reglas duplicadas para el mismo cultivo y horizonte.')
+            raise ValueError("Hay reglas duplicadas para el mismo cultivo y horizonte.")
         return self

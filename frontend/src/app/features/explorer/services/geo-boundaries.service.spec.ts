@@ -7,8 +7,26 @@ import { PILOT_TERRITORY } from '../../../core/catalog/pilot-territory';
 const feature = (id: number, code: string, name: string) => ({
   type: 'Feature',
   id,
-  properties: { code, name, departmentCode: '05', type: 'MUNICIPIO', areaKm2: 10, labelLon: -75, labelLat: 6 },
-  geometry: { type: 'Polygon', coordinates: [[[-76, 5], [-75, 5], [-75, 6], [-76, 5]]] },
+  properties: {
+    code,
+    name,
+    departmentCode: '05',
+    type: 'MUNICIPIO',
+    areaKm2: 10,
+    labelLon: -75,
+    labelLat: 6,
+  },
+  geometry: {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [-76, 5],
+        [-75, 5],
+        [-75, 6],
+        [-76, 5],
+      ],
+    ],
+  },
 });
 
 describe('GeoBoundariesService', () => {
@@ -16,7 +34,9 @@ describe('GeoBoundariesService', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     service = TestBed.inject(GeoBoundariesService);
     http = TestBed.inject(HttpTestingController);
   });
@@ -28,7 +48,11 @@ describe('GeoBoundariesService', () => {
     const second = service.municipalitySummaries();
     http.expectOne(PILOT_TERRITORY.boundaries.municipalities).flush({
       type: 'FeatureCollection',
-      features: [feature(5400, '05400', 'LA UNIÓN'), feature(5001, '05001', 'MEDELLÍN'), feature(5002, '05002', 'ABEJORRAL')],
+      features: [
+        feature(5400, '05400', 'LA UNIÓN'),
+        feature(5001, '05001', 'MEDELLÍN'),
+        feature(5002, '05002', 'ABEJORRAL'),
+      ],
     });
     const list = await first;
     await second; // served from the same cached request (expectOne would fail otherwise)
@@ -38,11 +62,15 @@ describe('GeoBoundariesService', () => {
 
   it('does not cache failures, so the user can retry', async () => {
     const failed = service.departments();
-    http.expectOne(PILOT_TERRITORY.boundaries.departments).flush('down', { status: 503, statusText: 'Unavailable' });
+    http
+      .expectOne(PILOT_TERRITORY.boundaries.departments)
+      .flush('down', { status: 503, statusText: 'Unavailable' });
     await expect(failed).rejects.toBeTruthy();
 
     const retry = service.departments();
-    http.expectOne(PILOT_TERRITORY.boundaries.departments).flush({ type: 'FeatureCollection', features: [] });
+    http
+      .expectOne(PILOT_TERRITORY.boundaries.departments)
+      .flush({ type: 'FeatureCollection', features: [] });
     await expect(retry).resolves.toEqual({ type: 'FeatureCollection', features: [] });
   });
 });

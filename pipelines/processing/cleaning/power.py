@@ -28,23 +28,34 @@ def normalize_power_daily(raw: dict) -> dict:
                 if not period.start.strftime("%Y%m%d") <= day <= period.end.strftime("%Y%m%d"):
                     continue
                 is_missing = value is None or value == missing
-                records.append({
-                    "source": "NASA_POWER", "date": f"{day[:4]}-{day[4:6]}-{day[6:]}",
-                    "longitude": lon, "latitude": lat, "variable": parameter,
-                    "value": None if is_missing else value, "unit": metadata.get("units"),
-                    "quality": "missing" if is_missing else "provider_value_unvalidated",
-                    "time_standard": "UTC", "data_kind": "historical",
-                    "resolution": (
-                        "1 x 1 degree" if parameter == "ALLSKY_SFC_SW_DWN" else
-                        "0.5 x 0.625 degree" if parameter in
-                        ("T2M", "T2M_MIN", "T2M_MAX", "RH2M", "WS2M") else
-                        "parameter-dependent; see provider documentation"
-                    ),
-                    "source_version": header.get("api", {}).get("version"),
-                })
-    return {**raw, "records": records,
-            "notes": "Ventana de consulta ampliada al mínimo de POWER (2 grados por eje); "
-                     "solo se conservan puntos devueltos dentro del bbox original. "
-                     "No es un promedio regional ni un recorte de píxeles. Meteorología "
-                     "0.5 x 0.625 grados, solar 1 x 1 grado: la malla de respuesta no "
-                     "aumenta la resolución de origen. Metadatos en raw_responses."}
+                records.append(
+                    {
+                        "source": "NASA_POWER",
+                        "date": f"{day[:4]}-{day[4:6]}-{day[6:]}",
+                        "longitude": lon,
+                        "latitude": lat,
+                        "variable": parameter,
+                        "value": None if is_missing else value,
+                        "unit": metadata.get("units"),
+                        "quality": "missing" if is_missing else "provider_value_unvalidated",
+                        "time_standard": "UTC",
+                        "data_kind": "historical",
+                        "resolution": (
+                            "1 x 1 degree"
+                            if parameter == "ALLSKY_SFC_SW_DWN"
+                            else "0.5 x 0.625 degree"
+                            if parameter in ("T2M", "T2M_MIN", "T2M_MAX", "RH2M", "WS2M")
+                            else "parameter-dependent; see provider documentation"
+                        ),
+                        "source_version": header.get("api", {}).get("version"),
+                    }
+                )
+    return {
+        **raw,
+        "records": records,
+        "notes": "Ventana de consulta ampliada al mínimo de POWER (2 grados por eje); "
+        "solo se conservan puntos devueltos dentro del bbox original. "
+        "No es un promedio regional ni un recorte de píxeles. Meteorología "
+        "0.5 x 0.625 grados, solar 1 x 1 grado: la malla de respuesta no "
+        "aumenta la resolución de origen. Metadatos en raw_responses.",
+    }

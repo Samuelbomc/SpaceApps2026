@@ -110,7 +110,8 @@ export const DATA_SOURCES: readonly DataSourceSummary[] = [
     spatialResolution: '1 segundo de arco (≈ 30 m)',
     temporalResolution: 'Una sola época (2000)',
     contribution: 'Relieve y pendiente como contexto de escorrentía y erosión.',
-    caveat: 'La pendiente es un indicador indirecto de riesgo de erosión, no una medición de erosión.',
+    caveat:
+      'La pendiente es un indicador indirecto de riesgo de erosión, no una medición de erosión.',
     status: 'planned',
     url: 'https://www.earthdata.nasa.gov/data/instruments/srtm',
   },
@@ -124,7 +125,8 @@ export const DATA_SOURCES: readonly DataSourceSummary[] = [
     spatialResolution: 'Mayormente 5 minutos de arco (≈ 9 km)',
     temporalResolution: 'Periodos climáticos de referencia y escenarios',
     contribution: 'Preselección de cultivos candidatos para las rotaciones.',
-    caveat: 'La aptitud y el rendimiento potencial son modelos bajo supuestos; no garantizan producción real.',
+    caveat:
+      'La aptitud y el rendimiento potencial son modelos bajo supuestos; no garantizan producción real.',
     status: 'planned',
     url: 'https://gaez.fao.org/',
   },
@@ -138,7 +140,8 @@ export const DATA_SOURCES: readonly DataSourceSummary[] = [
     spatialResolution: '250 m',
     temporalResolution: 'Estática',
     contribution: 'Contexto de propiedades del suelo cuando no hay análisis de laboratorio.',
-    caveat: 'Predicciones estadísticas con incertidumbre; no reemplazan un análisis de suelo de la finca.',
+    caveat:
+      'Predicciones estadísticas con incertidumbre; no reemplazan un análisis de suelo de la finca.',
     status: 'planned',
     url: 'https://soilgrids.org/',
   },

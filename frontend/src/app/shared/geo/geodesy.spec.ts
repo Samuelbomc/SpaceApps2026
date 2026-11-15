@@ -1,4 +1,14 @@
-import { LngLat, centroid, closeRing, distanceM, openRing, perimeterM, pointInRing, ringAreaM2, selfIntersects } from './geodesy';
+import {
+  LngLat,
+  centroid,
+  closeRing,
+  distanceM,
+  openRing,
+  perimeterM,
+  pointInRing,
+  ringAreaM2,
+  selfIntersects,
+} from './geodesy';
 
 /** Square of `sideDeg` degrees anchored at (lon, lat). */
 const square = (lon: number, lat: number, sideDeg: number): LngLat[] => [
@@ -46,6 +56,13 @@ describe('geodesy', () => {
 
   it('detects bow-tie (self-intersecting) polygons', () => {
     expect(selfIntersects(square(0, 0, 1))).toBe(false);
-    expect(selfIntersects([[0, 0], [1, 1], [1, 0], [0, 1]])).toBe(true);
+    expect(
+      selfIntersects([
+        [0, 0],
+        [1, 1],
+        [1, 0],
+        [0, 1],
+      ]),
+    ).toBe(true);
   });
 });

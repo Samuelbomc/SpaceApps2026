@@ -22,8 +22,11 @@ class GeoPoint:
         return f"{self.longitude},{self.latitude}"
 
     def as_dict(self) -> dict:
-        return {"crs": "EPSG:4326", "latitude": float(self.latitude),
-                "longitude": float(self.longitude)}
+        return {
+            "crs": "EPSG:4326",
+            "latitude": float(self.latitude),
+            "longitude": float(self.longitude),
+        }
 
 
 @dataclass(frozen=True)

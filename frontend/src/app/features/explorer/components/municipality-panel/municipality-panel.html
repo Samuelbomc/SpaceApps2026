@@ -5,7 +5,12 @@
         <span class="eyebrow">Municipio · {{ departmentName() }}</span>
         <h2 id="mpio-title">{{ m.name }}</h2>
       </div>
-      <button type="button" class="panel__close" (click)="cleared.emit()" aria-label="Quitar selección">
+      <button
+        type="button"
+        class="panel__close"
+        (click)="cleared.emit()"
+        aria-label="Quitar selección"
+      >
         ×
       </button>
     </header>
@@ -59,16 +64,22 @@
     <h2 id="dept-title">{{ departmentName() }}</h2>
     @if (all().length) {
       <p>
-        {{ all().length }} municipios con límites oficiales del DANE. Selecciona uno en el mapa, en el
-        buscador o en la lista para ver su información.
+        {{ all().length }} municipios con límites oficiales del DANE. Selecciona uno en el mapa, en
+        el buscador o en la lista para ver su información.
       </p>
       <ul class="tally">
-        <li data-status="pilot"><b>{{ pilotCount() }}</b> en la región piloto ({{ regionName }})</li>
-        <li data-status="integrated"><b>{{ counts().integrated }}</b> {{ coverageLabel.integrated }}</li>
+        <li data-status="pilot">
+          <b>{{ pilotCount() }}</b> en la región piloto ({{ regionName }})
+        </li>
+        <li data-status="integrated">
+          <b>{{ counts().integrated }}</b> {{ coverageLabel.integrated }}
+        </li>
         <li data-status="processed-pending">
           <b>{{ counts()['processed-pending'] }}</b> {{ coverageLabel['processed-pending'] }}
         </li>
-        <li data-status="none"><b>{{ counts().none }}</b> {{ coverageLabel.none }}</li>
+        <li data-status="none">
+          <b>{{ counts().none }}</b> {{ coverageLabel.none }}
+        </li>
       </ul>
     } @else {
       <p>Selecciona un municipio en el mapa o en la lista.</p>

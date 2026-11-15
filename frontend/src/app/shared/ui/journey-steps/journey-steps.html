@@ -8,7 +8,11 @@
           [attr.title]="step.summary"
         >
           <span class="step__dot" aria-hidden="true">
-            @if (step.status === 'done') { ✓ } @else { {{ step.index }} }
+            @if (step.status === 'done') {
+              ✓
+            } @else {
+              {{ step.index }}
+            }
           </span>
           <span class="step__label">{{ step.label }}</span>
           @if (step.status === 'done') {

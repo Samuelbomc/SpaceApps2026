@@ -1,8 +1,8 @@
 """Implementar estos puertos al disponer de modelos y reglas validados."""
 
-from typing import Protocol
 from datetime import date
 from pathlib import Path
+from typing import Protocol
 from uuid import UUID
 
 from packages.contracts.api import AnalysisRequest, Forecast, Recommendations, RotationAssessment
@@ -15,20 +15,29 @@ class ClimatePredictor(Protocol):
 
 
 class SoilPredictor(Protocol):
-    def predict(self, request: AnalysisRequest, observations: list[dict], climate: Forecast) -> Forecast: ...
+    def predict(
+        self, request: AnalysisRequest, observations: list[dict], climate: Forecast
+    ) -> Forecast: ...
 
 
 class RecommendationEngine(Protocol):
-    def recommend(self, request: AnalysisRequest, climate: Forecast, soil: Forecast) -> Recommendations: ...
+    def recommend(
+        self, request: AnalysisRequest, climate: Forecast, soil: Forecast
+    ) -> Recommendations: ...
 
 
 class RotationEvaluator(Protocol):
     """Evaluación trazable, que puede quedar pendiente sin aprobar una siembra."""
-    def assess(self, request: AnalysisRequest, climate: Forecast | None, soil: Forecast | None) -> RotationAssessment: ...
+
+    def assess(
+        self, request: AnalysisRequest, climate: Forecast | None, soil: Forecast | None
+    ) -> RotationAssessment: ...
 
 
 class PublishedPredictorFactory(Protocol):
-    def create(self, release: ModelRelease, artifact_directory: Path) -> ClimatePredictor | SoilPredictor: ...
+    def create(
+        self, release: ModelRelease, artifact_directory: Path
+    ) -> ClimatePredictor | SoilPredictor: ...
 
 
 # El contexto local conserva su procedencia y requiere alineación/validación antes de su uso.

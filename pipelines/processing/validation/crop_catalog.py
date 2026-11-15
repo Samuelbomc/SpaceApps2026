@@ -8,7 +8,13 @@ import re
 import unicodedata
 from collections import Counter
 
-from packages.contracts.agronomy import CropCatalog, CropProfile, EcologicalRequirement, NumericRange, QualitativeRequirement
+from packages.contracts.agronomy import (
+    CropCatalog,
+    CropProfile,
+    EcologicalRequirement,
+    NumericRange,
+    QualitativeRequirement,
+)
 
 MISSING = {"", "-", "---", "no input", "sin dato"}
 LIMITATIONS = [
@@ -50,22 +56,41 @@ def normalize_crop_catalog(content: bytes) -> CropCatalog:
         if None in row or any(value is None for value in row.values()):
             raise ValueError(f"La fila {line} no coincide con las columnas de la cabecera.")
         try:
+
             def requirement(prefix, suffix, unit):
                 return EcologicalRequirement(
-                    optimal=NumericRange(minimum=number(row[f"{prefix}_Optima_Min_{suffix}"]), maximum=number(row[f"{prefix}_Optima_Max_{suffix}"])),
-                    absolute=NumericRange(minimum=number(row[f"{prefix}_Absoluta_Min_{suffix}"]), maximum=number(row[f"{prefix}_Absoluta_Max_{suffix}"])), unit=unit)
+                    optimal=NumericRange(
+                        minimum=number(row[f"{prefix}_Optima_Min_{suffix}"]),
+                        maximum=number(row[f"{prefix}_Optima_Max_{suffix}"]),
+                    ),
+                    absolute=NumericRange(
+                        minimum=number(row[f"{prefix}_Absoluta_Min_{suffix}"]),
+                        maximum=number(row[f"{prefix}_Absoluta_Max_{suffix}"]),
+                    ),
+                    unit=unit,
+                )
 
-            ph = EcologicalRequirement(optimal=NumericRange(minimum=number(row["pH_Optimo_Min"]), maximum=number(row["pH_Optimo_Max"])),
-                absolute=NumericRange(minimum=number(row["pH_Absoluto_Min"]), maximum=number(row["pH_Absoluto_Max"])), unit="pH")
+            ph = EcologicalRequirement(
+                optimal=NumericRange(
+                    minimum=number(row["pH_Optimo_Min"]), maximum=number(row["pH_Optimo_Max"])
+                ),
+                absolute=NumericRange(
+                    minimum=number(row["pH_Absoluto_Min"]), maximum=number(row["pH_Absoluto_Max"])
+                ),
+                unit="pH",
+            )
             soil = {}
             for dimension in ("Profundidad", "Textura", "Fertilidad", "Salinidad", "Drenaje"):
                 key = next(key for key in row if key.startswith(f"Suelo_{dimension}"))
                 parts = row[key].split(" / ", 1)
                 if len(parts) != 2:
                     raise ValueError(f"Se requieren valores óptimo / absoluto en {key}.")
-                soil[dimension.lower()] = QualitativeRequirement(**{
-                    name: None if value.strip().casefold() in MISSING else value.strip()
-                    for name, value in zip(("optimal", "absolute"), parts)})
+                soil[dimension.lower()] = QualitativeRequirement(
+                    **{
+                        name: None if value.strip().casefold() in MISSING else value.strip()
+                        for name, value in zip(("optimal", "absolute"), parts)
+                    }
+                )
             code = int(row["Codigo_ECOCROP"])
             flags = ["latitude_hemispheres_unresolved", "regional_agronomic_validation_pending"]
             if counts[row["Codigo_ECOCROP"]] > 1:
@@ -73,18 +98,49 @@ def normalize_crop_catalog(content: bytes) -> CropCatalog:
             altitude = number(row["Altitud_Absoluta_Max_(msnm)"], optional=True)
             if altitude is None:
                 flags.append("altitude_max_missing")
-            crops.append(CropProfile(crop_id=f'{code}-{slug(row["Cadena"] + "-" + row["Cultivo"])}',
-                chain=row["Cadena"], crop_name=row["Cultivo"], scientific_name=row["Especie_ECOCROP"], ecocrop_code=code,
-                source_url=row["Fuente"], temperature=requirement("Temp", "(°C)", "C"),
-                annual_rainfall=requirement("Precipitacion", "(mm/año)", "mm/year"), soil_ph=ph, altitude_max_m=altitude,
-                cycle_days=NumericRange(minimum=number(row["Ciclo_Cultivo_Min_(dias)"]), maximum=number(row["Ciclo_Cultivo_Max_(dias)"])),
-                lethal_temperature_rest_c=number(row["Temp_Letal_en_Reposo_(°C)"], optional=True),
-                lethal_temperature_early_growth_c=number(row["Temp_Letal_Crecimiento_Temprano_(°C)"], optional=True),
-                qualitative_soil=soil, source_attributes=row, quality_flags=flags))
+            crops.append(
+                CropProfile(
+                    crop_id=f"{code}-{slug(row['Cadena'] + '-' + row['Cultivo'])}",
+                    chain=row["Cadena"],
+                    crop_name=row["Cultivo"],
+                    scientific_name=row["Especie_ECOCROP"],
+                    ecocrop_code=code,
+                    source_url=row["Fuente"],
+                    temperature=requirement("Temp", "(°C)", "C"),
+                    annual_rainfall=requirement("Precipitacion", "(mm/año)", "mm/year"),
+                    soil_ph=ph,
+                    altitude_max_m=altitude,
+                    cycle_days=NumericRange(
+                        minimum=number(row["Ciclo_Cultivo_Min_(dias)"]),
+                        maximum=number(row["Ciclo_Cultivo_Max_(dias)"]),
+                    ),
+                    lethal_temperature_rest_c=number(
+                        row["Temp_Letal_en_Reposo_(°C)"], optional=True
+                    ),
+                    lethal_temperature_early_growth_c=number(
+                        row["Temp_Letal_Crecimiento_Temprano_(°C)"], optional=True
+                    ),
+                    qualitative_soil=soil,
+                    source_attributes=row,
+                    quality_flags=flags,
+                )
+            )
         except (KeyError, StopIteration, ValueError) as exc:
             raise ValueError(f"Fila {line}: {exc}") from None
     digest = hashlib.sha256(content).hexdigest()
-    normalized = {"schema_version": "ecocrop_catalog_v1", "normalizer_version": "ecocrop_tsv_v1",
-                  "source_sha256": digest, "crops": [crop.model_dump(mode="json") for crop in crops], "limitations": LIMITATIONS}
-    identity = hashlib.sha256(json.dumps(normalized, sort_keys=True, ensure_ascii=False, allow_nan=False).encode()).hexdigest()
-    return CropCatalog(version=f"ecocrop-v1-{identity[:16]}", source_sha256=digest, crops=crops, limitations=LIMITATIONS)
+    normalized = {
+        "schema_version": "ecocrop_catalog_v1",
+        "normalizer_version": "ecocrop_tsv_v1",
+        "source_sha256": digest,
+        "crops": [crop.model_dump(mode="json") for crop in crops],
+        "limitations": LIMITATIONS,
+    }
+    identity = hashlib.sha256(
+        json.dumps(normalized, sort_keys=True, ensure_ascii=False, allow_nan=False).encode()
+    ).hexdigest()
+    return CropCatalog(
+        version=f"ecocrop-v1-{identity[:16]}",
+        source_sha256=digest,
+        crops=crops,
+        limitations=LIMITATIONS,
+    )

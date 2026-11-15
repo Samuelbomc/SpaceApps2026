@@ -20,7 +20,11 @@ export class GeoSearch {
   protected readonly open = signal(false);
   protected readonly active = signal(0);
   protected readonly statusLabel = STATUS_LABEL;
-  protected readonly kindLabel = { region: 'Región', municipality: 'Municipio', department: 'Departamento' };
+  protected readonly kindLabel = {
+    region: 'Región',
+    municipality: 'Municipio',
+    department: 'Departamento',
+  };
 
   protected readonly results = computed(() => searchGeo(this.index(), this.query()));
   protected readonly showList = computed(() => this.open() && this.query().trim().length >= 2);

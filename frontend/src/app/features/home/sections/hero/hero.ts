@@ -21,7 +21,13 @@ const HALF_H = 62;
 const THICKNESS = 12;
 
 /** Builds the polygon points for one isometric layer centred at y. */
-function slab(y: number, label: string, topFill: string, sideFill: string, striped = false): LayerShape {
+function slab(
+  y: number,
+  label: string,
+  topFill: string,
+  sideFill: string,
+  striped = false,
+): LayerShape {
   const l = [CX - HALF_W, y];
   const t = [CX, y - HALF_H];
   const r = [CX + HALF_W, y];

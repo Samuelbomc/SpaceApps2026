@@ -4,15 +4,16 @@ Requires requests and rasterio. EARTHDATA_TOKEN is read only from the environmen
 Use --catalog-only for public discovery. Resume by rerunning with the same output.
 The legacy collection is deleted only after complete validation with --replace-old.
 """
+
 import argparse
-from datetime import date, timedelta
 import json
 import os
-from pathlib import Path
 import re
 import shutil
 import time
-from urllib.parse import urljoin, urlparse, unquote
+from datetime import date, timedelta
+from pathlib import Path
+from urllib.parse import unquote, urljoin, urlparse
 
 import rasterio
 import requests
@@ -20,9 +21,11 @@ import requests
 CMR = "https://cmr.earthdata.nasa.gov/search"
 HARMONY = "https://harmony.earthdata.nasa.gov"
 BBOX = "-75.583,5.411,-74.6167,6.5866"
-FIELDS = [f"/Soil_Moisture_Retrieval_Data_{period}/{field}{suffix}"
-          for period, suffix in (("AM", ""), ("PM", "_pm"))
-          for field in ("soil_moisture", "soil_moisture_error", "retrieval_qual_flag", "surface_flag")]
+FIELDS = [
+    f"/Soil_Moisture_Retrieval_Data_{period}/{field}{suffix}"
+    for period, suffix in (("AM", ""), ("PM", "_pm"))
+    for field in ("soil_moisture", "soil_moisture_error", "retrieval_qual_flag", "surface_flag")
+]
 
 
 def get_json(session, url, **kwargs):
@@ -45,8 +48,11 @@ def download_assets(session, catalog_url, directory):
             continue
         visited.add(url)
         document = get_json(session, url)
-        pending.extend(urljoin(url, link["href"]) for link in document.get("links", [])
-                       if link.get("rel") in ("item", "child", "next"))
+        pending.extend(
+            urljoin(url, link["href"])
+            for link in document.get("links", [])
+            if link.get("rel") in ("item", "child", "next")
+        )
         for asset in document.get("assets", {}).values():
             href = urljoin(url, asset["href"])
             name = unquote(Path(urlparse(href).path).name)
@@ -79,28 +85,48 @@ def main():
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     public = requests.Session()
-    entries = get_json(public, f"{CMR}/collections.json", params={"short_name": "SPL3SMP_E", "version": "006", "page_size": 10})["feed"]["entry"]
+    entries = get_json(
+        public,
+        f"{CMR}/collections.json",
+        params={"short_name": "SPL3SMP_E", "version": "006", "page_size": 10},
+    )["feed"]["entry"]
     if len(entries) != 1:
         raise ValueError("Expected one SMAP version 006 collection")
     collection = entries[0]["id"]
     granules, page = [], 1
     while True:
-        items = get_json(public, f"{CMR}/granules.json", params={
-            "collection_concept_id": collection, "bounding_box": BBOX,
-            "temporal": f"2015-03-31T00:00:00Z,{args.end}T23:59:59Z",
-            "page_size": 2000, "page_num": page, "sort_key[]": "start_date"})["feed"]["entry"]
+        items = get_json(
+            public,
+            f"{CMR}/granules.json",
+            params={
+                "collection_concept_id": collection,
+                "bounding_box": BBOX,
+                "temporal": f"2015-03-31T00:00:00Z,{args.end}T23:59:59Z",
+                "page_size": 2000,
+                "page_num": page,
+                "sort_key[]": "start_date",
+            },
+        )["feed"]["entry"]
         granules.extend(items)
         if len(items) < 2000:
             break
         page += 1
     expected = sorted({g["time_start"][:10] for g in granules})
-    write_json(args.output / "cmr_inventory.json", {"collection": collection, "bbox": BBOX, "dates": expected, "granules": granules})
-    print(f"CMR: {len(granules)} granules on {len(expected)} dates; {expected[0]} through {expected[-1]}", flush=True)
+    write_json(
+        args.output / "cmr_inventory.json",
+        {"collection": collection, "bbox": BBOX, "dates": expected, "granules": granules},
+    )
+    print(
+        f"CMR: {len(granules)} granules on {len(expected)} dates; {expected[0]} through {expected[-1]}",
+        flush=True,
+    )
     if args.catalog_only:
         return
     token = os.environ.get("EARTHDATA_TOKEN")
     if not token:
-        raise SystemExit("Download blocked: configure EARTHDATA_TOKEN locally. Public inventory saved; old SMAP data retained.")
+        raise SystemExit(
+            "Download blocked: configure EARTHDATA_TOKEN locally. Public inventory saved; old SMAP data retained."
+        )
     session = requests.Session()
     session.headers["Authorization"] = f"Bearer {token}"
     # Monthly requests avoid truncation/preview limits and permit durable resume.
@@ -112,24 +138,36 @@ def main():
             next_month = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)
             start = max(month_start, date(2015, 3, 31))
             end = min(next_month - timedelta(days=1), date.fromisoformat(args.end))
-            params = [("subset", "lon(-75.583:-74.6167)"), ("subset", "lat(5.411:6.5866)"),
-                      ("subset", f'time("{start}T00:00:00Z":"{end}T23:59:59Z")'),
-                      ("variable", ",".join(FIELDS)), ("format", "image/tiff"), ("outputCrs", "EPSG:4326"),
-                      ("forceAsync", "true"), ("skipPreview", "true"), ("ignoreErrors", "false"), ("maxResults", "100")]
-            response = session.get(f"{HARMONY}/{collection}/ogc-api-coverages/1.0.0/collections/parameter_vars/coverage/rangeset", params=params, timeout=180)
+            params = [
+                ("subset", "lon(-75.583:-74.6167)"),
+                ("subset", "lat(5.411:6.5866)"),
+                ("subset", f'time("{start}T00:00:00Z":"{end}T23:59:59Z")'),
+                ("variable", ",".join(FIELDS)),
+                ("format", "image/tiff"),
+                ("outputCrs", "EPSG:4326"),
+                ("forceAsync", "true"),
+                ("skipPreview", "true"),
+                ("ignoreErrors", "false"),
+                ("maxResults", "100"),
+            ]
+            response = session.get(
+                f"{HARMONY}/{collection}/ogc-api-coverages/1.0.0/collections/parameter_vars/coverage/rangeset",
+                params=params,
+                timeout=180,
+            )
             response.raise_for_status()
             state = {"job_id": response.json()["jobID"]}
             write_json(state_path, state)
-        status_url = f'{HARMONY}/jobs/{state["job_id"]}'
+        status_url = f"{HARMONY}/jobs/{state['job_id']}"
         while True:
             status = get_json(session, status_url)
-            print(f'{month}: {status.get("status")} {status.get("progress", "")}', flush=True)
+            print(f"{month}: {status.get('status')} {status.get('progress', '')}", flush=True)
             if status.get("status") == "successful":
                 break
             if status.get("status") in ("failed", "canceled"):
                 raise RuntimeError(f"Harmony job {state['job_id']} did not succeed")
             time.sleep(15)
-        state["files"] = download_assets(session, f'{HARMONY}/stac/{state["job_id"]}', args.output)
+        state["files"] = download_assets(session, f"{HARMONY}/stac/{state['job_id']}", args.output)
         write_json(state_path, state)
     # Require all eight AM/PM layers on every date returned by CMR. Real mission
     # outages are absent from CMR and are not fabricated by interpolation.
@@ -139,11 +177,23 @@ def main():
         day_files = [p.name for p in paths if day.replace("-", "") in p.name]
         for field in FIELDS:
             group, name = field.strip("/").split("/")
-            if not any(group in p and re.search(rf"_{re.escape(name)}(?:_|\.)", p) for p in day_files):
+            if not any(
+                group in p and re.search(rf"_{re.escape(name)}(?:_|\.)", p) for p in day_files
+            ):
                 missing.append([day, field])
-    write_json(args.output / "validation.json", {"expected_dates": len(expected), "tiff_files": len(paths), "missing_layers": missing, "complete": not missing})
+    write_json(
+        args.output / "validation.json",
+        {
+            "expected_dates": len(expected),
+            "tiff_files": len(paths),
+            "missing_layers": missing,
+            "complete": not missing,
+        },
+    )
     if missing:
-        raise SystemExit(f"Incomplete replacement: {len(missing)} missing layers. Old collection retained.")
+        raise SystemExit(
+            f"Incomplete replacement: {len(missing)} missing layers. Old collection retained."
+        )
     if args.replace_old:
         old = Path("data/SMAP/SPL3SMP_E_006-20261114_235253").resolve()
         allowed = Path("data/SMAP").resolve()

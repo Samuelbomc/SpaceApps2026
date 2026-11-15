@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree, provideRouter } from '@angular/router';
 import { AuthGateway } from './auth-gateway';
-import { MockAuthGateway } from './mock-auth-gateway';
+import { MockAuthGateway } from '../../testing/mock-auth-gateway';
 import { AuthService } from './auth.service';
 import { requireGuest, requireSession, safeReturnUrl } from './auth.guards';
 
-describe('Demo authentication', () => {
+describe('Session state with test gateway', () => {
   let auth: AuthService;
 
   beforeEach(() => {
@@ -16,10 +16,9 @@ describe('Demo authentication', () => {
     auth = TestBed.inject(AuthService);
   });
 
-  it('starts a demo session and never stores the password', async () => {
+  it('starts a test session and never stores the password', async () => {
     await auth.login({ email: 'Maria@Correo.co', password: 'contraseña-secreta' });
     expect(auth.isAuthenticated()).toBe(true);
-    expect(auth.isDemo()).toBe(true);
     expect(auth.user()?.email).toBe('maria@correo.co');
 
     const stored = JSON.stringify(sessionStorage);
@@ -35,7 +34,7 @@ describe('Demo authentication', () => {
     expect(sessionStorage.length).toBe(0);
   });
 
-  it('restores the demo session after a reload (new service instance)', async () => {
+  it('restores the test session after a reload (new service instance)', async () => {
     await auth.login({ email: 'ana@correo.co', password: '12345678' });
     const restored = new MockAuthGateway().restore();
     expect(restored?.user.email).toBe('ana@correo.co');

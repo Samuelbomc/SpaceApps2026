@@ -3,15 +3,21 @@
 from pathlib import Path
 from typing import Protocol
 
-from packages.contracts.training import DatasetSnapshot, LabeledSample, ModelRelease, PreparedDataset
+from packages.contracts.training import (
+    DatasetSnapshot,
+    LabeledSample,
+    ModelRelease,
+    PreparedDataset,
+)
 
 
 class TrainingDatasetBuilder(Protocol):
     # Cambiar esta versión cuando cambien features, targets o controles de calidad.
     version: str
 
-    def build(self, snapshot: DatasetSnapshot, observations_path: Path,
-              model_kind: str, horizon_days: int) -> PreparedDataset: ...
+    def build(
+        self, snapshot: DatasetSnapshot, observations_path: Path, model_kind: str, horizon_days: int
+    ) -> PreparedDataset: ...
 
 
 class FittedRegressor(Protocol):

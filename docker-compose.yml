@@ -46,6 +46,8 @@ services:
       MONGODB_DATABASE: ${MONGODB_DATABASE:-fieldshift}
       DATASET_DIRECTORY: /app/data/datasets
       MODEL_DIRECTORY: /app/data/models
+      TRAINING_DATA_DIRECTORY: /app/data/prepared
+      TRAINING_CONFIG_PATH: ${TRAINING_CONFIG_PATH:-}
       PRETRAINED_MODEL_DIRECTORY: /app/ml/artifacts
       FEATURE_DIRECTORY: /app/data/features/expanded-v1
       ROTATION_WATER_RULES_PATH: ${ROTATION_WATER_RULES_PATH:-}

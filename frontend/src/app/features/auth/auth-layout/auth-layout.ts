@@ -5,7 +5,6 @@ import { PILOT_TERRITORY } from '../../../core/catalog/pilot-territory';
 /**
  * Shared frame for login, registration and password recovery:
  * a brand panel (what the platform does) and the form card (projected content).
- * Always shows the demonstration-mode notice: there is no real authentication yet.
  */
 @Component({
   selector: 'app-auth-layout',

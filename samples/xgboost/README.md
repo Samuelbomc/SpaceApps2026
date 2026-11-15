@@ -10,4 +10,4 @@ Es una fila incluida en el reajuste de model.json. Su inferencia sirve para
 verificar carga, unidades y suma del baseline, no para medir generalización.
 No se instala como entrada reciente ni se añade a las bases operativas.
 
-Comando de reproducción y arquitectura: [integración](../../docs/xgboost-integration.md).
+Comando de reproducción y arquitectura: [integración](../../docs/reference/model-inference.md).

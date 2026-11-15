@@ -1,5 +1,6 @@
 """Contrato HTTP versionado consumido por el generador de tipos del frontend."""
 
+import argparse
 import json
 from pathlib import Path
 
@@ -32,8 +33,10 @@ def typescript_type(schema):
             additional = schema.get("additionalProperties", True)
             return f"Record<string, {typescript_type(additional) if isinstance(additional, dict) else 'unknown'}>"
         required = schema.get("required", [])
-        fields = [f"{json.dumps(key)}{'' if key in required else '?'}: {typescript_type(value)};"
-                  for key, value in properties.items()]
+        fields = [
+            f"{json.dumps(key)}{'' if key in required else '?'}: {typescript_type(value)};"
+            for key, value in properties.items()
+        ]
         return "{ " + " ".join(fields) + " }"
     if kind in ("number", "integer"):
         return "number"
@@ -45,15 +48,42 @@ def typescript_type(schema):
 
 
 def generate_typescript(openapi):
-    lines = ["// Generado por python -m scripts.export_openapi. No editar manualmente.",
-             "export interface components {", "  schemas: {"]
-    lines += [f"    {json.dumps(name)}: {typescript_type(schema)};"
-              for name, schema in openapi["components"]["schemas"].items()]
+    lines = [
+        "// Generado por python -m scripts.export_openapi. No editar manualmente.",
+        "export interface components {",
+        "  schemas: {",
+    ]
+    lines += [
+        f"    {json.dumps(name)}: {typescript_type(schema)};"
+        for name, schema in openapi["components"]["schemas"].items()
+    ]
     return "\n".join([*lines, "  };", "}", ""])
 
 
-if __name__ == "__main__":
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="Verificar sin modificar archivos")
+    args = parser.parse_args(argv)
     target = Path("packages/contracts/openapi.json")
-    write_json(target, app.openapi())
-    target.with_name("api.generated.ts").write_text(generate_typescript(app.openapi()), encoding="utf-8")
+    schema = app.openapi()
+    typescript = generate_typescript(schema)
+    generated = target.with_name("api.generated.ts")
+    if args.check:
+        if (
+            not target.exists()
+            or not generated.exists()
+            or json.loads(target.read_text()) != schema
+            or generated.read_text() != typescript
+        ):
+            print("Contratos desactualizados: ejecutar python -m scripts.export_openapi")
+            return 1
+        print("OpenAPI y tipos TypeScript sincronizados.")
+        return 0
+    write_json(target, schema)
+    generated.write_text(typescript, encoding="utf-8")
     print(target)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -14,7 +14,6 @@ import { DataNatureBadge } from '../../../../shared/ui/data-nature-badge/data-na
 /**
  * Context panel for the current selection: either the pilot department overview
  * or one municipality with its DANE identity and honest data-coverage state.
- * Increment 3 will add variables, periods and charts here.
  */
 @Component({
   selector: 'app-municipality-panel',
@@ -33,7 +32,9 @@ export class MunicipalityPanel {
   protected readonly regionName = PILOT_TERRITORY.pilotRegion.name;
 
   protected readonly inPilot = computed(() => isSupportedMunicipality(this.municipality()?.code));
-  protected readonly pilotCount = computed(() => this.all().filter((m) => isSupportedMunicipality(m.code)).length);
+  protected readonly pilotCount = computed(
+    () => this.all().filter((m) => isSupportedMunicipality(m.code)).length,
+  );
 
   protected readonly status = computed<CoverageStatus>(() => {
     const m = this.municipality();
@@ -51,7 +52,11 @@ export class MunicipalityPanel {
   });
 
   protected readonly counts = computed(() => {
-    const totals: Record<CoverageStatus, number> = { integrated: 0, 'processed-pending': 0, none: 0 };
+    const totals: Record<CoverageStatus, number> = {
+      integrated: 0,
+      'processed-pending': 0,
+      none: 0,
+    };
     for (const m of this.all()) totals[coverageOf(m.code)]++;
     return totals;
   });

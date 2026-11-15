@@ -15,7 +15,11 @@ describe('PolygonEditor', () => {
     e.add([1, 1]);
     e.add([9, 9]);
     e.undo();
-    expect(e.vertices()).toEqual([[0, 0], [1, 0], [1, 1]]);
+    expect(e.vertices()).toEqual([
+      [0, 0],
+      [1, 0],
+      [1, 1],
+    ]);
     expect(e.finish()).toBe(true);
     expect(e.mode()).toBe('editing');
     expect(e.closed()).toBe(true);
@@ -23,7 +27,12 @@ describe('PolygonEditor', () => {
 
   it('moves, inserts and removes vertices while editing, never below three', () => {
     const e = new PolygonEditor();
-    e.load([[0, 0], [1, 0], [1, 1], [0, 0]]); // closed ring is accepted
+    e.load([
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 0],
+    ]); // closed ring is accepted
     expect(e.count()).toBe(3);
 
     e.move(1, [2, 0]);
@@ -44,7 +53,12 @@ describe('PolygonEditor', () => {
 
   it('flags self-intersection and clears back to idle', () => {
     const e = new PolygonEditor();
-    e.load([[0, 0], [1, 1], [1, 0], [0, 1]]);
+    e.load([
+      [0, 0],
+      [1, 1],
+      [1, 0],
+      [0, 1],
+    ]);
     expect(e.selfIntersecting()).toBe(true);
     e.clear();
     expect(e.mode()).toBe('idle');

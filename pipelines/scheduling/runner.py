@@ -1,7 +1,7 @@
 """Jobs ML con locks propios y backoff, separados del estado de las fuentes NASA."""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from psycopg.types.json import Jsonb
 
@@ -18,9 +18,11 @@ def next_slot(due, finished, interval_seconds):
 
 def poll_background(database, key, job, *, force=False, now=None):
     lock = LOCKS[key]
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     with database.connect(autocommit=True) as conn:
-        if not conn.execute("SELECT pg_try_advisory_lock(%s) AS locked", (lock,)).fetchone()["locked"]:
+        if not conn.execute("SELECT pg_try_advisory_lock(%s) AS locked", (lock,)).fetchone()[
+            "locked"
+        ]:
             return "locked"
         try:
             state = conn.execute("SELECT * FROM job_schedules WHERE job_key=%s", (key,)).fetchone()
@@ -35,18 +37,33 @@ def poll_background(database, key, job, *, force=False, now=None):
             except Exception as exc:
                 failures = state["consecutive_failures"] + 1
                 delay = min(86400, 3600 * 2 ** min(failures - 1, 5))
-                conn.execute("""UPDATE job_schedules SET retry_at=%s,consecutive_failures=%s,last_error=%s
-                    WHERE job_key=%s""", (datetime.now(timezone.utc) + timedelta(seconds=delay), failures,
-                                          f"{key} falló ({type(exc).__name__}); se conserva el estado anterior.", key))
+                conn.execute(
+                    """UPDATE job_schedules SET retry_at=%s,consecutive_failures=%s,last_error=%s
+                    WHERE job_key=%s""",
+                    (
+                        datetime.now(UTC) + timedelta(seconds=delay),
+                        failures,
+                        f"{key} falló ({type(exc).__name__}); se conserva el estado anterior.",
+                        key,
+                    ),
+                )
                 LOG.error("%s requiere reintento (%s)", key, type(exc).__name__)
                 return "retry_scheduled"
-            finished = datetime.now(timezone.utc)
-            following = next_slot(state["next_run_at"], finished, state["interval_seconds"]) if state["next_run_at"] <= finished else state["next_run_at"]
-            conn.execute("""UPDATE job_schedules SET next_run_at=%s,last_success_at=%s,retry_at=NULL,
+            finished = datetime.now(UTC)
+            following = (
+                next_slot(state["next_run_at"], finished, state["interval_seconds"])
+                if state["next_run_at"] <= finished
+                else state["next_run_at"]
+            )
+            conn.execute(
+                """UPDATE job_schedules SET next_run_at=%s,last_success_at=%s,retry_at=NULL,
                 last_error=NULL,consecutive_failures=0,last_result=%s WHERE job_key=%s""",
-                         (following, finished, Jsonb(result), key))
+                (following, finished, Jsonb(result), key),
+            )
             if key == "model-training" and result.get("published", 0):
-                conn.execute("UPDATE job_schedules SET next_run_at=LEAST(next_run_at,now()) WHERE job_key='crop-recommendations'")
+                conn.execute(
+                    "UPDATE job_schedules SET next_run_at=LEAST(next_run_at,now()) WHERE job_key='crop-recommendations'"
+                )
             return "completed"
         finally:
             conn.execute("SELECT pg_advisory_unlock(%s)", (lock,))

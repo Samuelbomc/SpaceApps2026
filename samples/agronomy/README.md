@@ -6,5 +6,5 @@ referencia y descripciones, no observaciones de una finca ni predicciones.
 
 El catálogo normalizado está en `ml/configs/ecocrop.catalog.json`. Se regenera
 con `python -m scripts.crop_catalog`; conserva enlaces, atributos originales y
-advertencias de calidad. Ver [la documentación agronómica](../../docs/agronomic-catalog.md)
+advertencias de calidad. Ver [la documentación agronómica](../../docs/reference/agronomic-catalog.md)
 para unidades, límites y responsabilidades.

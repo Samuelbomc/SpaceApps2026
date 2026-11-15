@@ -2651,6 +2651,32 @@
             "type": "string",
             "format": "date-time",
             "title": "Created At"
+          },
+          "evaluated_through": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated Through"
+          },
+          "validation_status": {
+            "type": "string",
+            "enum": [
+              "experimental",
+              "validated"
+            ],
+            "title": "Validation Status",
+            "default": "validated"
+          },
+          "spatial_scope": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Spatial Scope"
           }
         },
         "additionalProperties": false,
@@ -3412,7 +3438,8 @@
               "rejected",
               "unchanged",
               "insufficient_labels",
-              "pending_configuration"
+              "pending_configuration",
+              "pending_review"
             ],
             "title": "Status"
           },

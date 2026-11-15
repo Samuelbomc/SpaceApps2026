@@ -30,7 +30,11 @@ class ModelArtifactStore:
             for path in files:
                 json.loads(path.read_text())
                 hashes[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
-            (temporary / "manifest.json").write_text(json.dumps({**metadata, "artifact_sha256": hashes}, sort_keys=True, default=str, indent=2))
+            (temporary / "manifest.json").write_text(
+                json.dumps(
+                    {**metadata, "artifact_sha256": hashes}, sort_keys=True, default=str, indent=2
+                )
+            )
             os.rename(temporary, destination)
             return hashes
         finally:

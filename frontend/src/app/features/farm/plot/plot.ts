@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AnalysisJourneyStore } from '../../../core/journey/analysis-journey.store';
@@ -39,9 +47,12 @@ export class Plot {
   protected readonly region = PILOT_TERRITORY.pilotRegion;
   protected readonly imagery = SENTINEL2_CLOUDLESS;
 
-  private readonly params = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+  private readonly params = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap,
+  });
   private readonly requestedCode = computed(
-    () => this.params().get('municipio') ?? untracked(() => this.journey.municipality()?.code) ?? null,
+    () =>
+      this.params().get('municipio') ?? untracked(() => this.journey.municipality()?.code) ?? null,
   );
 
   protected readonly state = signal<PageState>('loading');
@@ -57,7 +68,9 @@ export class Plot {
   protected readonly initialRing = computed<LngLat[] | null>(() => {
     const plot = untracked(() => this.journey.plot());
     const m = this.municipality();
-    return plot && m && plot.municipalityCode === m.code ? openRing(plot.geometry.coordinates[0]) : null;
+    return plot && m && plot.municipalityCode === m.code
+      ? openRing(plot.geometry.coordinates[0])
+      : null;
   });
 
   protected readonly summary = computed(() => {
@@ -66,7 +79,9 @@ export class Plot {
     return s?.closed && s.ring.length >= 3 && m ? summarizePlot(s.ring, m) : null;
   });
 
-  protected readonly canConfirm = computed(() => !!this.summary()?.valid && this.journey.municipalitySupported());
+  protected readonly canConfirm = computed(
+    () => !!this.summary()?.valid && this.journey.municipalitySupported(),
+  );
 
   constructor() {
     this.geo
@@ -88,7 +103,8 @@ export class Plot {
         const stored = this.journey.plot();
         if (summary?.valid) {
           const next = toPlotSelection(summary, m.code);
-          if (JSON.stringify(stored?.geometry) !== JSON.stringify(next.geometry)) this.journey.setPlot(next);
+          if (JSON.stringify(stored?.geometry) !== JSON.stringify(next.geometry))
+            this.journey.setPlot(next);
         } else if (stored && this.shapeReported) {
           // Deleted, being redrawn or invalid: nothing confirmed may remain.
           this.journey.setPlot(null);

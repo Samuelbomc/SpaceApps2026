@@ -62,7 +62,9 @@
     height: 8px;
   }
 
-  &--open { display: block; }
+  &--open {
+    display: block;
+  }
 }
 
 .dropdown__link {

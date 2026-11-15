@@ -32,18 +32,34 @@ class FakePowerClient:
         for variable in parameters:
             values, day = {}, period.start
             while day <= period.end:
-                values[day.strftime("%Y%m%d")] = self.overrides.get((day.isoformat(), variable), 20.5)
+                values[day.strftime("%Y%m%d")] = self.overrides.get(
+                    (day.isoformat(), variable), 20.5
+                )
                 day += timedelta(days=1)
             series[variable] = values
         units = {"T2M": "C", "RH2M": "%", "WS10M": "m/s", "ALLSKY_SFC_SW_DWN": "MJ/m^2/day"}
-        return {"source": "power", "point": point.as_dict(), "period": period.as_dict(),
-                "retrieved_at": "2026-11-14T00:00:00+00:00", "raw_responses": [{
-                    "query": {"parameters": ",".join(parameters)}, "response": {
+        return {
+            "source": "power",
+            "point": point.as_dict(),
+            "period": period.as_dict(),
+            "retrieved_at": "2026-11-14T00:00:00+00:00",
+            "raw_responses": [
+                {
+                    "query": {"parameters": ",".join(parameters)},
+                    "response": {
                         "geometry": {"coordinates": [point.longitude, point.latitude]},
-                        "header": {"time_standard": "UTC", "fill_value": -999, "api": {"version": "test"},
-                                   "sources": ["MERRA2", "SYN1DEG"]},
+                        "header": {
+                            "time_standard": "UTC",
+                            "fill_value": -999,
+                            "api": {"version": "test"},
+                            "sources": ["MERRA2", "SYN1DEG"],
+                        },
                         "parameters": {v: {"units": units[v]} for v in parameters},
-                        "properties": {"parameter": series}}}]}
+                        "properties": {"parameter": series},
+                    },
+                }
+            ],
+        }
 
 
 def query(start="2024-01-01", end="2024-01-03", parameters=("T2M",)):
@@ -59,17 +75,28 @@ class PowerProcessingTests(unittest.TestCase):
         self.assertEqual({r["unit"] for r in records}, {"C", "m/s", "MJ/m^2/day"})
         self.assertEqual({r["location_id"] for r in records}, {power_location_id(POINT)})
         self.assertTrue(all(r["cell_id"] is None and r["product_version"] is None for r in records))
-        self.assertTrue(all(r["api_version"] == "test" and len(r["response_sha256"]) == 64 for r in records))
-        self.assertEqual(raw["raw_responses"][0]["response"]["properties"]["parameter"]["T2M"]["20240101"], 20.5)
+        self.assertTrue(
+            all(r["api_version"] == "test" and len(r["response_sha256"]) == 64 for r in records)
+        )
+        self.assertEqual(
+            raw["raw_responses"][0]["response"]["properties"]["parameter"]["T2M"]["20240101"], 20.5
+        )
 
     def test_missing_nonfinite_and_invalid_values_do_not_become_zero(self):
-        for bad, quality in [(-999, "missing"), (None, "missing"), (float("nan"), "invalid_value"),
-                             ("23.1", "invalid_value"), (True, "invalid_value")]:
+        for bad, quality in [
+            (-999, "missing"),
+            (None, "missing"),
+            (float("nan"), "invalid_value"),
+            ("23.1", "invalid_value"),
+            (True, "invalid_value"),
+        ]:
             with self.subTest(bad=bad):
                 client = FakePowerClient()
                 client.overrides[("2024-01-01", "T2M")] = bad
                 request = query(end="2024-01-01")
-                row = process_power_point(client.fetch_point_daily(request.period, POINT, ("T2M",)))[0]
+                row = process_power_point(
+                    client.fetch_point_daily(request.period, POINT, ("T2M",))
+                )[0]
                 self.assertIsNone(row["value"])
                 self.assertEqual(row["quality"], quality)
 
@@ -210,7 +237,9 @@ class PowerParquetFlowTests(unittest.TestCase):
 
     def test_another_location_does_not_share_checkpoint(self):
         self.run_flow()
-        other = DataQuery(point=GeoPoint(6.25, -75.58), period=query().period, power_parameters=("T2M",))
+        other = DataQuery(
+            point=GeoPoint(6.25, -75.58), period=query().period, power_parameters=("T2M",)
+        )
         result = self.run_flow(other)
         self.assertEqual(result["inserted"], 3)
         self.assertNotEqual(result["location_id"], power_location_id(POINT))

@@ -51,14 +51,15 @@
           >
             <span class="avatar" aria-hidden="true">{{ initials() }}</span>
             <span class="account__name">{{ user.name }}</span>
-            @if (auth.isDemo()) {
-              <span class="demo-chip">Demo</span>
-            }
           </a>
-          <button type="button" class="btn btn--secondary account__btn" (click)="logout()">Cerrar sesión</button>
+          <button type="button" class="btn btn--secondary account__btn" (click)="logout()">
+            Cerrar sesión
+          </button>
         } @else {
           <a class="nav__link" routerLink="/acceso" (click)="closeMenu()">Iniciar sesión</a>
-          <a class="btn btn--primary account__btn" routerLink="/registro" (click)="closeMenu()">Crear cuenta</a>
+          <a class="btn btn--primary account__btn" routerLink="/registro" (click)="closeMenu()"
+            >Crear cuenta</a
+          >
         }
       </div>
     </nav>

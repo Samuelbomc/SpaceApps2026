@@ -1,7 +1,8 @@
 """Repositorio de acceso a Landsat mediante HLSL30."""
 
-from ._satellite import SatelliteRepository
 from pipelines.ingestion.sources.nasa.hls import HLSClient
+
+from ._satellite import SatelliteRepository
 
 
 class LandsatRepository(SatelliteRepository):

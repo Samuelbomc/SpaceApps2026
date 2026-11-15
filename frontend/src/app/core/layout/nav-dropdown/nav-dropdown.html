@@ -13,10 +13,21 @@
   <span class="dropdown__caret" aria-hidden="true"></span>
 </button>
 
-<ul [id]="menuId" class="dropdown__menu" [class.dropdown__menu--open]="open()" (keydown)="onMenuKeydown($event)">
+<ul
+  [id]="menuId"
+  class="dropdown__menu"
+  [class.dropdown__menu--open]="open()"
+  (keydown)="onMenuKeydown($event)"
+>
   @for (link of group().links; track link.label) {
     <li>
-      <a class="dropdown__link" [routerLink]="link.path" [fragment]="link.fragment" (click)="choose()">{{ link.label }}</a>
+      <a
+        class="dropdown__link"
+        [routerLink]="link.path"
+        [fragment]="link.fragment"
+        (click)="choose()"
+        >{{ link.label }}</a
+      >
     </li>
   }
 </ul>

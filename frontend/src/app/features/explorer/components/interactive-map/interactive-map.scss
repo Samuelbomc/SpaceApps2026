@@ -68,11 +68,22 @@
   line-height: 1.35;
   pointer-events: none;
 
-  &--on { display: flex; }
-  span { color: var(--c-ink-inverse-muted); font-size: var(--fs-xs); }
-  &[data-tone='pilot'] { --tone: #7fd18b; }
-  &[data-tone='explore'] { --tone: #9fd3a8; }
-  &[data-tone='outside'] { --tone: rgb(243 241 234 / 0.5); }
+  &--on {
+    display: flex;
+  }
+  span {
+    color: var(--c-ink-inverse-muted);
+    font-size: var(--fs-xs);
+  }
+  &[data-tone='pilot'] {
+    --tone: #7fd18b;
+  }
+  &[data-tone='explore'] {
+    --tone: #9fd3a8;
+  }
+  &[data-tone='outside'] {
+    --tone: rgb(243 241 234 / 0.5);
+  }
 }
 
 .legend {
@@ -84,8 +95,16 @@
   background: rgb(11 29 23 / 0.85);
   font-size: var(--fs-xs);
 
-  ul { list-style: none; display: grid; gap: 4px; }
-  li { display: flex; align-items: center; gap: var(--sp-2); }
+  ul {
+    list-style: none;
+    display: grid;
+    gap: 4px;
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
 
   i {
     width: 0.8rem;
@@ -101,9 +120,15 @@
   letter-spacing: 0.04em;
 }
 
-.legend__none { background: rgb(243 241 234 / 0.15); }
-.legend__dashed { border-style: dashed !important; }
-.legend__pilot { border-width: 2px !important; }
+.legend__none {
+  background: rgb(243 241 234 / 0.15);
+}
+.legend__dashed {
+  border-style: dashed !important;
+}
+.legend__pilot {
+  border-width: 2px !important;
+}
 
 .status {
   position: absolute;
@@ -121,7 +146,9 @@
   background: rgb(11 29 23 / 0.85);
   font-size: var(--fs-xs);
 
-  &--error { background: #6b2a1a; }
+  &--error {
+    background: #6b2a1a;
+  }
 
   button {
     margin-left: var(--sp-2);
@@ -145,7 +172,9 @@
   text-align: center;
   background: #0b1d17;
 
-  &--error p { max-width: 28rem; }
+  &--error p {
+    max-width: 28rem;
+  }
 }
 
 .spinner {
@@ -157,9 +186,18 @@
   animation: spin 0.9s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 @media (max-width: 600px) {
-  .legend { bottom: var(--sp-7); max-width: 60%; }
-  .views button { padding: 0 var(--sp-3); }
+  .legend {
+    bottom: var(--sp-7);
+    max-width: 60%;
+  }
+  .views button {
+    padding: 0 var(--sp-3);
+  }
 }

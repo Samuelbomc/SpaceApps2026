@@ -28,9 +28,19 @@ import { INTEGRATION_STATUS_LABEL, IntegrationStatus } from '../../../core/catal
       border: 2px solid currentColor;
       background: var(--st-fill, transparent);
     }
-    :host(.status--available) { --st-bg: var(--c-sage-100); --st-ink: var(--c-forest-700); --st-fill: currentColor; }
-    :host(.status--in-development) { --st-bg: var(--c-ochre-100); --st-ink: var(--c-ochre-600); }
-    :host(.status--planned) { --st-bg: var(--c-slate-100); --st-ink: var(--c-slate-600); }
+    :host(.status--available) {
+      --st-bg: var(--c-sage-100);
+      --st-ink: var(--c-forest-700);
+      --st-fill: currentColor;
+    }
+    :host(.status--in-development) {
+      --st-bg: var(--c-ochre-100);
+      --st-ink: var(--c-ochre-600);
+    }
+    :host(.status--planned) {
+      --st-bg: var(--c-slate-100);
+      --st-ink: var(--c-slate-600);
+    }
   `,
   template: `{{ label() }}`,
 })

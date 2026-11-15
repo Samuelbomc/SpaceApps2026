@@ -20,11 +20,16 @@ class PlaceLookupUnavailable(RuntimeError):
 class MapPlaceService:
     def __init__(self, endpoint, http=None, clock=time.monotonic):
         self.endpoint = endpoint
-        self.http = http if http is not None else JsonHTTPClient(
-            cache_dir=Path("data/cache/places"), timeout=5, attempts=1, cache_ttl=86400)
+        self.http = (
+            http
+            if http is not None
+            else JsonHTTPClient(
+                cache_dir=Path("data/cache/places"), timeout=5, attempts=1, cache_ttl=86400
+            )
+        )
         self.clock, self.lock = clock, threading.Lock()
         self.cache = OrderedDict()
-        self.next_request = 0.
+        self.next_request = 0.0
 
     def resolve(self, latitude, longitude):
         key = (round(latitude, 3), round(longitude, 3))
@@ -41,7 +46,9 @@ class MapPlaceService:
                 raise PlaceLookupBusy()
             self.next_request = now + 1.1
             try:
-                payload = self.http.get(self.endpoint, {"lat": key[0], "lon": key[1], "limit": 1, "radius": 3})
+                payload = self.http.get(
+                    self.endpoint, {"lat": key[0], "lon": key[1], "limit": 1, "radius": 3}
+                )
                 features = payload.get("features")
                 if not isinstance(features, list):
                     raise ValueError("Respuesta de lugares inválida")
@@ -53,10 +60,19 @@ class MapPlaceService:
                     locality = props.get("district") or props.get("locality")
                     if not locality and props.get("osm_key") == "place":
                         locality = props.get("name")
-                    values = [locality, props.get("city") or props.get("county"), props.get("state"), props.get("country")]
+                    values = [
+                        locality,
+                        props.get("city") or props.get("county"),
+                        props.get("state"),
+                        props.get("country"),
+                    ]
                     parts = []
                     for value in values:
-                        if isinstance(value, str) and value.strip() and value.casefold() not in {part.casefold() for part in parts}:
+                        if (
+                            isinstance(value, str)
+                            and value.strip()
+                            and value.casefold() not in {part.casefold() for part in parts}
+                        ):
                             parts.append(value.strip()[:150])
                     label = ", ".join(parts) or None
                 result = MapPlace(latitude=key[0], longitude=key[1], label=label)

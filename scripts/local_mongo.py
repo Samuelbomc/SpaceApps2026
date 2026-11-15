@@ -10,13 +10,29 @@ from contextlib import contextmanager
 def local_mongo(directory, port=27018):
     from pymongo import MongoClient
     from pymongo.errors import PyMongoError
+
     binary = shutil.which("mongod")
     if binary is None:
         raise RuntimeError("Falta mongod; instala MongoDB o ejecuta dev_stack sin --with-mongo.")
     directory.mkdir(parents=True, exist_ok=True)
-    process = subprocess.Popen([binary, "--dbpath", str(directory), "--bind_ip", "127.0.0.1", "--port", str(port),
-                                "--wiredTigerCacheSizeGB", "0.25", "--quiet", "--logpath", str(directory.parent/"mongo.log"), "--logappend"],
-                               start_new_session=True)
+    process = subprocess.Popen(
+        [
+            binary,
+            "--dbpath",
+            str(directory),
+            "--bind_ip",
+            "127.0.0.1",
+            "--port",
+            str(port),
+            "--wiredTigerCacheSizeGB",
+            "0.25",
+            "--quiet",
+            "--logpath",
+            str(directory.parent / "mongo.log"),
+            "--logappend",
+        ],
+        start_new_session=True,
+    )
     uri = f"mongodb://127.0.0.1:{port}"
     client = MongoClient(uri, serverSelectionTimeoutMS=300)
     try:
@@ -27,7 +43,7 @@ def local_mongo(directory, port=27018):
                 client.admin.command("ping")
                 break
             except PyMongoError:
-                threading.Event().wait(.2)
+                threading.Event().wait(0.2)
         else:
             raise RuntimeError("MongoDB local no respondió.")
         yield uri

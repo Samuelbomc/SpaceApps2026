@@ -41,20 +41,33 @@ export function summarizePlot(
 ): PlotSummary {
   const r = openRing(ring);
   const polygons = (
-    municipality.geometry.type === 'Polygon' ? [municipality.geometry.coordinates] : municipality.geometry.coordinates
+    municipality.geometry.type === 'Polygon'
+      ? [municipality.geometry.coordinates]
+      : municipality.geometry.coordinates
   ) as LngLat[][][];
   const insideCount = r.filter((p) => pointInPolygons(p, polygons)).length;
   const c = centroid(r);
   const within: PlotSummary['within'] =
-    insideCount === r.length ? 'inside' : insideCount > 0 || pointInPolygons(c, polygons) ? 'partial' : 'outside';
+    insideCount === r.length
+      ? 'inside'
+      : insideCount > 0 || pointInPolygons(c, polygons)
+        ? 'partial'
+        : 'outside';
   const areaM2 = ringAreaM2(r);
 
   const issues: PlotIssue[] = [];
   if (selfIntersects(r)) {
-    issues.push({ level: 'error', message: 'Los lados del lote se cruzan. Mueve los puntos para que el contorno no se corte a sí mismo.' });
+    issues.push({
+      level: 'error',
+      message:
+        'Los lados del lote se cruzan. Mueve los puntos para que el contorno no se corte a sí mismo.',
+    });
   }
   if (within === 'outside') {
-    issues.push({ level: 'error', message: `El lote está fuera de ${municipality.name}. Dibújalo dentro del límite municipal.` });
+    issues.push({
+      level: 'error',
+      message: `El lote está fuera de ${municipality.name}. Dibújalo dentro del límite municipal.`,
+    });
   } else if (within === 'partial') {
     issues.push({
       level: 'warning',
@@ -62,9 +75,17 @@ export function summarizePlot(
     });
   }
   if (areaM2 < SMALL_AREA_M2) {
-    issues.push({ level: 'warning', message: 'El lote es muy pequeño frente al detalle de la imagen (10 m por píxel); su contorno será poco preciso.' });
+    issues.push({
+      level: 'warning',
+      message:
+        'El lote es muy pequeño frente al detalle de la imagen (10 m por píxel); su contorno será poco preciso.',
+    });
   } else if (areaM2 > LARGE_AREA_M2) {
-    issues.push({ level: 'warning', message: 'El área es muy grande para un lote. Verifica que dibujaste solo el terreno que quieres analizar.' });
+    issues.push({
+      level: 'warning',
+      message:
+        'El área es muy grande para un lote. Verifica que dibujaste solo el terreno que quieres analizar.',
+    });
   }
 
   return {

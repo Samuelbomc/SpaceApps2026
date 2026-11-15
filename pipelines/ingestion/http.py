@@ -4,10 +4,9 @@ import hashlib
 import json
 import os
 import random
-import socket
 import tempfile
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from http.client import IncompleteRead, RemoteDisconnected
 from pathlib import Path
@@ -30,21 +29,22 @@ def retry_delay(header: str, *, now=None) -> float | None:
         return float(header)
     try:
         due = parsedate_to_datetime(header)
-        return max(0., (due - (now or datetime.now(timezone.utc))).total_seconds())
+        return max(0.0, (due - (now or datetime.now(UTC))).total_seconds())
     except (ValueError, TypeError, OverflowError):
         return None
 
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def write_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = None
     try:
-        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
-                                         delete=False) as handle:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent, delete=False
+        ) as handle:
             temporary = Path(handle.name)
             json.dump(data, handle, ensure_ascii=False, indent=2, allow_nan=False)
             handle.write("\n")
@@ -55,9 +55,17 @@ def write_json(path: Path, data: dict) -> None:
 
 
 class JsonHTTPClient:
-    def __init__(self, cache_dir: Path | None = Path("data/cache"), *,
-                 timeout: float = 60, attempts: int = 3, cache_ttl: float = 86400,
-                 opener=urlopen, sleeper=time.sleep, jitter=random.uniform):
+    def __init__(
+        self,
+        cache_dir: Path | None = Path("data/cache"),
+        *,
+        timeout: float = 60,
+        attempts: int = 3,
+        cache_ttl: float = 86400,
+        opener=urlopen,
+        sleeper=time.sleep,
+        jitter=random.uniform,
+    ):
         if attempts < 1 or timeout <= 0 or cache_ttl < 0:
             raise ValueError("Timeout y reintentos deben ser positivos; TTL no negativo.")
         self.cache_dir = cache_dir
@@ -75,8 +83,9 @@ class JsonHTTPClient:
                     return stored["payload"]
             except (ValueError, KeyError, TypeError):
                 pass  # Una entrada dañada se reemplaza con una respuesta real.
-        request = Request(url, headers={"User-Agent": "SpaceApps2026/0.1",
-                                        "Accept": "application/json"})
+        request = Request(
+            url, headers={"User-Agent": "SpaceApps2026/0.1", "Accept": "application/json"}
+        )
         for attempt in range(self.attempts):
             try:
                 with self.opener(request, timeout=self.timeout) as response:
@@ -92,16 +101,28 @@ class JsonHTTPClient:
                 server_delay = retry_delay(header)
                 exc.close()
                 if code not in (408, 429, 500, 502, 503, 504) or attempt == self.attempts - 1:
-                    raise IngestionError(f"HTTP {code} al consultar {endpoint}.",
-                                         retry_after_seconds=server_delay or 0) from None
+                    raise IngestionError(
+                        f"HTTP {code} al consultar {endpoint}.",
+                        retry_after_seconds=server_delay or 0,
+                    ) from None
                 # Esperas largas se delegan al scheduler persistente, sin bloquear el worker.
                 if server_delay is not None and server_delay > 60:
-                    raise IngestionError(f"HTTP {code}: proveedor solicita reintentar después.",
-                                         retry_after_seconds=server_delay) from None
+                    raise IngestionError(
+                        f"HTTP {code}: proveedor solicita reintentar después.",
+                        retry_after_seconds=server_delay,
+                    ) from None
                 delay = server_delay if server_delay is not None else self._backoff(attempt)
-            except (URLError, TimeoutError, socket.timeout, ConnectionError, IncompleteRead, RemoteDisconnected) as exc:
+            except (
+                URLError,
+                TimeoutError,
+                ConnectionError,
+                IncompleteRead,
+                RemoteDisconnected,
+            ) as exc:
                 if attempt == self.attempts - 1:
-                    raise IngestionError(f"No fue posible conectar con {endpoint} ({type(exc).__name__}).") from None
+                    raise IngestionError(
+                        f"No fue posible conectar con {endpoint} ({type(exc).__name__})."
+                    ) from None
                 delay = self._backoff(attempt)
             except (ValueError, UnicodeError):
                 if attempt == self.attempts - 1:
@@ -111,5 +132,5 @@ class JsonHTTPClient:
         raise AssertionError("Bucle de reintentos agotado")
 
     def _backoff(self, attempt):
-        base = min(30., 2. ** attempt)
-        return base + self.jitter(0, base * .25)
+        base = min(30.0, 2.0**attempt)
+        return base + self.jitter(0, base * 0.25)

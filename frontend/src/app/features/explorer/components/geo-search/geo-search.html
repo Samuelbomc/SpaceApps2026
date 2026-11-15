@@ -22,11 +22,26 @@
     (blur)="onBlur()"
   />
   @if (query()) {
-    <button type="button" class="search__clear" (click)="clear(inputEl)" aria-label="Borrar búsqueda">×</button>
+    <button
+      type="button"
+      class="search__clear"
+      (click)="clear(inputEl)"
+      aria-label="Borrar búsqueda"
+    >
+      ×
+    </button>
   }
-  <p id="geo-search-hint" class="sr-only">Escribe al menos dos letras. Usa las flechas para recorrer los resultados y Enter para elegir.</p>
+  <p id="geo-search-hint" class="sr-only">
+    Escribe al menos dos letras. Usa las flechas para recorrer los resultados y Enter para elegir.
+  </p>
 
-  <ul id="geo-search-list" class="results" role="listbox" aria-label="Resultados" [hidden]="!showList()">
+  <ul
+    id="geo-search-list"
+    class="results"
+    role="listbox"
+    aria-label="Resultados"
+    [hidden]="!showList()"
+  >
     @for (r of results(); track r.kind + r.id; let i = $index) {
       <li
         [id]="'geo-opt-' + i"
@@ -46,7 +61,9 @@
         <span class="result__status">{{ statusLabel[r.status] }}</span>
       </li>
     } @empty {
-      <li class="result result--empty" role="presentation">Sin resultados en Colombia ni en Antioquia.</li>
+      <li class="result result--empty" role="presentation">
+        Sin resultados en Colombia ni en Antioquia.
+      </li>
     }
   </ul>
   <p class="sr-only" aria-live="polite">

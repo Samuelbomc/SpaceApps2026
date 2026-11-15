@@ -67,7 +67,9 @@ ol {
     color: #fff;
   }
 
-  a { color: var(--c-forest-700); }
+  a {
+    color: var(--c-forest-700);
+  }
 }
 
 .step--current {
@@ -78,7 +80,9 @@ ol {
     box-shadow: 0 0 0 4px var(--c-sage-100);
   }
 
-  a { color: var(--c-forest-900); }
+  a {
+    color: var(--c-forest-900);
+  }
 }
 
 .step a:hover .step__label {

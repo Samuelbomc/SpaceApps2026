@@ -45,7 +45,8 @@ export function ringAreaM2(ring: readonly LngLat[]): number {
 export function distanceM(a: LngLat, b: LngLat): number {
   const dLat = rad(b[1] - a[1]);
   const dLon = rad(b[0] - a[0]);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1])) * Math.cos(rad(b[1])) * Math.sin(dLon / 2) ** 2;
+  const h =
+    Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1])) * Math.cos(rad(b[1])) * Math.sin(dLon / 2) ** 2;
   return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
@@ -91,7 +92,10 @@ export function pointInRing(point: LngLat, ring: readonly LngLat[]): boolean {
   for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
     const [xi, yi] = r[i];
     const [xj, yj] = r[j];
-    if (yi > point[1] !== yj > point[1] && point[0] < ((xj - xi) * (point[1] - yi)) / (yj - yi) + xi) {
+    if (
+      yi > point[1] !== yj > point[1] &&
+      point[0] < ((xj - xi) * (point[1] - yi)) / (yj - yi) + xi
+    ) {
       inside = !inside;
     }
   }
@@ -99,14 +103,19 @@ export function pointInRing(point: LngLat, ring: readonly LngLat[]): boolean {
 }
 
 /** Point inside a Polygon/MultiPolygon (outer rings minus holes). */
-export function pointInPolygons(point: LngLat, polygons: readonly (readonly LngLat[][])[]): boolean {
+export function pointInPolygons(
+  point: LngLat,
+  polygons: readonly (readonly LngLat[][])[],
+): boolean {
   return polygons.some(
-    (poly) => pointInRing(point, poly[0]) && !poly.slice(1).some((hole) => pointInRing(point, hole)),
+    (poly) =>
+      pointInRing(point, poly[0]) && !poly.slice(1).some((hole) => pointInRing(point, hole)),
   );
 }
 
 function segmentsCross(a: LngLat, b: LngLat, c: LngLat, d: LngLat): boolean {
-  const o = (p: LngLat, q: LngLat, s: LngLat) => Math.sign((q[0] - p[0]) * (s[1] - p[1]) - (q[1] - p[1]) * (s[0] - p[0]));
+  const o = (p: LngLat, q: LngLat, s: LngLat) =>
+    Math.sign((q[0] - p[0]) * (s[1] - p[1]) - (q[1] - p[1]) * (s[0] - p[0]));
   return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0;
 }
 
@@ -135,6 +144,10 @@ export function formatArea(m2: number): string {
 
 /** Decimal-degree coordinate with hemisphere, e.g. "5,9731° N, 75,3612° O". */
 export function formatLngLat([lon, lat]: LngLat, digits = 5): string {
-  const f = (v: number) => Math.abs(v).toLocaleString('es-CO', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  const f = (v: number) =>
+    Math.abs(v).toLocaleString('es-CO', {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
   return `${f(lat)}° ${lat >= 0 ? 'N' : 'S'}, ${f(lon)}° ${lon >= 0 ? 'E' : 'O'}`;
 }

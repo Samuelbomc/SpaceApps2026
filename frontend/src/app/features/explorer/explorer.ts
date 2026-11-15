@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { InteractiveMap } from './components/interactive-map/interactive-map';
 import { MunicipalityPanel } from './components/municipality-panel/municipality-panel';
@@ -45,7 +53,9 @@ export class Explorer {
   protected readonly region = PILOT_TERRITORY.pilotRegion;
   protected readonly plotPath = PLOT_STEP_PATH;
 
-  protected readonly selectedCode = signal<string | null>(this.journey.municipality()?.code ?? null);
+  protected readonly selectedCode = signal<string | null>(
+    this.journey.municipality()?.code ?? null,
+  );
   protected readonly municipalities = signal<MunicipalitySummary[]>([]);
   protected readonly searchIndex = signal<GeoSearchEntry[]>([]);
   protected readonly listState = signal<'loading' | 'ready' | 'error'>('loading');

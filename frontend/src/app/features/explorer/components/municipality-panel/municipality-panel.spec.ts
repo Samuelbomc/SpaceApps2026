@@ -2,8 +2,20 @@ import { TestBed } from '@angular/core/testing';
 import { MunicipalityPanel } from './municipality-panel';
 import { MunicipalitySummary } from '../../models/geo.models';
 
-const laUnion: MunicipalitySummary = { id: 5400, code: '05400', name: 'La Unión', areaKm2: 167.7, bbox: [-75.4, 5.9, -75.3, 6.0] };
-const briceno: MunicipalitySummary = { id: 5107, code: '05107', name: 'Briceño', areaKm2: 376.2, bbox: [-75.6, 7.0, -75.4, 7.2] };
+const laUnion: MunicipalitySummary = {
+  id: 5400,
+  code: '05400',
+  name: 'La Unión',
+  areaKm2: 167.7,
+  bbox: [-75.4, 5.9, -75.3, 6.0],
+};
+const briceno: MunicipalitySummary = {
+  id: 5107,
+  code: '05107',
+  name: 'Briceño',
+  areaKm2: 376.2,
+  bbox: [-75.6, 7.0, -75.4, 7.2],
+};
 
 describe('MunicipalityPanel', () => {
   async function render(municipality: MunicipalitySummary | null) {

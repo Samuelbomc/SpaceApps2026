@@ -3,7 +3,7 @@
 `DataQuery`, `SourceResult`, `DataRepository`, `GeoPoint`, `BoundingBox` y
 `DateRange` son contratos Python independientes de FastAPI, de los clientes
 NASA y de los modelos de ML. `data-query.schema.json` documenta la entrada
-JSON para consumidores como Next.js y futuros endpoints.
+JSON independiente de la interfaz; Angular consume el contrato HTTP generado.
 
 El contrato Python valida también relaciones entre valores: orden de límites,
 orden de fechas y límite puntual de 20 variables POWER. El JSON Schema describe
@@ -16,7 +16,7 @@ comprueba que coincidan con la API actual. La validación de valores se realiza
 en Pydantic; TypeScript describe su forma estática.
 
 La base operativa PostgreSQL, los estados de análisis pendientes y los comandos
-de generación están descritos en [development.md](../../docs/development.md).
+de generación están descritos en [desarrollo](../../docs/guides/development.md).
 
 
 El contrato HTTP `ObservationPage` permite consultar sin fechas y paginar todo el
@@ -36,3 +36,9 @@ job exige esta versión antes de almacenar recomendaciones listas para consultar
 `agronomy.py` describe `CropCatalog` y los contextos e informes de compatibilidad.
 El catálogo se expone en `GET /api/v1/crops/catalog`. Las comprobaciones de rangos
 son diferentes de `Recommendations`: no declaran siembras o rotaciones listas.
+
+La receta de entrenamiento incluye identidad espacial por muestra, etiquetas
+parciales por target, disponibilidad temporal, estado de revisión y alcance del
+modelo. No se deben eliminar esos campos al implementar adapters alternativos.
+Ver [entrenamiento](../../docs/reference/model-training.md). Para regenerar contratos
+use `python -m scripts.export_openapi`; `--check` verifica sin escribir.

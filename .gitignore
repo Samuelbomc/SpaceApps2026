@@ -239,4 +239,6 @@ SMAP
 SOILGRIDS
 SRTM
 .venv-data/
-.venv-data/
+# Entrevistas locales del módulo de terminal; no deben entrar en Git.
+modulo_rotacion/datos/fincas/*
+!modulo_rotacion/datos/fincas/.gitkeep

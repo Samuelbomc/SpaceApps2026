@@ -6,13 +6,7 @@
  * institutional statistics, farmer inputs and demo data apart.
  */
 export type DataNature =
-  | 'satellite'
-  | 'modeled'
-  | 'ground'
-  | 'institutional'
-  | 'literature'
-  | 'farmer'
-  | 'demo';
+  'satellite' | 'modeled' | 'ground' | 'institutional' | 'literature' | 'farmer' | 'demo';
 
 export interface DataNatureInfo {
   label: string;
@@ -42,11 +36,13 @@ export const DATA_NATURE: Record<DataNature, DataNatureInfo> = {
   },
   literature: {
     label: 'Evidencia bibliográfica',
-    description: 'Conocimiento agronómico publicado (estudios, guías técnicas) que respalda un criterio.',
+    description:
+      'Conocimiento agronómico publicado (estudios, guías técnicas) que respalda un criterio.',
   },
   farmer: {
     label: 'Aportado por el agricultor',
-    description: 'Información que la persona usuaria registra sobre su finca: historial, suelo, prioridades.',
+    description:
+      'Información que la persona usuaria registra sobre su finca: historial, suelo, prioridades.',
   },
   demo: {
     label: 'Dato de demostración',

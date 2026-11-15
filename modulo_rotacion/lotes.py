@@ -9,6 +9,7 @@ Uso:
   python lotes.py --finca "La Esperanza"            # compara los lotes de la finca
   python lotes.py --finca "La Esperanza" --lote "Lote de arriba"   # historia de un lote
 """
+
 import argparse
 import json
 import re
@@ -21,7 +22,12 @@ ICONO = {"verde": "🟢", "amarillo": "🟡", "rojo": "🔴"}
 
 
 def slug(txt):
-    t = unicodedata.normalize("NFKD", str(txt or "sin_nombre")).encode("ascii", "ignore").decode().lower()
+    t = (
+        unicodedata.normalize("NFKD", str(txt or "sin_nombre"))
+        .encode("ascii", "ignore")
+        .decode()
+        .lower()
+    )
     return re.sub(r"[^a-z0-9]+", "_", t).strip("_") or "sin_nombre"
 
 
@@ -31,14 +37,18 @@ def resumen_texto(resp, diag, rec):
         from .motor_rotacion import texto_rotacion
     else:
         from motor_rotacion import texto_rotacion
-    f, l = resp.get("finca", {}), resp.get("lote", {})
+    f, lote = resp.get("finca", {}), resp.get("lote", {})
     TEN = {"propia": "tierra propia", "arrendada": "tierra arrendada", "compania": "en compañía"}
     TAM = {"menos_1": "menos de 1 ha", "1_5": "1 a 5 ha", "mas_5": "más de 5 ha"}
     per = resp.get("perfil", {})
     datos = ", ".join(x for x in (TAM.get(per.get("tamano")), TEN.get(per.get("tenencia"))) if x)
-    titulo = " – ".join(x for x in (f.get("nombre"), l.get("nombre")) if x) or "Su lote"
-    lin = [f"*{titulo}* ({f.get('municipio', '')}{', ' + datos if datos else ''})",
-           datetime.now().strftime("%d/%m/%Y"), "", "*Cómo está el lote*"]
+    titulo = " – ".join(x for x in (f.get("nombre"), lote.get("nombre")) if x) or "Su lote"
+    lin = [
+        f"*{titulo}* ({f.get('municipio', '')}{', ' + datos if datos else ''})",
+        datetime.now().strftime("%d/%m/%Y"),
+        "",
+        "*Cómo está el lote*",
+    ]
     for a in diag["areas"]:
         lin.append(f"{ICONO[a['color']]} {a['area']}")
     if diag["prioridad"]:
@@ -49,13 +59,20 @@ def resumen_texto(resp, diag, rec):
         lin += ["", "*Qué sembrar este año*", texto_rotacion(r), r["explicacion"]]
         lin += [f"- {x}" for x in (rec.get("alertas_generales", []) + r["alertas"])[:3]]
     else:
-        lin += ["", rec.get('aviso', 'Falta una evaluación de rotación con predicciones disponibles.')]
+        lin += [
+            "",
+            rec.get("aviso", "Falta una evaluación de rotación con predicciones disponibles."),
+        ]
     return "\n".join(lin)
 
 
 def guardar(resp, diag, rec):
     """Guarda la entrevista y devuelve (ruta_json, ruta_resumen)."""
-    carpeta = FINCAS / slug(resp.get("finca", {}).get("nombre")) / slug(resp.get("lote", {}).get("nombre"))
+    carpeta = (
+        FINCAS
+        / slug(resp.get("finca", {}).get("nombre"))
+        / slug(resp.get("lote", {}).get("nombre"))
+    )
     carpeta.mkdir(parents=True, exist_ok=True)
     fecha = datetime.now().strftime("%Y-%m-%d_%H%M")
     registro = {"fecha": fecha, "respuestas": resp, "diagnostico": diag, "recomendacion": rec}
@@ -79,8 +96,12 @@ def listar():
         print("Todavía no hay entrevistas guardadas.")
         return
     for finca in sorted(FINCAS.iterdir()):
-        lotes = [l for l in finca.iterdir() if l.is_dir()]
-        nombre = _registros(lotes[0])[-1]["respuestas"]["finca"].get("nombre", finca.name) if lotes else finca.name
+        lotes = [lote for lote in finca.iterdir() if lote.is_dir()]
+        nombre = (
+            _registros(lotes[0])[-1]["respuestas"]["finca"].get("nombre", finca.name)
+            if lotes
+            else finca.name
+        )
         print(f"{nombre}: {len(lotes)} lote(s)")
 
 
@@ -95,15 +116,19 @@ def comparar_finca(finca):
         from motor_rotacion import texto_rotacion
     filas = []
     print(f"Lotes de {finca}   (orden de los semáforos: Erosión · Rotación y suelo · Agua)\n")
-    for lote in sorted(l for l in carpeta.iterdir() if l.is_dir()):
+    for lote in sorted(item for item in carpeta.iterdir() if item.is_dir()):
         regs = _registros(lote)
         if not regs:
             continue
         r = regs[-1]
         rot = r["recomendacion"]["rotaciones"]
-        fila = {"lote": r["respuestas"]["lote"].get("nombre", lote.name), "fecha": r["fecha"][:10],
-                "semaforos": _semaforos(r["diagnostico"]), "urgente": r["diagnostico"]["prioridad"] or "nada urgente",
-                "rotacion": texto_rotacion(rot[0]) if rot else "sin rotación"}
+        fila = {
+            "lote": r["respuestas"]["lote"].get("nombre", lote.name),
+            "fecha": r["fecha"][:10],
+            "semaforos": _semaforos(r["diagnostico"]),
+            "urgente": r["diagnostico"]["prioridad"] or "nada urgente",
+            "rotacion": texto_rotacion(rot[0]) if rot else "sin rotación",
+        }
         filas.append(fila)
         print(f"■ {fila['lote']}  ({fila['fecha']})  {fila['semaforos']}")
         print(f"   Lo más urgente: {fila['urgente']}")
@@ -123,8 +148,10 @@ def historia_lote(finca, lote):
         return
     print(f"Historia de {lote} ({finca})   Erosión · Rotación y suelo · Agua\n")
     for r in regs:
-        print(f"{r['fecha'][:10]}  {_semaforos(r['diagnostico'])}   "
-              f"último cultivo: {(r['respuestas'].get('historial', {}).get('ultimos_cultivos') or ['-'])[0]}")
+        print(
+            f"{r['fecha'][:10]}  {_semaforos(r['diagnostico'])}   "
+            f"último cultivo: {(r['respuestas'].get('historial', {}).get('ultimos_cultivos') or ['-'])[0]}"
+        )
     if len(regs) > 1:
         antes = [a["color"] for a in regs[0]["diagnostico"]["areas"]]
         ahora = [a["color"] for a in regs[-1]["diagnostico"]["areas"]]

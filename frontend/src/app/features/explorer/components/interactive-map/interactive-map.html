@@ -14,22 +14,48 @@
 
   <!-- Camera presets -->
   <div class="views" role="group" aria-label="Escala del mapa">
-    <button type="button" [attr.aria-pressed]="level() === 'globe'" [disabled]="!ready()" (click)="flyToGlobe()">
+    <button
+      type="button"
+      [attr.aria-pressed]="level() === 'globe'"
+      [disabled]="!ready()"
+      (click)="flyToGlobe()"
+    >
       Globo
     </button>
-    <button type="button" [attr.aria-pressed]="level() === 'country'" [disabled]="!ready()" (click)="flyToColombia()">
+    <button
+      type="button"
+      [attr.aria-pressed]="level() === 'country'"
+      [disabled]="!ready()"
+      (click)="flyToColombia()"
+    >
       Colombia
     </button>
-    <button type="button" [attr.aria-pressed]="level() === 'department'" [disabled]="!ready()" (click)="flyToDepartment()">
+    <button
+      type="button"
+      [attr.aria-pressed]="level() === 'department'"
+      [disabled]="!ready()"
+      (click)="flyToDepartment()"
+    >
       Antioquia
     </button>
-    <button type="button" [attr.aria-pressed]="level() === 'region'" [disabled]="!ready()" (click)="flyToRegion()">
+    <button
+      type="button"
+      [attr.aria-pressed]="level() === 'region'"
+      [disabled]="!ready()"
+      (click)="flyToRegion()"
+    >
       Oriente
     </button>
   </div>
 
   <!-- Hover / tap tooltip: positioned imperatively, content via signal -->
-  <div #tooltip class="tooltip" [class.tooltip--on]="hover()" [attr.data-tone]="hover()?.tone" aria-hidden="true">
+  <div
+    #tooltip
+    class="tooltip"
+    [class.tooltip--on]="hover()"
+    [attr.data-tone]="hover()?.tone"
+    aria-hidden="true"
+  >
     @if (hover(); as h) {
       <strong>{{ h.name }}</strong>
       <span>{{ h.detail }}</span>
@@ -41,8 +67,13 @@
       @if (level() === 'department' || level() === 'region') {
         <p class="legend__title">Municipios de Antioquia</p>
         <ul>
-          <li><i class="legend__pilot" [style.background]="color.pilot"></i>{{ regionName }}: puedes delimitar tu lote</li>
-          <li><i class="legend__none legend__dashed"></i>Fuera de la región piloto: solo exploración</li>
+          <li>
+            <i class="legend__pilot" [style.background]="color.pilot"></i>{{ regionName }}: puedes
+            delimitar tu lote
+          </li>
+          <li>
+            <i class="legend__none legend__dashed"></i>Fuera de la región piloto: solo exploración
+          </li>
           <li><i [style.background]="color.selected"></i>Seleccionado</li>
         </ul>
       } @else {
@@ -67,7 +98,9 @@
       </p>
     }
     @if (imageryFailed()) {
-      <p class="chip-status">La imagen satelital de fondo no está disponible; los límites siguen activos.</p>
+      <p class="chip-status">
+        La imagen satelital de fondo no está disponible; los límites siguen activos.
+      </p>
     }
   </div>
 

@@ -12,16 +12,31 @@ import { BoundaryMetadata } from '../../models/geo.models';
   imports: [DatePipe, DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
-    details { padding: 0; }
+    details {
+      padding: 0;
+    }
     summary {
       padding: var(--sp-4) var(--sp-5);
       font-weight: 700;
       cursor: pointer;
     }
-    .body { display: grid; gap: var(--sp-4); padding: 0 var(--sp-5) var(--sp-5); font-size: var(--fs-sm); }
-    h3 { font-size: var(--fs-sm); margin-bottom: var(--sp-2); }
-    p { color: var(--c-ink-muted); }
-    .cite { font-size: var(--fs-xs); font-style: italic; }
+    .body {
+      display: grid;
+      gap: var(--sp-4);
+      padding: 0 var(--sp-5) var(--sp-5);
+      font-size: var(--fs-sm);
+    }
+    h3 {
+      font-size: var(--fs-sm);
+      margin-bottom: var(--sp-2);
+    }
+    p {
+      color: var(--c-ink-muted);
+    }
+    .cite {
+      font-size: var(--fs-xs);
+      font-style: italic;
+    }
   `,
   template: `
     <details class="card">
@@ -39,18 +54,27 @@ import { BoundaryMetadata } from '../../models/geo.models';
               <dd>WGS84 (EPSG:4326)</dd>
               <dt>Generalización</dt>
               <dd>
-                ≈ {{ m.processing.simplification.municipalitiesToleranceDeg * 111000 | number: '1.0-0' }} m
-                (municipios)
+                ≈
+                {{
+                  m.processing.simplification.municipalitiesToleranceDeg * 111000 | number: '1.0-0'
+                }}
+                m (municipios)
               </dd>
               @if (m.quality.municipalities.areaDeviationPct; as d) {
                 <dt>Cambio de área</dt>
                 <dd>promedio {{ d.mean }} %, máx. {{ d.max }} %</dd>
               }
             </dl>
-            <p>{{ m.source.officialLimitsNote }} Límites simplificados para visualización; no aptos para uso catastral o legal.</p>
+            <p>
+              {{ m.source.officialLimitsNote }} Límites simplificados para visualización; no aptos
+              para uso catastral o legal.
+            </p>
             <p class="cite">{{ m.source.citation }}</p>
           } @else if (failed()) {
-            <p>No se pudo cargar la ficha de metadatos. Fuente: DANE, Marco Geoestadístico Nacional 2025.</p>
+            <p>
+              No se pudo cargar la ficha de metadatos. Fuente: DANE, Marco Geoestadístico Nacional
+              2025.
+            </p>
           } @else {
             <p>Cargando metadatos…</p>
           }

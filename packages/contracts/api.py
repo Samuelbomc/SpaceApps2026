@@ -28,12 +28,17 @@ class AnalysisRequest(Contract):
     region_id: str = Field(min_length=1, max_length=100)
     reference_date: date
     horizon_days: int = Field(default=7, ge=1, le=90)
-    forecast_start_date: date | None = Field(default=None, description="Inicio del periodo objetivo; si se omite, el día posterior a reference_date")
+    forecast_start_date: date | None = Field(
+        default=None,
+        description="Inicio del periodo objetivo; si se omite, el día posterior a reference_date",
+    )
 
     @model_validator(mode="after")
     def forecast_follows_inputs(self):
         if self.forecast_start_date is not None and self.forecast_start_date <= self.reference_date:
-            raise ValueError("El periodo objetivo debe comenzar después de la última fecha de entrada")
+            raise ValueError(
+                "El periodo objetivo debe comenzar después de la última fecha de entrada"
+            )
         return self
 
 
@@ -41,14 +46,16 @@ class ForecastValue(Contract):
     variable: str
     value: FiniteFloat
     unit: str
-    aggregation: str = Field(description="Ej.: media del periodo o acumulado; debe definirlo el modelo")
-    statistic: Literal['mean', 'sum'] | None = None
+    aggregation: str = Field(
+        description="Ej.: media del periodo o acumulado; debe definirlo el modelo"
+    )
+    statistic: Literal["mean", "sum"] | None = None
 
 
 class Forecast(Contract):
     model_kind: Literal["climate", "soil"]
     model_version: str = Field(min_length=1)
-    validation_status: Literal['experimental', 'validated', 'unspecified'] = 'unspecified'
+    validation_status: Literal["experimental", "validated", "unspecified"] = "unspecified"
     region_id: str
     reference_date: date
     forecast_start_date: date | None = None
@@ -71,8 +78,8 @@ class Recommendations(Contract):
 
 
 class RotationCheck(Contract):
-    variable: Literal['temperature', 'precipitation', 'surface_soil_moisture', 'crop_family']
-    status: Literal['within_range', 'outside_range', 'unknown']
+    variable: Literal["temperature", "precipitation", "surface_soil_moisture", "crop_family"]
+    status: Literal["within_range", "outside_range", "unknown"]
     value: FiniteFloat | None = None
     unit: str
     explanation: str
@@ -82,7 +89,7 @@ class RotationCandidate(Contract):
     crop_id: str
     crop_name: str
     family: str
-    status: Literal['excluded', 'pending_requirements', 'within_checked_ranges']
+    status: Literal["excluded", "pending_requirements", "within_checked_ranges"]
     checks: list[RotationCheck]
 
 
@@ -95,12 +102,17 @@ class RotationStage(Contract):
 
 class RotationScenario(Contract):
     stages: list[RotationStage]
-    status: Literal['conditional'] = 'conditional'
+    status: Literal["conditional"] = "conditional"
     explanation: str
 
 
 class RotationAssessment(Contract):
-    status: Literal['pending_forecasts', 'pending_agronomic_requirements', 'evaluated', 'no_compatible_candidates']
+    status: Literal[
+        "pending_forecasts",
+        "pending_agronomic_requirements",
+        "evaluated",
+        "no_compatible_candidates",
+    ]
     engine_version: str
     catalog_version: str
     rules_version: str
@@ -118,7 +130,9 @@ class RotationAssessment(Contract):
 
 
 class AnalysisResult(Contract):
-    status: Literal["pending_model", "pending_run", "insufficient_data", "pending_recommendations", "ready"]
+    status: Literal[
+        "pending_model", "pending_run", "insufficient_data", "pending_recommendations", "ready"
+    ]
     request: AnalysisRequest
     analysis_id: str | None = None
     input_snapshot_id: str | None = None

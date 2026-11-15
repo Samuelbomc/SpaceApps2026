@@ -29,7 +29,9 @@ describe('geo search', () => {
     expect(region.status).toBe('pilot');
     expect(searchGeo(index, 'la union')[0].status).toBe('pilot');
     expect(searchGeo(index, 'medellin')[0].status).toBe('outside');
-    expect(searchGeo(index, 'antioquia').find((e) => e.kind === 'department')?.status).toBe('explore');
+    expect(searchGeo(index, 'antioquia').find((e) => e.kind === 'department')?.status).toBe(
+      'explore',
+    );
   });
 
   it('distinguishes a municipality from a department with the same name', () => {

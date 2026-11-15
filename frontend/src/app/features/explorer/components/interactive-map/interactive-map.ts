@@ -22,7 +22,11 @@ import {
 } from '../../models/geo.models';
 import { displayName, featuresBBox, geometryBBox } from '../../utils/geo-utils';
 import { PILOT_TERRITORY, isSupportedMunicipality } from '../../../../core/catalog/pilot-territory';
-import { MAP_LOCALE, WebGLUnavailableError, loadMapLibre } from '../../../../shared/map/maplibre-loader';
+import {
+  MAP_LOCALE,
+  WebGLUnavailableError,
+  loadMapLibre,
+} from '../../../../shared/map/maplibre-loader';
 import {
   ATTRIBUTION,
   LAYER,
@@ -143,15 +147,20 @@ export class InteractiveMap {
         maxZoom: 12,
         maxPitch: 60,
         locale: MAP_LOCALE,
-        attributionControl: { compact: true, customAttribution: [ATTRIBUTION.boundaries, ATTRIBUTION.glyphs] },
+        attributionControl: {
+          compact: true,
+          customAttribution: [ATTRIBUTION.boundaries, ATTRIBUTION.glyphs],
+        },
       });
       this.map = map;
       map.addControl(new maplibre.NavigationControl({ visualizePitch: true }), 'top-right');
       map.addControl(new maplibre.ScaleControl({ unit: 'metric' }), 'bottom-right');
-      map.getCanvas().setAttribute(
-        'aria-label',
-        'Mapa interactivo de Colombia. Usa las flechas para desplazarte y las teclas más y menos para acercar o alejar.',
-      );
+      map
+        .getCanvas()
+        .setAttribute(
+          'aria-label',
+          'Mapa interactivo de Colombia. Usa las flechas para desplazarte y las teclas más y menos para acercar o alejar.',
+        );
 
       map.on('error', (event) => {
         // Imagery failures must never break the map: boundaries keep working.
@@ -213,10 +222,18 @@ export class InteractiveMap {
         },
       };
     });
-    this.colombiaBBox = featuresBBox(features.filter((f) => !CAMERA_EXCLUDED_DEPARTMENTS.has(f.properties.code)));
+    this.colombiaBBox = featuresBBox(
+      features.filter((f) => !CAMERA_EXCLUDED_DEPARTMENTS.has(f.properties.code)),
+    );
 
-    map.addSource(SOURCE.departments, { type: 'geojson', data: { type: 'FeatureCollection', features } as never });
-    map.addSource(SOURCE.departmentLabels, { type: 'geojson', data: labelPoints(features) as never });
+    map.addSource(SOURCE.departments, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features } as never,
+    });
+    map.addSource(SOURCE.departmentLabels, {
+      type: 'geojson',
+      data: labelPoints(features) as never,
+    });
     departmentLayers().forEach((l) => map.addLayer(l));
     departmentLabelLayers().forEach((l) => map.addLayer(l));
   }
@@ -250,14 +267,23 @@ export class InteractiveMap {
     const pilot = features.filter((f) => f.properties.pilot);
     this.regionBBox = pilot.length ? featuresBBox(pilot) : undefined;
 
-    map.addSource(SOURCE.municipalities, { type: 'geojson', data: { type: 'FeatureCollection', features } as never });
-    map.addSource(SOURCE.municipalityLabels, { type: 'geojson', data: labelPoints(features) as never });
+    map.addSource(SOURCE.municipalities, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features } as never,
+    });
+    map.addSource(SOURCE.municipalityLabels, {
+      type: 'geojson',
+      data: labelPoints(features) as never,
+    });
     // Insert below department labels so country-scale labels stay on top.
     municipalityLayers().forEach((l) => map.addLayer(l, LAYER.departmentLabel));
     municipalityLabelLayers().forEach((l) => map.addLayer(l));
 
     if (pilot.length) {
-      map.addSource(SOURCE.regionLabel, { type: 'geojson', data: regionLabelPoint(pilot, this.regionName) as never });
+      map.addSource(SOURCE.regionLabel, {
+        type: 'geojson',
+        data: regionLabelPoint(pilot, this.regionName) as never,
+      });
       map.addLayer(regionLabelLayer());
     }
     this.municipalState.set('ready');
@@ -304,7 +330,15 @@ export class InteractiveMap {
 
   private onMoveEnd(): void {
     const zoom = this.map!.getZoom();
-    this.level.set(zoom < 3.2 ? 'globe' : zoom < MUNICIPAL_MIN_ZOOM ? 'country' : zoom < 7.4 ? 'department' : 'region');
+    this.level.set(
+      zoom < 3.2
+        ? 'globe'
+        : zoom < MUNICIPAL_MIN_ZOOM
+          ? 'country'
+          : zoom < 7.4
+            ? 'department'
+            : 'region',
+    );
     if (zoom >= MUNICIPAL_MIN_ZOOM - 0.4) void this.ensureMunicipalities().catch(() => undefined);
   }
 
@@ -312,12 +346,32 @@ export class InteractiveMap {
     const name = p['labelName'] as string;
     if (source === SOURCE.municipalities) {
       return p['pilot']
-        ? { key: `m${p['code']}`, name, detail: `${this.regionName} · puedes delimitar tu lote aquí`, tone: 'pilot' }
-        : { key: `m${p['code']}`, name, detail: 'Fuera de la región piloto · solo exploración', tone: 'outside' };
+        ? {
+            key: `m${p['code']}`,
+            name,
+            detail: `${this.regionName} · puedes delimitar tu lote aquí`,
+            tone: 'pilot',
+          }
+        : {
+            key: `m${p['code']}`,
+            name,
+            detail: 'Fuera de la región piloto · solo exploración',
+            tone: 'outside',
+          };
     }
     return p['isPilot']
-      ? { key: `d${p['code']}`, name, detail: `Contiene la región piloto ${this.regionName} · clic para acercar`, tone: 'explore' }
-      : { key: `d${p['code']}`, name, detail: 'Referencia geográfica · fuera de la cobertura', tone: 'reference' };
+      ? {
+          key: `d${p['code']}`,
+          name,
+          detail: `Contiene la región piloto ${this.regionName} · clic para acercar`,
+          tone: 'explore',
+        }
+      : {
+          key: `d${p['code']}`,
+          name,
+          detail: 'Referencia geográfica · fuera de la cobertura',
+          tone: 'reference',
+        };
   }
 
   private setHoverState(next: FeatureRef | null): void {
@@ -384,7 +438,13 @@ export class InteractiveMap {
   // ----------------------------------------------------------------- cameras
   protected flyToGlobe(): void {
     this.setSelectedDepartment(null);
-    this.map?.flyTo({ center: GLOBE_VIEW.center, zoom: GLOBE_VIEW.zoom, bearing: 0, pitch: 0, duration: 1800 });
+    this.map?.flyTo({
+      center: GLOBE_VIEW.center,
+      zoom: GLOBE_VIEW.zoom,
+      bearing: 0,
+      pitch: 0,
+      duration: 1800,
+    });
   }
 
   protected flyToColombia(): void {
@@ -425,7 +485,10 @@ export class InteractiveMap {
 
 // ---------------------------------------------------------------- helpers
 function labelPoints(
-  features: { id: number; properties: { labelLon: number; labelLat: number } & Record<string, unknown> }[],
+  features: {
+    id: number;
+    properties: { labelLon: number; labelLat: number } & Record<string, unknown>;
+  }[],
 ) {
   return {
     type: 'FeatureCollection',
@@ -439,11 +502,20 @@ function labelPoints(
 }
 
 /** One label for the region, at the mean of its municipalities' label points. */
-function regionLabelPoint(features: { properties: { labelLon: number; labelLat: number } }[], name: string) {
+function regionLabelPoint(
+  features: { properties: { labelLon: number; labelLat: number } }[],
+  name: string,
+) {
   const lon = features.reduce((s, f) => s + f.properties.labelLon, 0) / features.length;
   const lat = features.reduce((s, f) => s + f.properties.labelLat, 0) / features.length;
   return {
     type: 'FeatureCollection',
-    features: [{ type: 'Feature', properties: { name }, geometry: { type: 'Point', coordinates: [lon, lat] } }],
+    features: [
+      {
+        type: 'Feature',
+        properties: { name },
+        geometry: { type: 'Point', coordinates: [lon, lat] },
+      },
+    ],
   };
 }

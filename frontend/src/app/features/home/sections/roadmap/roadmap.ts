@@ -16,8 +16,16 @@ import { StatusBadge } from '../../../../shared/ui/status-badge/status-badge';
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--sp-5);
     }
-    @media (max-width: 860px) { .columns { grid-template-columns: 1fr; } }
-    .card { display: grid; gap: var(--sp-4); align-content: start; }
+    @media (max-width: 860px) {
+      .columns {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      display: grid;
+      gap: var(--sp-4);
+      align-content: start;
+    }
   `,
   template: `
     <section class="section" aria-labelledby="roadmap-title">
@@ -52,25 +60,25 @@ export class HomeRoadmap {
       status: 'available',
       items: [
         'Recorrido unificado y navegación de la plataforma',
-        'Pantallas de acceso, registro y recuperación (modo demostración)',
+        'Registro, acceso y gestión privada de fincas',
         'Globo interactivo con límites oficiales del DANE y búsqueda geográfica',
         'Región piloto del Oriente Antioqueño verificada con fuente oficial',
-        'Delimitación del lote sobre imagen satelital (Sentinel-2, 10 m)',
+        'Delimitación y almacenamiento del polígono del lote',
       ],
     },
     {
       status: 'in-development',
       items: [
-        'Cuestionario de caracterización del lote',
-        'Panel de análisis: rotación de cultivos, series ambientales y recomendaciones',
+        'Integración validada de mediciones de finca en los modelos',
+        'Variables recientes completas y validación de modelos por horizonte',
       ],
     },
     {
       status: 'planned',
       items: [
-        'Cuentas reales y almacenamiento seguro de fincas y análisis',
-        'Integración de datos NASA y fuentes colombianas',
-        'Motor de análisis con metodología documentada y validación local',
+        'Recuperación de contraseña y edición de perfil',
+        'Extracción automatizada de todas las fuentes satelitales',
+        'Recomendaciones agronómicas aprobadas y validación local',
       ],
     },
   ];

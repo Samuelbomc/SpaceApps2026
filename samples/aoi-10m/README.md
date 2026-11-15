@@ -13,6 +13,6 @@ catálogos; sus archivos de muestra devolvieron HTTP 401 a GET sin credenciales.
 Un HEAD 200 no fue suficiente para leerlos. No hay valores raster ficticios ni
 interpolación a 10 m. `provider_value_unvalidated` no certifica precisión local.
 
-El [informe](../../docs/aoi-10m-validation.md) describe limpieza, resolución,
+El [informe](../../docs/reference/geospatial.md) describe limpieza, resolución,
 limitaciones y comandos para repetir la prueba. Los Parquet completos y payloads
 originales están en los directorios locales de `data/probes/` indicados en el resumen.

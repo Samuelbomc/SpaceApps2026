@@ -7,7 +7,6 @@ from pydantic import Field, FiniteFloat, model_validator
 
 from packages.contracts.api import Contract, Schedule
 
-
 ModelKind = Literal["climate", "soil"]
 
 
@@ -34,11 +33,18 @@ class LabeledSample(Contract):
     baseline: dict[str, FiniteFloat]
     label_sources: list[str] = Field(min_length=1)
     labels_verified: bool = False
+    spatial_id: str = "region"
+    longitude: FiniteFloat | None = None
+    latitude: FiniteFloat | None = None
+    observation_cutoff: date | None = None
+    label_observed_days: dict[str, int] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def temporal_order(self):
         if not self.feature_date < self.label_start <= self.label_end <= self.label_available_on:
-            raise ValueError("Las etiquetas deben ser posteriores a las entradas y estar disponibles después de su observación.")
+            raise ValueError(
+                "Las etiquetas deben ser posteriores a las entradas y estar disponibles después de su observación."
+            )
         return self
 
 
@@ -50,17 +56,33 @@ class PreparedDataset(Contract):
     feature_names: list[str] = Field(min_length=1)
     target_units: dict[str, str] = Field(min_length=1)
     samples: list[LabeledSample]
+    target_mode: Literal["complete", "per_target"] = "complete"
+    publication_ready: bool = True
+    provenance: dict = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def consistent_columns(self):
         if len(set(self.feature_names)) != len(self.feature_names):
             raise ValueError("Las features deben tener nombres únicos y un orden explícito.")
-        if len({sample.feature_date for sample in self.samples}) != len(self.samples):
-            raise ValueError("Solo se admite una muestra por fecha y tarea regional.")
+        if len({(sample.feature_date, sample.spatial_id) for sample in self.samples}) != len(
+            self.samples
+        ):
+            raise ValueError("Solo se admite una muestra por fecha y celda en cada tarea regional.")
         for sample in self.samples:
-            if (set(sample.features) != set(self.feature_names) or
-                    set(sample.targets) != set(self.target_units) or set(sample.baseline) != set(self.target_units)):
-                raise ValueError("Features, targets y baseline deben coincidir con el esquema del dataset.")
+            expected = set(self.target_units)
+            valid_targets = (
+                set(sample.targets) == expected
+                if self.target_mode == "complete"
+                else bool(sample.targets) and set(sample.targets) <= expected
+            )
+            if (
+                set(sample.features) != set(self.feature_names)
+                or not valid_targets
+                or set(sample.baseline) != set(sample.targets)
+            ):
+                raise ValueError(
+                    "Features, targets y baseline deben coincidir con el esquema del dataset."
+                )
             if (sample.label_end - sample.label_start).days + 1 != self.horizon_days:
                 raise ValueError("Las etiquetas deben cubrir exactamente el horizonte declarado.")
         return self
@@ -75,6 +97,10 @@ class TrainingPolicy(Contract):
     min_relative_improvement: FiniteFloat = Field(default=0.01, ge=0, lt=1)
     # Sin umbrales agronómicos explícitos no se permite publicar un modelo.
     max_mae: dict[str, FiniteFloat] = Field(default_factory=dict)
+    split_strategy: Literal["rolling", "chronological_60_20_20"] = "rolling"
+    min_test_samples: int = Field(default=1, ge=1)
+    min_spatial_locations: int = Field(default=1, ge=1)
+    publication_allowed: bool = True
 
     @model_validator(mode="after")
     def positive_errors(self):
@@ -99,11 +125,21 @@ class ModelRelease(Contract):
     artifact_sha256: dict[str, str]
     metrics: dict
     created_at: datetime
+    evaluated_through: date | None = None
+    validation_status: Literal["experimental", "validated"] = "validated"
+    spatial_scope: dict = Field(default_factory=dict)
 
 
 class TrainingOutcome(Contract):
     slot: str
-    status: Literal["published", "rejected", "unchanged", "insufficient_labels", "pending_configuration"]
+    status: Literal[
+        "published",
+        "rejected",
+        "unchanged",
+        "insufficient_labels",
+        "pending_configuration",
+        "pending_review",
+    ]
     message: str
     dataset_id: str | None = None
     version: str | None = None

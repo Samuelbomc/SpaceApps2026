@@ -45,7 +45,8 @@ export const MUNICIPAL_MIN_ZOOM = 5.8;
 export const ATTRIBUTION = {
   boundaries:
     'Límites: <a href="https://geoportal.dane.gov.co/" target="_blank" rel="noopener">DANE – MGN 2025</a>; región piloto: Gobernación de Antioquia',
-  glyphs: 'Tipografía del mapa: <a href="https://openfreemap.org/" target="_blank" rel="noopener">OpenFreeMap</a>',
+  glyphs:
+    'Tipografía del mapa: <a href="https://openfreemap.org/" target="_blank" rel="noopener">OpenFreeMap</a>',
 } as const;
 
 /** Map palette (hex literals: WebGL paint cannot read CSS custom properties). */
@@ -126,14 +127,40 @@ export function departmentLayers(): AddLayerObject[] {
       type: 'fill',
       source: SOURCE.departments,
       paint: {
-        'fill-color': ['case', selected, MAP_COLOR.selected, isExplore, MAP_COLOR.explore, MAP_COLOR.boundary],
+        'fill-color': [
+          'case',
+          selected,
+          MAP_COLOR.selected,
+          isExplore,
+          MAP_COLOR.explore,
+          MAP_COLOR.boundary,
+        ],
         // Antioquia (explorable) is highlighted at country scale and fades out as
         // municipal polygons take over.
         'fill-opacity': [
-          'interpolate', ['linear'], ['zoom'],
-          2, ['case', selected, 0.5, isExplore, ['case', hovered, 0.75, 0.55], ['case', hovered, 0.28, 0.08]],
-          6, ['case', selected, 0.35, isExplore, ['case', hovered, 0.45, 0.3], ['case', hovered, 0.22, 0.05]],
-          7.5, ['case', selected, 0.12, isExplore, 0, ['case', hovered, 0.18, 0.04]],
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          2,
+          [
+            'case',
+            selected,
+            0.5,
+            isExplore,
+            ['case', hovered, 0.75, 0.55],
+            ['case', hovered, 0.28, 0.08],
+          ],
+          6,
+          [
+            'case',
+            selected,
+            0.35,
+            isExplore,
+            ['case', hovered, 0.45, 0.3],
+            ['case', hovered, 0.22, 0.05],
+          ],
+          7.5,
+          ['case', selected, 0.12, isExplore, 0, ['case', hovered, 0.18, 0.04]],
         ],
       },
     }),
@@ -143,13 +170,25 @@ export function departmentLayers(): AddLayerObject[] {
       source: SOURCE.departments,
       layout: { 'line-join': 'round' },
       paint: {
-        'line-color': ['case', selected, '#ffffff', isExplore, MAP_COLOR.exploreOutline, MAP_COLOR.boundary],
+        'line-color': [
+          'case',
+          selected,
+          '#ffffff',
+          isExplore,
+          MAP_COLOR.exploreOutline,
+          MAP_COLOR.boundary,
+        ],
         'line-opacity': ['case', selected, 1, isExplore, 1, 0.6],
         'line-width': [
-          'interpolate', ['linear'], ['zoom'],
-          2, ['case', selected, 2, isExplore, 1.2, 0.4],
-          6, ['case', selected, 3, isExplore, 2.6, 1],
-          9, ['case', selected, 3.5, isExplore, 3.2, 1.4],
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          2,
+          ['case', selected, 2, isExplore, 1.2, 0.4],
+          6,
+          ['case', selected, 3, isExplore, 2.6, 1],
+          9,
+          ['case', selected, 3.5, isExplore, 3.2, 1.4],
         ],
       },
     }),
@@ -157,7 +196,11 @@ export function departmentLayers(): AddLayerObject[] {
 }
 
 export function departmentLabelLayers(): AddLayerObject[] {
-  const textBase = { 'text-font': ['Noto Sans Bold'], 'text-letter-spacing': 0.08, 'text-max-width': 8 };
+  const textBase = {
+    'text-font': ['Noto Sans Bold'],
+    'text-letter-spacing': 0.08,
+    'text-max-width': 8,
+  };
   return [
     layer({
       id: LAYER.departmentLabel,
@@ -167,7 +210,11 @@ export function departmentLabelLayers(): AddLayerObject[] {
       maxzoom: 7.4,
       filter: ['!', isExplore],
       layout: { ...textBase, 'text-field': ['get', 'labelName'], 'text-size': 10 },
-      paint: { 'text-color': '#e8ece6', 'text-halo-color': 'rgba(11,29,23,0.85)', 'text-halo-width': 1.2 },
+      paint: {
+        'text-color': '#e8ece6',
+        'text-halo-color': 'rgba(11,29,23,0.85)',
+        'text-halo-width': 1.2,
+      },
     }),
     layer({
       id: LAYER.exploreLabel,
@@ -180,20 +227,35 @@ export function departmentLabelLayers(): AddLayerObject[] {
         ...textBase,
         'text-field': [
           'format',
-          ['upcase', ['get', 'labelName']], { 'font-scale': 1 },
-          '\n', {},
-          'Área de exploración', { 'font-scale': 0.78, 'text-font': ['literal', ['Noto Sans Regular']] },
+          ['upcase', ['get', 'labelName']],
+          { 'font-scale': 1 },
+          '\n',
+          {},
+          'Área de exploración',
+          { 'font-scale': 0.78, 'text-font': ['literal', ['Noto Sans Regular']] },
         ],
         'text-size': ['interpolate', ['linear'], ['zoom'], 3, 12, 5.5, 15],
         'text-allow-overlap': true,
       },
-      paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(11,29,23,0.9)', 'text-halo-width': 1.6 },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': 'rgba(11,29,23,0.9)',
+        'text-halo-width': 1.6,
+      },
     }),
   ];
 }
 
 export function municipalityLayers(): AddLayerObject[] {
-  const fade = (value: unknown) => ['interpolate', ['linear'], ['zoom'], MUNICIPAL_MIN_ZOOM, 0, 7, value];
+  const fade = (value: unknown) => [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    MUNICIPAL_MIN_ZOOM,
+    0,
+    7,
+    value,
+  ];
   return [
     layer({
       id: LAYER.municipalityFill,
@@ -201,7 +263,14 @@ export function municipalityLayers(): AddLayerObject[] {
       source: SOURCE.municipalities,
       minzoom: MUNICIPAL_MIN_ZOOM,
       paint: {
-        'fill-color': ['case', selected, MAP_COLOR.selected, isPilot, MAP_COLOR.pilot, MAP_COLOR.outside],
+        'fill-color': [
+          'case',
+          selected,
+          MAP_COLOR.selected,
+          isPilot,
+          MAP_COLOR.pilot,
+          MAP_COLOR.outside,
+        ],
         'fill-opacity': fade(['case', selected, 0.5, hovered, 0.45, isPilot, 0.3, 0.06]),
       },
     }),
@@ -217,7 +286,15 @@ export function municipalityLayers(): AddLayerObject[] {
         'line-color': ['case', selected, '#ffffff', MAP_COLOR.boundary],
         'line-opacity': fade(['case', selected, 1, hovered, 1, 0.5]),
         'line-dasharray': [3, 2],
-        'line-width': ['interpolate', ['linear'], ['zoom'], 6, ['case', selected, 2.5, hovered, 1.6, 0.4], 10, ['case', selected, 4, hovered, 2.4, 1]],
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          6,
+          ['case', selected, 2.5, hovered, 1.6, 0.4],
+          10,
+          ['case', selected, 4, hovered, 2.4, 1],
+        ],
       },
     }),
     // Pilot region: solid, brighter outline.
@@ -231,7 +308,15 @@ export function municipalityLayers(): AddLayerObject[] {
       paint: {
         'line-color': ['case', selected, '#ffffff', '#e9f7e4'],
         'line-opacity': fade(1),
-        'line-width': ['interpolate', ['linear'], ['zoom'], 6, ['case', selected, 3, hovered, 2, 0.9], 10, ['case', selected, 4.5, hovered, 3, 1.8]],
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          6,
+          ['case', selected, 3, hovered, 2, 0.9],
+          10,
+          ['case', selected, 4.5, hovered, 3, 1.8],
+        ],
       },
     }),
   ];
@@ -253,7 +338,11 @@ export function municipalityLabelLayers(): AddLayerObject[] {
         'text-max-width': 7,
         'text-optional': true,
       },
-      paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(11,29,23,0.85)', 'text-halo-width': 1.3 },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': 'rgba(11,29,23,0.85)',
+        'text-halo-width': 1.3,
+      },
     });
   return [base(LAYER.municipalityLabel, 7.6, true), base(LAYER.municipalityLabelOther, 8.6, false)];
 }
@@ -268,15 +357,22 @@ export function regionLabelLayer(): AddLayerObject {
     layout: {
       'text-field': [
         'format',
-        ['upcase', ['get', 'name']], { 'font-scale': 1 },
-        '\n', {},
-        'Región piloto', { 'font-scale': 0.78, 'text-font': ['literal', ['Noto Sans Regular']] },
+        ['upcase', ['get', 'name']],
+        { 'font-scale': 1 },
+        '\n',
+        {},
+        'Región piloto',
+        { 'font-scale': 0.78, 'text-font': ['literal', ['Noto Sans Regular']] },
       ],
       'text-font': ['Noto Sans Bold'],
       'text-size': ['interpolate', ['linear'], ['zoom'], 6, 13, 8, 16],
       'text-letter-spacing': 0.08,
       'text-allow-overlap': true,
     },
-    paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(11,29,23,0.92)', 'text-halo-width': 1.8 },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': 'rgba(11,29,23,0.92)',
+      'text-halo-width': 1.8,
+    },
   });
 }

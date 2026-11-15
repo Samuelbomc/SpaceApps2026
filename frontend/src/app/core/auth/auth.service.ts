@@ -49,7 +49,6 @@ export class AuthService {
   readonly session = this.sessionState.asReadonly();
   readonly user = computed(() => this.sessionState()?.user ?? null);
   readonly isAuthenticated = computed(() => this.sessionState() !== null);
-  readonly isDemo = computed(() => this.sessionState()?.isDemo ?? false);
 
   async login(request: LoginRequest): Promise<void> {
     await this.ready;
@@ -67,14 +66,6 @@ export class AuthService {
     if (version !== this.generation) return;
     this.sessionState.set(session);
     this.error.set('');
-  }
-
-  requestPasswordReset(email: string): Promise<void> {
-    return this.gateway.requestPasswordReset(email);
-  }
-
-  async updateName(name: string): Promise<void> {
-    this.sessionState.set(await this.gateway.updateProfile({ name }));
   }
 
   async logout(): Promise<void> {

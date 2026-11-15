@@ -1,6 +1,6 @@
 # Módulo del agricultor y rotación basada en XGBoost
 
-El motor ahora consume **AnalysisResult precalculado**, con las predicciones de
+El motor consume **AnalysisResult precalculado**, con las predicciones de
 clima y suelo del mismo lugar, fecha de referencia y horizonte. La entrevista
 aporta historial y restricciones; nunca se convierte fría/templada/caliente en
 15/21/26 °C ni se supone un calendario de lluvias para sustituir los modelos.
@@ -20,8 +20,8 @@ como para previews experimentales. No existe un motor paralelo de clima supuesto
 La temperatura media pronosticada se comprueba contra rangos ECOCROP. Las medias
 de extremos diarios no demuestran que no ocurrirá una helada. La lluvia de días
 no se anualiza ni se compara con mm/año. No se infiere humedad radicular a partir
-de humedad superficial. No se usan como criterios de siembra las estimaciones
-anteriores de ingreso, trabajo o tolerancia a hongos.
+de humedad superficial. Las comprobaciones de siembra requieren reglas revisadas para las variables
+y el horizonte evaluados.
 
 **El equipo todavía no tiene umbrales por cultivo/horizonte de lluvia y humedad.**
 Esas comprobaciones quedan unknown, con el valor real predicho y la razón. El
@@ -43,12 +43,11 @@ python -m modulo_rotacion.motor_rotacion \
   --analisis /ruta/al/AnalysisResult.json --region-id region-asociada-al-lote
 ```
 
-Sin --salida, imprime JSON y no sobrescribe el resultado de ejemplo versionado.
-El archivo `resultado_rotacion.json` es un ejemplo anterior a esta integración,
-no una salida actual ni una evaluación hecha con XGBoost.
+Sin `--salida`, imprime JSON sin escribir un archivo.
 
 ```python
 from modulo_rotacion.motor_rotacion import recomendar
+
 result = recomendar(respuestas, analisis=analysis_result, region_id=region_id)
 ```
 
@@ -72,5 +71,5 @@ un archivo de límites predeterminado. En Docker usar una ruta montada bajo /app
 La publicación de recomendaciones sigue requiriendo modelos validados y reglas
 agronómicas completas, además de revisión del catálogo y del contexto local.
 
-Arquitectura, diferencias detectadas y verificación:
-[rotation-architecture.md](../docs/rotation-architecture.md).
+Contrato y verificación:
+[contrato de rotación](../docs/reference/crop-rotation.md).

@@ -29,8 +29,13 @@
     </dl>
 
     @for (issue of s.issues; track issue.message) {
-      <p class="issue" [class.issue--error]="issue.level === 'error'" [attr.role]="issue.level === 'error' ? 'alert' : null">
-        <strong>{{ issue.level === 'error' ? 'Corrige:' : 'Atención:' }}</strong> {{ issue.message }}
+      <p
+        class="issue"
+        [class.issue--error]="issue.level === 'error'"
+        [attr.role]="issue.level === 'error' ? 'alert' : null"
+      >
+        <strong>{{ issue.level === 'error' ? 'Corrige:' : 'Atención:' }}</strong>
+        {{ issue.message }}
       </p>
     }
 
@@ -47,7 +52,9 @@
       coordenadas geográficas; no sobre grados como si fueran metros.
     </p>
   } @else if (drawing()) {
-    <p class="empty">Marca al menos tres esquinas y cierra el contorno para ver el área y las coordenadas.</p>
+    <p class="empty">
+      Marca al menos tres esquinas y cierra el contorno para ver el área y las coordenadas.
+    </p>
   } @else {
     <p class="empty">Aún no has dibujado el lote.</p>
   }

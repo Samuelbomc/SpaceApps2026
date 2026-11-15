@@ -16,5 +16,11 @@ class CMRSourceClient:
         return self.cmr.collection(PRODUCTS[self.source])
 
     def search(self, query: DataQuery) -> dict:
-        return self.cmr.search(self.source, query.period, query.bbox, point=query.point,
-                               limit=query.limit, page_size=query.page_size)
+        return self.cmr.search(
+            self.source,
+            query.period,
+            query.bbox,
+            point=query.point,
+            limit=query.limit,
+            page_size=query.page_size,
+        )

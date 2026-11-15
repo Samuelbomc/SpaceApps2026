@@ -25,12 +25,16 @@
     linear-gradient(90deg, rgb(169 194 171 / 0.07) 1px, transparent 1px);
   background-size: 40px 40px;
 
-  .eyebrow { color: var(--c-sage-300); }
+  .eyebrow {
+    color: var(--c-sage-300);
+  }
 
   @media (max-width: 860px) {
     padding: var(--sp-5);
 
-    .auth__steps { display: none; }
+    .auth__steps {
+      display: none;
+    }
   }
 }
 
@@ -49,7 +53,10 @@
   list-style: none;
   color: var(--c-ink-inverse-muted);
 
-  li { display: flex; gap: var(--sp-3); }
+  li {
+    display: flex;
+    gap: var(--sp-3);
+  }
 
   b {
     flex: none;
@@ -76,13 +83,11 @@
   gap: var(--sp-5);
   padding: clamp(var(--sp-5), 4vw, var(--sp-7));
 
-  h1 { font-size: var(--fs-2xl); }
+  h1 {
+    font-size: var(--fs-2xl);
+  }
 }
 
 .auth__lead {
   margin-top: calc(var(--sp-3) * -1);
-}
-
-.auth__demo {
-  font-size: var(--fs-xs);
 }

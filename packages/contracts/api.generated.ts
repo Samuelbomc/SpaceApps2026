@@ -28,7 +28,7 @@ export interface components {
     "MapPlace": { "latitude": number; "longitude": number; "label"?: (string | null); "source"?: "Photon/OpenStreetMap"; };
     "ModelCatalog": { "models": Array<components['schemas']["ModelInfo"]>; "recipe_version"?: string; "supported_horizons": Array<number>; "limitations": Array<string>; };
     "ModelInfo": { "model_id": string; "model_kind": "climate" | "soil"; "version": string; "horizon_days"?: number; "validation_status"?: "experimental"; "unit": string; "features": Array<string>; "formula": string; "evaluation_mae": number; "baseline_mae": number; "evaluation_note"?: string; };
-    "ModelRelease": { "slot": string; "version": string; "model_kind": "climate" | "soil"; "region_id": string; "horizon_days": number; "dataset_id": string; "training_fingerprint": string; "recipe_version": string; "policy_version": string; "trained_through": string; "feature_names": Array<string>; "target_units": Record<string, string>; "artifact_sha256": Record<string, string>; "metrics": Record<string, unknown>; "created_at": string; };
+    "ModelRelease": { "slot": string; "version": string; "model_kind": "climate" | "soil"; "region_id": string; "horizon_days": number; "dataset_id": string; "training_fingerprint": string; "recipe_version": string; "policy_version": string; "trained_through": string; "feature_names": Array<string>; "target_units": Record<string, string>; "artifact_sha256": Record<string, string>; "metrics": Record<string, unknown>; "created_at": string; "evaluated_through"?: (string | null); "validation_status"?: "experimental" | "validated"; "spatial_scope"?: Record<string, unknown>; };
     "NumericRange": { "minimum": number; "maximum": number; };
     "Observation": { "source": string; "date": string; "variable": string; "value": (number | null); "unit": string; "quality": string; "resolution": string; };
     "ObservationPage": { "region_id": string; "items": Array<components['schemas']["Observation"]>; "limit": number; "offset"?: number; "total"?: (number | null); "first_date"?: (string | null); "last_date"?: (string | null); "last_updated_at"?: (string | null); };
@@ -44,7 +44,7 @@ export interface components {
     "RotationStage": { "crop_id": string; "crop_name": string; "family": string; "forecast_evaluated": boolean; };
     "Schedule": { "job_key": string; "interval_seconds": number; "next_run_at": string; "last_success_at"?: (string | null); "last_error"?: (string | null); "retry_at"?: (string | null); "consecutive_failures"?: number; "pending_sources"?: Array<string>; "last_result"?: Record<string, unknown>; };
     "StatusResponse": { "database"?: "postgresql"; "climate_model": "not_configured" | "configured"; "soil_model": "not_configured" | "configured"; "recommendations": "not_configured" | "configured"; "schedule": (components['schemas']["Schedule"] | null); "recent_runs": Array<components['schemas']["IngestionRun"]>; };
-    "TrainingOutcome": { "slot": string; "status": "published" | "rejected" | "unchanged" | "insufficient_labels" | "pending_configuration"; "message": string; "dataset_id"?: (string | null); "version"?: (string | null); };
+    "TrainingOutcome": { "slot": string; "status": "published" | "rejected" | "unchanged" | "insufficient_labels" | "pending_configuration" | "pending_review"; "message": string; "dataset_id"?: (string | null); "version"?: (string | null); };
     "ValidationError": { "loc": Array<(string | number)>; "msg": string; "type": string; "input"?: unknown; "ctx"?: Record<string, unknown>; };
   };
 }

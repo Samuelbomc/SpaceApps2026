@@ -39,7 +39,10 @@ export class HomeEarthObservation {
       is: 'Humedad superficial del suelo (SMAP)',
       isNot: 'la humedad en la zona de raíces',
     },
-    { is: 'NDVI (índice de vegetación)', isNot: 'una medida de la salud del suelo ni del rendimiento' },
+    {
+      is: 'NDVI (índice de vegetación)',
+      isNot: 'una medida de la salud del suelo ni del rendimiento',
+    },
     { is: 'Temperatura de superficie terrestre', isNot: 'la temperatura del aire' },
     { is: 'Datos de NASA POWER', isNot: 'observaciones meteorológicas de la finca' },
     { is: 'Estadísticas municipales', isNot: 'información de una finca en particular' },

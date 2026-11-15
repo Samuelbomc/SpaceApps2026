@@ -1,7 +1,7 @@
 # AndesTerra — frontend Angular
 
 Frontend activo de Field Shift, integrado con FastAPI y el cliente compartido
-`packages/api-client`. El frontend Next.js anterior fue eliminado.
+`packages/api-client`.
 
 ```bash
 npm ci --prefix frontend
@@ -17,7 +17,7 @@ Las sesiones son reales con cookie HttpOnly; los guards esperan su restauración
 Los archivos de finca son privados. Recuperación de contraseña y modificación
 del nombre de cuenta todavía no tienen endpoint y se muestran como no disponibles.
 
-El nuevo mapa usa MapLibre; conserva su diseño, límites municipales y polígonos.
+El mapa usa MapLibre; conserva su diseño, límites municipales y polígonos.
 También permite colocar cuadrados por superficie en m², km² y ha. La geometría
 GeoJSON se guarda completa junto al bbox; los registros antiguos siguen siendo
 compatibles. Las condiciones y análisis se consultan por región con datos
@@ -32,4 +32,4 @@ npm test --prefix frontend -- --watch=false
 npm test --prefix packages/api-client
 ```
 
-Ver [la guía de migración](../docs/frontend-migration.md).
+Ver [el contrato del frontend](../docs/reference/frontend.md).

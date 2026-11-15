@@ -5,7 +5,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'app-home-problem',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
-    .grid { --grid-min: 15rem; list-style: none; }
+    .grid {
+      --grid-min: 15rem;
+      list-style: none;
+    }
     .num {
       display: inline-grid;
       place-items: center;
@@ -19,7 +22,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       font-weight: 700;
       font-size: var(--fs-sm);
     }
-    h3 { margin-bottom: var(--sp-2); }
+    h3 {
+      margin-bottom: var(--sp-2);
+    }
   `,
   template: `
     <section class="section" aria-labelledby="problem-title">
