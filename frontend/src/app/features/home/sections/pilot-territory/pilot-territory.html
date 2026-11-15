@@ -1,12 +1,12 @@
 <section class="section section--sage" aria-labelledby="pilot-title">
   <div class="container">
     <header class="section-head">
-      <span class="eyebrow">Territorio piloto</span>
-      <h2 id="pilot-title">Comenzamos en {{ territory.department }}, pensando en {{ territory.country }}</h2>
+      <span class="eyebrow">Región piloto</span>
+      <h2 id="pilot-title">Comenzamos en el {{ territory.pilotRegion.name }}, pensando en {{ territory.country }}</h2>
       <p>
-        {{ territory.department }} es el territorio de implementación inicial. La plataforma se
-        diseña para extenderse a otros departamentos mediante datos y configuración, sin cambiar su
-        arquitectura.
+        Puedes explorar la geografía de {{ territory.department }}, pero el análisis de fincas solo
+        está disponible en los municipios del {{ territory.pilotRegion.name }}. La plataforma se
+        diseña para extenderse a otras regiones mediante datos y configuración.
       </p>
     </header>
 
@@ -15,30 +15,33 @@
         <h3>Subregiones de {{ territory.department }}</h3>
         <ul class="chip-list">
           @for (s of territory.subregions; track s) {
-            <li class="chip">{{ s }}</li>
+            <li class="chip" [class.chip--pilot]="s === territory.pilotRegion.subregion">
+              {{ s }}
+              @if (s === territory.pilotRegion.subregion) {
+                <span class="sr-only">(región piloto)</span>
+              }
+            </li>
           }
+        </ul>
+        <ul class="scope">
+          <li><b class="scope__dot scope__dot--explore"></b><span><strong>Exploración geográfica:</strong> todo {{ territory.department }}.</span></li>
+          <li><b class="scope__dot scope__dot--pilot"></b><span><strong>Análisis de fincas:</strong> solo el {{ territory.pilotRegion.name }}.</span></li>
         </ul>
 
         <div class="pilot__selection">
-          <h4>Municipios piloto</h4>
-          @if (territory.pilotMunicipalities.length) {
-            <ul class="chip-list">
-              @for (m of territory.pilotMunicipalities; track m) {
-                <li class="chip">{{ m }}</li>
-              }
-            </ul>
+          <h4>Municipios del {{ territory.pilotRegion.name }}</h4>
+          @if (territory.pilotRegion.membershipSource) {
+            <p>
+              {{ territory.pilotRegion.municipalityCodes.length }} municipios verificados con fuente
+              oficial. <a [href]="territory.pilotRegion.membershipSource.urls[0]" target="_blank" rel="noopener noreferrer">{{ territory.pilotRegion.membershipSource.citation }}<span class="sr-only"> (abre en una pestaña nueva)</span></a>
+            </p>
           } @else {
             <p class="notice notice--info" role="note">
               <span>
-                <strong>Por definir.</strong> Los municipios se seleccionarán según estos criterios,
-                no por conveniencia:
+                <strong>Verificación en curso.</strong> La lista de municipios de la región se está
+                confirmando con fuentes oficiales y se mostrará en el mapa cuando esté verificada.
               </span>
             </p>
-            <ul class="check-list">
-              @for (c of territory.selectionCriteria; track c) {
-                <li>{{ c }}</li>
-              }
-            </ul>
           }
         </div>
       </div>

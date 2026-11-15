@@ -1,0 +1,77 @@
+@if (municipality(); as m) {
+  <article class="card panel" aria-live="polite" aria-labelledby="mpio-title">
+    <header class="panel__head">
+      <div>
+        <span class="eyebrow">Municipio · {{ departmentName() }}</span>
+        <h2 id="mpio-title">{{ m.name }}</h2>
+      </div>
+      <button type="button" class="panel__close" (click)="cleared.emit()" aria-label="Quitar selección">
+        ×
+      </button>
+    </header>
+
+    <dl class="spec-list">
+      <dt>Código DIVIPOLA</dt>
+      <dd>{{ m.code }}</dd>
+      @if (m.areaKm2) {
+        <dt>Área oficial</dt>
+        <dd>{{ m.areaKm2 | number: '1.0-1' }} km²</dd>
+      }
+      <dt>Límites</dt>
+      <dd>DANE · MGN 2025</dd>
+      <dt>Región piloto</dt>
+      <dd>{{ inPilot() ? regionName + ' — sí' : 'No (solo exploración)' }}</dd>
+    </dl>
+
+    <div class="coverage" [attr.data-status]="status()">
+      <strong>Datos ambientales: {{ coverageLabel[status()] }}</strong>
+      @if (coverage(); as c) {
+        <p>{{ c.note }}</p>
+        <ul class="coverage__sources">
+          @for (s of sources(); track s.id) {
+            <li><app-data-nature-badge [nature]="s.nature" /> {{ s.name }}</li>
+          }
+        </ul>
+        <dl class="spec-list">
+          <dt>Periodo</dt>
+          <dd>{{ c.period }}</dd>
+        </dl>
+        <p class="coverage__support"><strong>Cobertura espacial:</strong> {{ c.spatialSupport }}</p>
+      } @else {
+        <p>
+          Aún no hay datos procesados para este municipio. Las fuentes regionales previstas (por
+          ejemplo, NASA POWER o GPM IMERG) cubren todo el territorio y se conectarán en próximos
+          incrementos.
+        </p>
+      }
+    </div>
+
+    <p class="notice notice--info" role="note">
+      <span>
+        Información de escala municipal o regional: describe el territorio, no una finca en
+        particular.
+      </span>
+    </p>
+  </article>
+} @else {
+  <article class="card panel" aria-labelledby="dept-title">
+    <span class="eyebrow">Área de exploración</span>
+    <h2 id="dept-title">{{ departmentName() }}</h2>
+    @if (all().length) {
+      <p>
+        {{ all().length }} municipios con límites oficiales del DANE. Selecciona uno en el mapa, en el
+        buscador o en la lista para ver su información.
+      </p>
+      <ul class="tally">
+        <li data-status="pilot"><b>{{ pilotCount() }}</b> en la región piloto ({{ regionName }})</li>
+        <li data-status="integrated"><b>{{ counts().integrated }}</b> {{ coverageLabel.integrated }}</li>
+        <li data-status="processed-pending">
+          <b>{{ counts()['processed-pending'] }}</b> {{ coverageLabel['processed-pending'] }}
+        </li>
+        <li data-status="none"><b>{{ counts().none }}</b> {{ coverageLabel.none }}</li>
+      </ul>
+    } @else {
+      <p>Selecciona un municipio en el mapa o en la lista.</p>
+    }
+  </article>
+}

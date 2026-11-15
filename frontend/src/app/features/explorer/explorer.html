@@ -1,0 +1,116 @@
+<section class="portal" aria-labelledby="explorer-title">
+  <div class="container portal__steps">
+    <app-journey-steps current="explorar" />
+  </div>
+
+  <header class="container portal__head">
+    <div>
+      <span class="eyebrow">Paso 2 · Explorar</span>
+      <h1 id="explorer-title">Explora el territorio y encuentra tu municipio</h1>
+      <p>
+        Recorre el globo hasta {{ territory.department }}. La región piloto es el {{ region.name }}: en
+        sus {{ region.municipalityCodes.length }} municipios podrás ubicar tu finca y delimitar tu lote.
+      </p>
+    </div>
+    <div class="portal__search">
+      @if (listState() === 'ready') {
+        <app-geo-search [index]="searchIndex()" (picked)="onPicked($event)" />
+      }
+    </div>
+  </header>
+
+  <div class="container portal__body">
+    <div class="portal__map">
+      <app-interactive-map [(selectedCode)]="selectedCode" />
+    </div>
+
+    <aside class="portal__panel" aria-label="Selección y siguiente paso">
+      <div class="card next" aria-live="polite">
+        <h2>Paso 3 · Municipio y lote</h2>
+        @if (selectedMunicipality(); as m) {
+          @if (canContinue()) {
+            <p><strong>{{ m.name }}</strong> está en la región piloto ({{ region.name }}).</p>
+            <a
+              class="btn btn--primary btn--block"
+              [routerLink]="plotPath"
+              [queryParams]="{ municipio: m.code }"
+            >Delimitar mi lote en {{ m.name }}</a>
+            @if (!auth.isAuthenticated()) {
+              <p class="next__hint">Te pediremos iniciar sesión para guardar tu lote; luego volverás aquí mismo.</p>
+            }
+          } @else {
+            <p>
+              <strong>{{ m.name }}</strong> está fuera de la región piloto ({{ region.name }}). Puedes
+              explorar su geografía, pero aún no es posible delimitar ni analizar lotes allí.
+            </p>
+            <button type="button" class="btn btn--secondary btn--block" (click)="showRegion()">Ver la región piloto</button>
+          }
+        } @else if (focused(); as f) {
+          @if (f.kind === 'region') {
+            <p>
+              <strong>{{ f.name }}</strong>: región piloto. Elige uno de sus municipios en el mapa, en el
+              buscador o en la lista.
+            </p>
+          } @else if (f.status === 'explore') {
+            <p>
+              <strong>{{ f.name }}</strong>: área de exploración. Solo los municipios del {{ region.name }}
+              permiten delimitar un lote.
+            </p>
+            <button type="button" class="btn btn--secondary btn--block" (click)="showRegion()">Ver la región piloto</button>
+          } @else {
+            <p>
+              <strong>{{ f.name }}</strong> aún no está incluido en la cobertura de la plataforma. Se
+              muestra solo como referencia geográfica.
+            </p>
+            <button type="button" class="btn btn--secondary btn--block" (click)="showRegion()">Ver la región piloto</button>
+          }
+        } @else {
+          <p>Elige el municipio de tu finca dentro del {{ region.name }}.</p>
+          <button type="button" class="btn btn--secondary btn--block" (click)="showRegion()">Ver la región piloto</button>
+        }
+      </div>
+
+      <div class="card picker">
+        <label for="municipio-select">Lista de municipios</label>
+        @switch (listState()) {
+          @case ('ready') {
+            <select id="municipio-select" (change)="onSelect($event)" aria-describedby="municipio-hint">
+              <option value="" [selected]="!selectedCode()">Elige un municipio…</option>
+              <optgroup [label]="region.name + ' — región piloto'">
+                @for (m of pilotMunicipalities(); track m.code) {
+                  <option [value]="m.code" [selected]="m.code === selectedCode()">{{ m.name }}</option>
+                }
+              </optgroup>
+              <optgroup [label]="'Otros municipios de ' + territory.department + ' — solo exploración'">
+                @for (m of otherMunicipalities(); track m.code) {
+                  <option [value]="m.code" [selected]="m.code === selectedCode()">{{ m.name }}</option>
+                }
+              </optgroup>
+            </select>
+            <p id="municipio-hint" class="picker__hint">
+              Alternativa accesible al mapa: funciona con teclado y pantallas táctiles.
+            </p>
+          }
+          @case ('loading') {
+            <p class="picker__hint">Cargando municipios…</p>
+          }
+          @case ('error') {
+            <p class="picker__hint" role="alert">
+              No se pudo cargar la lista de municipios.
+              <button type="button" class="link-btn" (click)="loadLists()">Reintentar</button>
+            </p>
+          }
+        }
+      </div>
+
+      <app-municipality-panel
+        [municipality]="selectedMunicipality()"
+        [all]="municipalities()"
+        [departmentName]="territory.department"
+        (cleared)="selectedCode.set(null)"
+      />
+
+      <app-map-provenance />
+    </aside>
+  </div>
+</section>

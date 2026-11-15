@@ -1,13 +1,36 @@
-/** Primary navigation entries, shared by the header and footer. */
-export interface NavItem {
+/** Navigation entries for the header and footer. */
+export interface NavLink {
   label: string;
   path: string;
   fragment?: string;
 }
 
-export const PRIMARY_NAV: readonly NavItem[] = [
-  { label: 'Inicio', path: '/' },
-  { label: 'Portal de datos', path: '/datos' },
-  { label: 'Espacio del agricultor', path: '/agricultor' },
-  { label: 'Fuentes y método', path: '/', fragment: 'fuentes' },
+export interface NavGroup {
+  label: string;
+  links: readonly NavLink[];
+}
+
+export type NavEntry = ({ kind: 'link' } & NavLink) | ({ kind: 'group' } & NavGroup);
+
+/** "Inicio" dropdown: the home page and its two reference sections. */
+export const HOME_GROUP: NavGroup = {
+  label: 'Inicio',
+  links: [
+    { label: 'Inicio', path: '/' },
+    { label: 'Cómo funciona', path: '/', fragment: 'como-funciona' },
+    { label: 'Fuentes y métodos', path: '/', fragment: 'fuentes' },
+  ],
+};
+
+/** Shown to visitors without a session. */
+export const PUBLIC_NAV: readonly NavEntry[] = [
+  { kind: 'group', ...HOME_GROUP },
+  { kind: 'link', label: 'Explorar el mapa', path: '/explorar' },
+];
+
+/** Shown once the user is signed in. */
+export const APP_NAV: readonly NavEntry[] = [
+  { kind: 'group', ...HOME_GROUP },
+  { kind: 'link', label: 'Mi panel', path: '/panel' },
+  { kind: 'link', label: 'Nuevo análisis', path: '/explorar' },
 ];

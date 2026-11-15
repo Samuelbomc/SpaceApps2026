@@ -1,0 +1,88 @@
+<div class="shell">
+  <div
+    #mapContainer
+    class="canvas"
+    role="region"
+    aria-label="Mapa de Colombia y Antioquia con la región piloto Oriente Antioqueño"
+    aria-describedby="map-help"
+  ></div>
+  <p id="map-help" class="sr-only">
+    Gira el globo arrastrando y acerca con la rueda del ratón o con gestos. Los botones Globo,
+    Colombia, Antioquia y Oriente mueven la vista. Como alternativa al mapa, usa el buscador o la
+    lista de municipios.
+  </p>
+
+  <!-- Camera presets -->
+  <div class="views" role="group" aria-label="Escala del mapa">
+    <button type="button" [attr.aria-pressed]="level() === 'globe'" [disabled]="!ready()" (click)="flyToGlobe()">
+      Globo
+    </button>
+    <button type="button" [attr.aria-pressed]="level() === 'country'" [disabled]="!ready()" (click)="flyToColombia()">
+      Colombia
+    </button>
+    <button type="button" [attr.aria-pressed]="level() === 'department'" [disabled]="!ready()" (click)="flyToDepartment()">
+      Antioquia
+    </button>
+    <button type="button" [attr.aria-pressed]="level() === 'region'" [disabled]="!ready()" (click)="flyToRegion()">
+      Oriente
+    </button>
+  </div>
+
+  <!-- Hover / tap tooltip: positioned imperatively, content via signal -->
+  <div #tooltip class="tooltip" [class.tooltip--on]="hover()" [attr.data-tone]="hover()?.tone" aria-hidden="true">
+    @if (hover(); as h) {
+      <strong>{{ h.name }}</strong>
+      <span>{{ h.detail }}</span>
+    }
+  </div>
+
+  @if (ready()) {
+    <div class="legend">
+      @if (level() === 'department' || level() === 'region') {
+        <p class="legend__title">Municipios de Antioquia</p>
+        <ul>
+          <li><i class="legend__pilot" [style.background]="color.pilot"></i>{{ regionName }}: puedes delimitar tu lote</li>
+          <li><i class="legend__none legend__dashed"></i>Fuera de la región piloto: solo exploración</li>
+          <li><i [style.background]="color.selected"></i>Seleccionado</li>
+        </ul>
+      } @else {
+        <p class="legend__title">Departamentos</p>
+        <ul>
+          <li><i [style.background]="color.explore"></i>Antioquia · área de exploración</li>
+          <li><i class="legend__none"></i>Referencia, fuera de la cobertura</li>
+        </ul>
+      }
+    </div>
+  }
+
+  <!-- Status messages -->
+  <div class="status" aria-live="polite">
+    @if (municipalState() === 'loading') {
+      <p class="chip-status">Cargando límites municipales…</p>
+    }
+    @if (municipalState() === 'error') {
+      <p class="chip-status chip-status--error">
+        No se pudieron cargar los límites municipales.
+        <button type="button" (click)="retryMunicipalities()">Reintentar</button>
+      </p>
+    }
+    @if (imageryFailed()) {
+      <p class="chip-status">La imagen satelital de fondo no está disponible; los límites siguen activos.</p>
+    }
+  </div>
+
+  @switch (state()) {
+    @case ('loading') {
+      <div class="overlay" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        Cargando el globo…
+      </div>
+    }
+    @case ('error') {
+      <div class="overlay overlay--error" role="alert">
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="btn btn--light" (click)="init()">Reintentar</button>
+      </div>
+    }
+  }
+</div>
