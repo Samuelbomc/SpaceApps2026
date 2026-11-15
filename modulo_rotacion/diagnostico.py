@@ -34,7 +34,10 @@ def diagnosticar(resp):
     """resp = dict de respuestas (o ruta a JSON). Devuelve lista de areas con color, motivos y consejos."""
     if not isinstance(resp, dict):
         resp = json.loads(Path(resp).read_text(encoding="utf-8"))
-    from motor_rotacion import normalizar
+    if __package__:
+        from .motor_rotacion import normalizar
+    else:
+        from motor_rotacion import normalizar
     resp = normalizar(resp)
     lote, suelo = resp.get("lote", {}), resp.get("suelo", {})
     hist = resp.get("historial", {}).get("ultimos_cultivos", [])

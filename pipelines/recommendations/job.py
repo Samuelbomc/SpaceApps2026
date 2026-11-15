@@ -10,10 +10,11 @@ from pipelines.recommendations.pipeline import CropRecommendationPipeline
 
 class CropRecommendationJob:
     def __init__(self, observations, results, registry, artifacts, *, predictor_factory=None,
-                 engine=None, horizons=(7, 15, 30, 60), bundled_models=None, feature_store=None):
+                 engine=None, horizons=(7, 15, 30, 60), bundled_models=None, feature_store=None, rotation_engine=None):
         self.observations, self.results, self.registry, self.artifacts = observations, results, registry, artifacts
         self.predictor_factory, self.engine, self.horizons = predictor_factory, engine, horizons
         self.bundled_models, self.feature_store = bundled_models, feature_store
+        self.rotation_engine = rotation_engine
 
     def run(self, *, as_of=None):
         today = as_of or datetime.now(ZoneInfo("America/Bogota")).date()
@@ -47,7 +48,7 @@ class CropRecommendationJob:
                 pipeline = CropRecommendationPipeline(self.observations, climate_adapter, soil_adapter,
                                                        self.engine, results_repository=self.results,
                                                        published_versions={"climate": climate.version, "soil": soil.version},
-                                                       require_catalog_version=True)
+                                                       require_catalog_version=True, rotation_engine=self.rotation_engine)
                 result = pipeline.run(request)
                 outcomes.append({"region_id": region_id, "horizon_days": horizon, "status": result.status,
                                  "analysis_id": result.analysis_id})
@@ -65,5 +66,6 @@ class CropRecommendationJob:
                 messages=['Los cinco modelos XGBoost están integrados. Faltan las variables procesadas expanded-v1 '
                           'para esta región y fecha: POWER, GPM Late, elevación y, para suelo, SMAP y SoilGrids. '
                           'No se usan filas de otras fechas o ubicaciones.'])
-        self.results.save_analysis(result)
-        return result
+        pipeline = CropRecommendationPipeline(self.observations, results_repository=self.results,
+                                               rotation_engine=self.rotation_engine)
+        return pipeline.finalize(result)

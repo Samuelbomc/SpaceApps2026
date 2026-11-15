@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from uuid import UUID
 
-from packages.contracts.api import AnalysisRequest, Forecast, Recommendations
+from packages.contracts.api import AnalysisRequest, Forecast, Recommendations, RotationAssessment
 from packages.contracts.farms import FarmFeatureBundle
 from packages.contracts.training import ModelRelease
 
@@ -20,6 +20,11 @@ class SoilPredictor(Protocol):
 
 class RecommendationEngine(Protocol):
     def recommend(self, request: AnalysisRequest, climate: Forecast, soil: Forecast) -> Recommendations: ...
+
+
+class RotationEvaluator(Protocol):
+    """Evaluación trazable, que puede quedar pendiente sin aprobar una siembra."""
+    def assess(self, request: AnalysisRequest, climate: Forecast | None, soil: Forecast | None) -> RotationAssessment: ...
 
 
 class PublishedPredictorFactory(Protocol):

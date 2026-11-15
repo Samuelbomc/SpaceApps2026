@@ -19,8 +19,9 @@ flowchart TD
     TRAIN --> GATE[Validación temporal: candidato, baseline y campeón]
     GATE -->|Cumple criterios| PUB[Modelo publicado: JSON y manifiesto]
     GATE -->|No cumple| KEEP[Conservar modelo vigente]
-    PUB --> REC[CropRecommendationPipeline]
-    KEEP --> REC
+    PUB --> INF[Inferencias de clima y suelo por horizonte]
+    INF --> REC[CropRecommendationPipeline: cierre común y evaluación de rotación]
+    KEEP --> INF
     PG --> REC
     CATALOG[(MongoDB: catálogo agronómico versionado)] --> REC
     REC --> RESULTS[(MongoDB: escenarios, predicciones y recomendaciones)]
@@ -104,3 +105,11 @@ un gránulo mediante CMR no equivale a extraer una observación científica.
 
 Consulta [autonomous-training.md](autonomous-training.md) para los contratos,
 la validación y las instrucciones de ejecución.
+
+## Conexión con rotación
+
+El cierre común pasa las predicciones a ForecastRotationEngine y persiste la
+evaluación. El motor de entrevista ya no genera clima ni un año de rotación.
+Umbrales de agua, promoción de modelos y publicación agronómica son etapas
+distintas. Estado y diferencias frente al objetivo:
+[validación de arquitectura de rotación](rotation-architecture.md).

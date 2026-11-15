@@ -42,6 +42,7 @@ class ForecastValue(Contract):
     value: FiniteFloat
     unit: str
     aggregation: str = Field(description="Ej.: media del periodo o acumulado; debe definirlo el modelo")
+    statistic: Literal['mean', 'sum'] | None = None
 
 
 class Forecast(Contract):
@@ -69,6 +70,53 @@ class Recommendations(Contract):
     alternatives: list[Rotation] = Field(min_length=3)
 
 
+class RotationCheck(Contract):
+    variable: Literal['temperature', 'precipitation', 'surface_soil_moisture', 'crop_family']
+    status: Literal['within_range', 'outside_range', 'unknown']
+    value: FiniteFloat | None = None
+    unit: str
+    explanation: str
+
+
+class RotationCandidate(Contract):
+    crop_id: str
+    crop_name: str
+    family: str
+    status: Literal['excluded', 'pending_requirements', 'within_checked_ranges']
+    checks: list[RotationCheck]
+
+
+class RotationStage(Contract):
+    crop_id: str
+    crop_name: str
+    family: str
+    forecast_evaluated: bool
+
+
+class RotationScenario(Contract):
+    stages: list[RotationStage]
+    status: Literal['conditional'] = 'conditional'
+    explanation: str
+
+
+class RotationAssessment(Contract):
+    status: Literal['pending_forecasts', 'pending_agronomic_requirements', 'evaluated', 'no_compatible_candidates']
+    engine_version: str
+    catalog_version: str
+    rules_version: str
+    input_snapshot_id: str
+    region_id: str
+    forecast_start_date: date
+    horizon_days: int
+    climate_model_version: str | None = None
+    soil_model_version: str | None = None
+    forecast_values: dict[str, FiniteFloat] = Field(default_factory=dict)
+    candidates: list[RotationCandidate] = Field(default_factory=list)
+    scenarios: list[RotationScenario] = Field(default_factory=list)
+    limitations: list[str]
+    recommendation_ready: bool = False
+
+
 class AnalysisResult(Contract):
     status: Literal["pending_model", "pending_run", "insufficient_data", "pending_recommendations", "ready"]
     request: AnalysisRequest
@@ -77,6 +125,7 @@ class AnalysisResult(Contract):
     climate: Forecast | None = None
     soil: Forecast | None = None
     recommendations: Recommendations | None = None
+    rotation_assessment: RotationAssessment | None = None
     messages: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")

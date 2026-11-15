@@ -114,6 +114,67 @@
             }
           </article>
         }
+      } @else if (analysis()?.rotation_assessment; as assessment) {
+        @if (assessment.status === 'pending_forecasts') {
+          <p>
+            La evaluación de rotaciones necesita las predicciones de clima y suelo de este periodo.
+          </p>
+        } @else {
+          <p>
+            Evaluación provisional basada en XGBoost. Faltan requisitos agronómicos revisados para
+            aprobar una siembra.
+          </p>
+          @for (scenario of assessment.scenarios; track $index) {
+            <article>
+              <h4>Escenario condicional</h4>
+              @for (stage of scenario.stages; track $index) {
+                <p>
+                  {{ stage.crop_name }} ·
+                  {{
+                    stage.forecast_evaluated
+                      ? 'evaluación parcial del periodo'
+                      : 'requiere nuevas predicciones'
+                  }}
+                </p>
+              }
+              @if (technical()) {
+                <p>{{ scenario.explanation }}</p>
+              }
+            </article>
+          }
+          @if (!assessment.scenarios?.length) {
+            <p>No hay candidatos compatibles con las comprobaciones disponibles.</p>
+          }
+        }
+        @if (technical()) {
+          <details>
+            <summary>Comprobaciones de rotación y procedencia</summary>
+            <p>
+              Motor: {{ assessment.engine_version }} · catálogo: {{ assessment.catalog_version }} ·
+              reglas: {{ assessment.rules_version }}
+            </p>
+            <p>Snapshot: {{ assessment.input_snapshot_id }}</p>
+            <p>
+              Clima: {{ assessment.climate_model_version }} · suelo:
+              {{ assessment.soil_model_version }}
+            </p>
+            <pre>{{ assessment.forecast_values | json }}</pre>
+            @for (candidate of assessment.candidates; track candidate.crop_id) {
+              <article>
+                <h4>{{ candidate.crop_name }} · {{ candidate.family }}</h4>
+                @for (check of candidate.checks; track check.variable) {
+                  <p>
+                    {{ check.variable }}: {{ check.value }} {{ check.unit }} · {{ check.status }}.
+                    {{ check.explanation }}
+                  </p>
+                }
+              </article>
+            }
+            @for (note of assessment.limitations; track note) {
+              <p>{{ note }}</p>
+            }
+          </details>
+        }
       } @else {
         <p>Todavía no hay recomendaciones publicadas para este periodo.</p>
       }

@@ -19,6 +19,7 @@ class Settings:
     geocoder_url: str = "https://photon.komoot.io/reverse"
     pretrained_model_directory: Path = Path('ml/artifacts')
     feature_directory: Path = Path('data/features/expanded-v1')
+    rotation_water_rules_path: Path | None = None
 
     @classmethod
     def from_env(cls):
@@ -33,4 +34,5 @@ class Settings:
                    model_directory=Path(os.getenv("MODEL_DIRECTORY", "data/models")),
                    geocoder_url=os.getenv("GEOCODER_URL", "https://photon.komoot.io/reverse"),
                    pretrained_model_directory=Path(os.getenv('PRETRAINED_MODEL_DIRECTORY', 'ml/artifacts')),
-                   feature_directory=Path(os.getenv('FEATURE_DIRECTORY', 'data/features/expanded-v1')))
+                   feature_directory=Path(os.getenv('FEATURE_DIRECTORY', 'data/features/expanded-v1')),
+                   rotation_water_rules_path=Path(os.environ['ROTATION_WATER_RULES_PATH']) if os.getenv('ROTATION_WATER_RULES_PATH') else None)

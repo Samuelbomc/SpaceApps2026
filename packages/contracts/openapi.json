@@ -1223,6 +1223,16 @@
               }
             ]
           },
+          "rotation_assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RotationAssessment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "messages": {
             "items": {
               "type": "string"
@@ -2250,6 +2260,21 @@
             "type": "string",
             "title": "Aggregation",
             "description": "Ej.: media del periodo o acumulado; debe definirlo el modelo"
+          },
+          "statistic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mean",
+                  "sum"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statistic"
           }
         },
         "additionalProperties": false,
@@ -2972,6 +2997,268 @@
           "reasons"
         ],
         "title": "Rotation"
+      },
+      "RotationAssessment": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending_forecasts",
+              "pending_agronomic_requirements",
+              "evaluated",
+              "no_compatible_candidates"
+            ],
+            "title": "Status"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "catalog_version": {
+            "type": "string",
+            "title": "Catalog Version"
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version"
+          },
+          "input_snapshot_id": {
+            "type": "string",
+            "title": "Input Snapshot Id"
+          },
+          "region_id": {
+            "type": "string",
+            "title": "Region Id"
+          },
+          "forecast_start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Forecast Start Date"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "climate_model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Climate Model Version"
+          },
+          "soil_model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Soil Model Version"
+          },
+          "forecast_values": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Forecast Values"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/RotationCandidate"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/RotationScenario"
+            },
+            "type": "array",
+            "title": "Scenarios"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "recommendation_ready": {
+            "type": "boolean",
+            "title": "Recommendation Ready",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "engine_version",
+          "catalog_version",
+          "rules_version",
+          "input_snapshot_id",
+          "region_id",
+          "forecast_start_date",
+          "horizon_days",
+          "limitations"
+        ],
+        "title": "RotationAssessment"
+      },
+      "RotationCandidate": {
+        "properties": {
+          "crop_id": {
+            "type": "string",
+            "title": "Crop Id"
+          },
+          "crop_name": {
+            "type": "string",
+            "title": "Crop Name"
+          },
+          "family": {
+            "type": "string",
+            "title": "Family"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "excluded",
+              "pending_requirements",
+              "within_checked_ranges"
+            ],
+            "title": "Status"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/RotationCheck"
+            },
+            "type": "array",
+            "title": "Checks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "crop_id",
+          "crop_name",
+          "family",
+          "status",
+          "checks"
+        ],
+        "title": "RotationCandidate"
+      },
+      "RotationCheck": {
+        "properties": {
+          "variable": {
+            "type": "string",
+            "enum": [
+              "temperature",
+              "precipitation",
+              "surface_soil_moisture",
+              "crop_family"
+            ],
+            "title": "Variable"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "within_range",
+              "outside_range",
+              "unknown"
+            ],
+            "title": "Status"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "variable",
+          "status",
+          "unit",
+          "explanation"
+        ],
+        "title": "RotationCheck"
+      },
+      "RotationScenario": {
+        "properties": {
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/RotationStage"
+            },
+            "type": "array",
+            "title": "Stages"
+          },
+          "status": {
+            "type": "string",
+            "const": "conditional",
+            "title": "Status",
+            "default": "conditional"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "stages",
+          "explanation"
+        ],
+        "title": "RotationScenario"
+      },
+      "RotationStage": {
+        "properties": {
+          "crop_id": {
+            "type": "string",
+            "title": "Crop Id"
+          },
+          "crop_name": {
+            "type": "string",
+            "title": "Crop Name"
+          },
+          "family": {
+            "type": "string",
+            "title": "Family"
+          },
+          "forecast_evaluated": {
+            "type": "boolean",
+            "title": "Forecast Evaluated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "crop_id",
+          "crop_name",
+          "family",
+          "forecast_evaluated"
+        ],
+        "title": "RotationStage"
       },
       "Schedule": {
         "properties": {

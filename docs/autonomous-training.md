@@ -145,3 +145,7 @@ Los cinco modelos del equipo ya tienen [integración de inferencia](xgboost-inte
 catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren 7, 15, 30 y 60
 días y conservan su estado experimental; los pronósticos actuales requieren
 entradas recientes completas de su receta.
+
+La conexión con el motor de rotación se revisó y corrigió. Inferencias, reglas
+pendientes y escenarios condicionales se describen en la
+[validación de arquitectura](rotation-architecture.md).

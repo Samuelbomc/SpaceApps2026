@@ -116,6 +116,7 @@ class ExpandedModelBundle:
         climate_values = [ForecastValue(
             variable=name, value=self._predict(name, snapshot.climate, *records[name], horizon_days),
             unit=records[name][0]['units'],
+            statistic='sum' if name == 'precipitation' else 'mean',
             aggregation=f'acumulado de {horizon_days} días' if name == 'precipitation' else f'media de {horizon_days} días',
         ) for name in CLIMATE]
         climate = forecast('climate', climate_version, climate_values)
@@ -126,6 +127,7 @@ class ExpandedModelBundle:
                 variable='surface_soil_moisture',
                 value=self._predict('moisture', snapshot.soil, config, version, horizon_days),
                 unit=config['units'], aggregation=f'media de observaciones válidas de los próximos {horizon_days} días',
+                statistic='mean',
             )])
         identity = {'snapshot': snapshot.model_dump(mode='json'), 'horizon_days': horizon_days,
                     'versions': {k: v[1] for k, v in records.items()}}

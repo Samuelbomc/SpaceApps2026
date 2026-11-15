@@ -77,13 +77,13 @@ class ApplicationTests(unittest.TestCase):
                                                 "quality": "provider_value_unvalidated"}]
         def climate(req, observations):
             events.append("climate")
-            return Forecast(model_kind="climate", model_version="test-only-v1", region_id=req.region_id,
+            return Forecast(model_kind="climate", model_version="test-only-v1", validation_status="validated", region_id=req.region_id,
                             reference_date=req.reference_date, horizon_days=req.horizon_days,
                             values=[ForecastValue(variable="temperature", value=20, unit="C", aggregation="mean")])
         def soil(req, observations, forecast):
             self.assertEqual(forecast.model_kind, "climate")
             events.append("soil")
-            return Forecast(model_kind="soil", model_version="test-only-v1", region_id=req.region_id,
+            return Forecast(model_kind="soil", model_version="test-only-v1", validation_status="validated", region_id=req.region_id,
                             reference_date=req.reference_date, horizon_days=req.horizon_days,
                             values=[ForecastValue(variable="moisture", value=.3, unit="m3/m3", aggregation="mean")])
         engine = Mock()

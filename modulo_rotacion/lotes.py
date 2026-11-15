@@ -27,7 +27,10 @@ def slug(txt):
 
 def resumen_texto(resp, diag, rec):
     """Resumen corto, en lenguaje sencillo, para WhatsApp o para imprimir."""
-    from motor_rotacion import texto_rotacion
+    if __package__:
+        from .motor_rotacion import texto_rotacion
+    else:
+        from motor_rotacion import texto_rotacion
     f, l = resp.get("finca", {}), resp.get("lote", {})
     TEN = {"propia": "tierra propia", "arrendada": "tierra arrendada", "compania": "en compañía"}
     TAM = {"menos_1": "menos de 1 ha", "1_5": "1 a 5 ha", "mas_5": "más de 5 ha"}
@@ -46,7 +49,7 @@ def resumen_texto(resp, diag, rec):
         lin += ["", "*Qué sembrar este año*", texto_rotacion(r), r["explicacion"]]
         lin += [f"- {x}" for x in (rec.get("alertas_generales", []) + r["alertas"])[:3]]
     else:
-        lin += ["", "No encontramos una rotación con estas condiciones; hable con el técnico de la UMATA."]
+        lin += ["", rec.get('aviso', 'Falta una evaluación de rotación con predicciones disponibles.')]
     return "\n".join(lin)
 
 
@@ -86,7 +89,10 @@ def comparar_finca(finca):
     if not carpeta.exists():
         print(f"No hay entrevistas de la finca '{finca}'.")
         return []
-    from motor_rotacion import texto_rotacion
+    if __package__:
+        from .motor_rotacion import texto_rotacion
+    else:
+        from motor_rotacion import texto_rotacion
     filas = []
     print(f"Lotes de {finca}   (orden de los semáforos: Erosión · Rotación y suelo · Agua)\n")
     for lote in sorted(l for l in carpeta.iterdir() if l.is_dir()):

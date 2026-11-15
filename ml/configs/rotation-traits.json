@@ -1,0 +1,78 @@
+{
+  "source": "modulo_rotacion/datos/cultivos.csv",
+  "source_sha256": "cc38e81bfc805c0357576d1aa523698f8381dcb5ec7926e38f83f8746ba20f93",
+  "traits": [
+    {
+      "legacy_id": "maiz",
+      "chain": "Maíz",
+      "scientific_name": "Zea mays ssp. mays",
+      "family": "Poaceae"
+    },
+    {
+      "legacy_id": "arroz",
+      "chain": "Arroz",
+      "scientific_name": "Oryza sativa",
+      "family": "Poaceae"
+    },
+    {
+      "legacy_id": "frijol_arbustivo",
+      "chain": "Frijol arbustivo",
+      "scientific_name": "Phaseolus vulgaris",
+      "family": "Fabaceae"
+    },
+    {
+      "legacy_id": "frijol_voluble",
+      "chain": "Frijol voluble",
+      "scientific_name": "Phaseolus vulgaris",
+      "family": "Fabaceae"
+    },
+    {
+      "legacy_id": "yuca",
+      "chain": "Yuca",
+      "scientific_name": "Manihot esculenta",
+      "family": "Euphorbiaceae"
+    },
+    {
+      "legacy_id": "name_criollo",
+      "chain": "Ñame",
+      "scientific_name": "Dioscorea alata",
+      "family": "Dioscoreaceae"
+    },
+    {
+      "legacy_id": "name_espino",
+      "chain": "Ñame",
+      "scientific_name": "Dioscorea rotundata",
+      "family": "Dioscoreaceae"
+    },
+    {
+      "legacy_id": "cebolla_junca",
+      "chain": "Cebolla junca",
+      "scientific_name": "Allium fistulosum",
+      "family": "Amaryllidaceae"
+    },
+    {
+      "legacy_id": "brocoli",
+      "chain": "Hortalizas clima frio",
+      "scientific_name": "Brassica oleracea var. italica",
+      "family": "Brassicaceae"
+    },
+    {
+      "legacy_id": "repollo",
+      "chain": "Hortalizas clima frio",
+      "scientific_name": "Brassica oleracea var. capitata",
+      "family": "Brassicaceae"
+    },
+    {
+      "legacy_id": "zanahoria",
+      "chain": "Hortalizas clima frio",
+      "scientific_name": "Daucus carota",
+      "family": "Apiaceae"
+    },
+    {
+      "legacy_id": "lechuga",
+      "chain": "Hortalizas clima frio",
+      "scientific_name": "Lactuca sativa var. capitata",
+      "family": "Asteraceae"
+    }
+  ]
+}

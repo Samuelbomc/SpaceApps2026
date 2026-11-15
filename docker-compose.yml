@@ -48,6 +48,7 @@ services:
       MODEL_DIRECTORY: /app/data/models
       PRETRAINED_MODEL_DIRECTORY: /app/ml/artifacts
       FEATURE_DIRECTORY: /app/data/features/expanded-v1
+      ROTATION_WATER_RULES_PATH: ${ROTATION_WATER_RULES_PATH:-}
       GEOCODER_URL: ${GEOCODER_URL:-https://photon.komoot.io/reverse}
     ports:
       - "127.0.0.1:8000:8000"

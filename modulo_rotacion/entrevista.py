@@ -19,9 +19,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from diagnostico import diagnosticar
-from lotes import guardar, resumen_texto
-from motor_rotacion import recomendar
+if __package__:
+    from .diagnostico import diagnosticar
+    from .lotes import guardar, resumen_texto
+    from .motor_rotacion import recomendar
+else:
+    from diagnostico import diagnosticar
+    from lotes import guardar, resumen_texto
+    from motor_rotacion import recomendar
 
 DATOS = Path(__file__).parent / "datos"
 DEFECTOS = {"lote.nombre": "Lote 1", "finca.zona": "templada", "lote.pendiente": "media",
@@ -180,11 +185,13 @@ def entrevistar(completa=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--completa", action="store_true", help="agrega las preguntas opcionales")
+    ap.add_argument('--analisis', type=Path, help='AnalysisResult precalculado de XGBoost')
+    ap.add_argument('--region-id', help='Región explícitamente asociada al lote')
     a = ap.parse_args()
 
     resp = entrevistar(a.completa)
     diag = diagnosticar(resp)
-    rec = recomendar(resp, diag)
+    rec = recomendar(resp, diag, analisis=a.analisis, region_id=a.region_id)
 
     print("\n" + "=" * 55)
     print(resumen_texto(resp, diag, rec).replace("*", ""))

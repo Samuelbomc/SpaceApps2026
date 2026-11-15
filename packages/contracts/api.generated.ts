@@ -2,7 +2,7 @@
 export interface components {
   schemas: {
     "AnalysisRequest": { "region_id": string; "reference_date": string; "horizon_days"?: number; "forecast_start_date"?: (string | null); };
-    "AnalysisResult": { "status": "pending_model" | "pending_run" | "insufficient_data" | "pending_recommendations" | "ready"; "request": components['schemas']["AnalysisRequest"]; "analysis_id"?: (string | null); "input_snapshot_id"?: (string | null); "climate"?: (components['schemas']["Forecast"] | null); "soil"?: (components['schemas']["Forecast"] | null); "recommendations"?: (components['schemas']["Recommendations"] | null); "messages"?: Array<string>; };
+    "AnalysisResult": { "status": "pending_model" | "pending_run" | "insufficient_data" | "pending_recommendations" | "ready"; "request": components['schemas']["AnalysisRequest"]; "analysis_id"?: (string | null); "input_snapshot_id"?: (string | null); "climate"?: (components['schemas']["Forecast"] | null); "soil"?: (components['schemas']["Forecast"] | null); "recommendations"?: (components['schemas']["Recommendations"] | null); "rotation_assessment"?: (components['schemas']["RotationAssessment"] | null); "messages"?: Array<string>; };
     "AutomationStatus": { "results_backend": "postgresql" | "mongodb"; "schedules": Array<components['schemas']["Schedule"]>; "published_models": Array<components['schemas']["ModelRelease"]>; "recent_training": Array<components['schemas']["TrainingOutcome"]>; "limitations": Array<string>; };
     "Body_upload_api_v1_farms__farm_id__datasets_post": { "file": string; };
     "CatalogOption": { "value": string; "label": string; };
@@ -20,7 +20,7 @@ export interface components {
     "FarmerSession": { "user": components['schemas']["FarmerUser"]; "csrf_token": string; "expires_at": string; };
     "FarmerUser": { "user_id": string; "email": string; "display_name": string; "created_at": string; };
     "Forecast": { "model_kind": "climate" | "soil"; "model_version": string; "validation_status"?: "experimental" | "validated" | "unspecified"; "region_id": string; "reference_date": string; "forecast_start_date"?: (string | null); "horizon_days": number; "values": Array<components['schemas']["ForecastValue"]>; "limitations"?: Array<string>; };
-    "ForecastValue": { "variable": string; "value": number; "unit": string; "aggregation": string; };
+    "ForecastValue": { "variable": string; "value": number; "unit": string; "aggregation": string; "statistic"?: ("mean" | "sum" | null); };
     "HTTPValidationError": { "detail"?: Array<components['schemas']["ValidationError"]>; };
     "IngestionRun": { "run_id": string; "region_id": string; "started_at": string; "finished_at"?: (string | null); "status": "running" | "ok" | "partial" | "failed"; "summary"?: Record<string, unknown>; };
     "LocalVariable": { "variable": string; "label": string; "unit": string; "aggregation": string; "minimum"?: (number | null); "maximum"?: (number | null); };
@@ -37,6 +37,11 @@ export interface components {
     "Region": { "region_id": string; "name": string; "latitude": number; "longitude": number; };
     "RegisterRequest": { "email": string; "display_name": string; "password": string; };
     "Rotation": { "name": string; "crops": Array<string>; "reasons": Array<string>; "risks"?: Array<string>; };
+    "RotationAssessment": { "status": "pending_forecasts" | "pending_agronomic_requirements" | "evaluated" | "no_compatible_candidates"; "engine_version": string; "catalog_version": string; "rules_version": string; "input_snapshot_id": string; "region_id": string; "forecast_start_date": string; "horizon_days": number; "climate_model_version"?: (string | null); "soil_model_version"?: (string | null); "forecast_values"?: Record<string, number>; "candidates"?: Array<components['schemas']["RotationCandidate"]>; "scenarios"?: Array<components['schemas']["RotationScenario"]>; "limitations": Array<string>; "recommendation_ready"?: boolean; };
+    "RotationCandidate": { "crop_id": string; "crop_name": string; "family": string; "status": "excluded" | "pending_requirements" | "within_checked_ranges"; "checks": Array<components['schemas']["RotationCheck"]>; };
+    "RotationCheck": { "variable": "temperature" | "precipitation" | "surface_soil_moisture" | "crop_family"; "status": "within_range" | "outside_range" | "unknown"; "value"?: (number | null); "unit": string; "explanation": string; };
+    "RotationScenario": { "stages": Array<components['schemas']["RotationStage"]>; "status"?: "conditional"; "explanation": string; };
+    "RotationStage": { "crop_id": string; "crop_name": string; "family": string; "forecast_evaluated": boolean; };
     "Schedule": { "job_key": string; "interval_seconds": number; "next_run_at": string; "last_success_at"?: (string | null); "last_error"?: (string | null); "retry_at"?: (string | null); "consecutive_failures"?: number; "pending_sources"?: Array<string>; "last_result"?: Record<string, unknown>; };
     "StatusResponse": { "database"?: "postgresql"; "climate_model": "not_configured" | "configured"; "soil_model": "not_configured" | "configured"; "recommendations": "not_configured" | "configured"; "schedule": (components['schemas']["Schedule"] | null); "recent_runs": Array<components['schemas']["IngestionRun"]>; };
     "TrainingOutcome": { "slot": string; "status": "published" | "rejected" | "unchanged" | "insufficient_labels" | "pending_configuration"; "message": string; "dataset_id"?: (string | null); "version"?: (string | null); };

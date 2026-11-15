@@ -23,7 +23,7 @@ describe('Analysis with connected XGBoost models', () => {
     supported_horizons: [7],
     limitations: [],
   };
-  const request = vi.fn(async (path: string) => {
+  const defaultRequest = async (path: string): Promise<unknown> => {
     if (path === 'regions') return [{ region_id: 'test-only', name: 'Solo test' }];
     if (path === 'crops/catalog') return { crops: [] };
     if (path === 'models') return catalog;
@@ -34,9 +34,11 @@ describe('Analysis with connected XGBoost models', () => {
       soil: null,
       recommendations: null,
     };
-  });
+  };
+  const request = vi.fn(defaultRequest);
   beforeEach(() => {
-    request.mockClear();
+    request.mockReset();
+    request.mockImplementation(defaultRequest);
     TestBed.configureTestingModule({
       providers: [
         {
@@ -93,5 +95,86 @@ describe('Analysis with connected XGBoost models', () => {
     fixture.detectChanges();
     expect(request.mock.calls.some(([path]) => path.includes('horizon_days=30'))).toBe(true);
     expect(fixture.nativeElement.textContent).toContain('próximos 30 días');
+  });
+
+  it('shows conditional stages and never presents later crops as forecasted', async () => {
+    request.mockImplementation(async (path: string) => {
+      if (!path.includes('latest-analysis')) return defaultRequest(path);
+      return {
+        status: 'pending_recommendations',
+        messages: [],
+        rotation_assessment: {
+          status: 'pending_agronomic_requirements',
+          engine_version: 'test-only',
+          catalog_version: 'test-only',
+          rules_version: 'test-only',
+          input_snapshot_id: 'test-only',
+          region_id: 'test-only',
+          horizon_days: 7,
+          climate_model_version: 'climate-test',
+          soil_model_version: 'soil-test',
+          forecast_values: { precipitation: 42 },
+          limitations: [],
+          candidates: [],
+          scenarios: [
+            {
+              status: 'conditional',
+              explanation: 'Solo prueba de interfaz',
+              stages: [
+                {
+                  crop_id: 'one',
+                  crop_name: 'Cultivo inicial de prueba',
+                  family: 'A',
+                  forecast_evaluated: true,
+                },
+                {
+                  crop_id: 'two',
+                  crop_name: 'Cultivo posterior de prueba',
+                  family: 'B',
+                  forecast_evaluated: false,
+                },
+              ],
+            },
+          ],
+        },
+      };
+    });
+    const fixture = TestBed.createComponent(Analysis);
+    fixture.detectChanges();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Escenario condicional');
+    });
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('Evaluación provisional basada en XGBoost');
+    expect(text).toContain('evaluación parcial del periodo');
+    expect(text).toContain('requiere nuevas predicciones');
+    expect(text).not.toContain('Qué sembrar este año');
+  });
+  it('does not render scenarios before forecasts exist', async () => {
+    request.mockImplementation(async (path: string) => {
+      if (!path.includes('latest-analysis')) return defaultRequest(path);
+      return {
+        status: 'insufficient_data',
+        messages: [],
+        rotation_assessment: {
+          status: 'pending_forecasts',
+          engine_version: 'test-only',
+          catalog_version: 'test-only',
+          rules_version: 'test-only',
+          input_snapshot_id: 'test-only',
+          limitations: [],
+          candidates: [],
+          scenarios: [],
+        },
+      };
+    });
+    const fixture = TestBed.createComponent(Analysis);
+    fixture.detectChanges();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('La evaluación de rotaciones necesita');
+    });
+    expect(fixture.nativeElement.textContent).not.toContain('Escenario condicional');
   });
 });

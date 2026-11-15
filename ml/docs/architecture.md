@@ -78,3 +78,7 @@ snapshots. The recommendation job can use this experimental bundle when no
 published champion exists for that slot. It does not register or promote the
 experiment artifacts as validated application models. See
 [the integration contract](../../docs/xgboost-integration.md).
+
+La conexión con el motor de rotación se revisó y corrigió. Inferencias, reglas
+pendientes y escenarios condicionales se describen en la
+[validación de arquitectura](../../docs/rotation-architecture.md).

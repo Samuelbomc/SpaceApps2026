@@ -139,3 +139,7 @@ npm run build --prefix frontend
 Se comprueban la inferencia real, el baseline de humedad una sola vez, orden de
 variables, integridad de modelos, fechas y coordenadas exactas, aislamiento del
 registro publicado, persistencia PostgreSQL/MongoDB y lectura HTTP sin inferencia.
+
+La conexión con el motor de rotación se revisó y corrigió. Inferencias, reglas
+pendientes y escenarios condicionales se describen en la
+[validación de arquitectura](rotation-architecture.md).

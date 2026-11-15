@@ -84,7 +84,7 @@ class AutomationAPITests(unittest.TestCase):
         observations.observations.return_value=[{'date':'2024-01-01','variable':'T2M','value':20.,'quality':'provider_value_unvalidated'}]
         request=AnalysisRequest(region_id='test-only',reference_date=date(2024,1,1))
         def forecast(kind):
-            return Forecast(model_kind=kind,model_version='test-only-v1',region_id=request.region_id,
+            return Forecast(model_kind=kind,model_version='test-only-v1',validation_status='validated',region_id=request.region_id,
                             reference_date=request.reference_date,horizon_days=7,
                             values=[ForecastValue(variable='test-only',value=1,unit='test-only',aggregation='test-only')])
         climate.predict.return_value=forecast('climate')
