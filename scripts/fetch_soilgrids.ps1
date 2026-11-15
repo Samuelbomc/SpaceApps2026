@@ -4,11 +4,16 @@ param(
     [double]$LatitudeMaximum = 6.5866,
     [double]$LongitudeMinimum = -75.5830,
     [double]$LongitudeMaximum = -74.6167,
+    [double]$BufferDegrees = 0.01,
+    [string]$PythonExecutable = "",
+    [string]$PowerDirectory = "",
     [int]$ResolutionMeters = 250,
     [string]$OutputDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "static_download_helpers.ps1")
+Initialize-StaticDownload
 
 if ($LatitudeMinimum -lt -90 -or $LatitudeMaximum -gt 90 -or $LatitudeMinimum -ge $LatitudeMaximum) {
     throw "LatitudeMinimum and LatitudeMaximum must be ordered values between -90 and 90."
@@ -22,19 +27,23 @@ if ($ResolutionMeters -lt 1) {
 
 $timestamp = (Get-Date).ToUniversalTime().ToString("yyyyMMdd_HHmmssZ")
 if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
-    $OutputDirectory = Join-Path $PSScriptRoot "..\SOILGRIDS\SOILGRIDS_V2_0_0-5cm_${timestamp}"
+    $OutputDirectory = Join-Path $PSScriptRoot "..\data\SOILGRIDS\SOILGRIDS_V2_0_0-5cm_BUFFERED_${timestamp}"
 }
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
 $OutputDirectory = (Resolve-Path -LiteralPath $OutputDirectory).Path
 
 $culture = [System.Globalization.CultureInfo]::InvariantCulture
-$latMin = $LatitudeMinimum.ToString("0.####", $culture)
-$latMax = $LatitudeMaximum.ToString("0.####", $culture)
-$lonMin = $LongitudeMinimum.ToString("0.####", $culture)
-$lonMax = $LongitudeMaximum.ToString("0.####", $culture)
+$south = [Math]::Max([double]-90, [double]($LatitudeMinimum - $BufferDegrees))
+$north = [Math]::Min([double]90, [double]($LatitudeMaximum + $BufferDegrees))
+$west = [Math]::Max([double]-180, [double]($LongitudeMinimum - $BufferDegrees))
+$east = [Math]::Min([double]180, [double]($LongitudeMaximum + $BufferDegrees))
+$latMin = $south.ToString("0.########", $culture)
+$latMax = $north.ToString("0.########", $culture)
+$lonMin = $west.ToString("0.########", $culture)
+$lonMax = $east.ToString("0.########", $culture)
 $latitudeAtCenter = ($LatitudeMinimum + $LatitudeMaximum) / 2
-$height = [Math]::Ceiling((($LatitudeMaximum - $LatitudeMinimum) * 110574) / $ResolutionMeters)
-$width = [Math]::Ceiling((($LongitudeMaximum - $LongitudeMinimum) * 111320 * [Math]::Cos($latitudeAtCenter * [Math]::PI / 180)) / $ResolutionMeters)
+$height = [Math]::Ceiling((($north - $south) * 110574) / $ResolutionMeters)
+$width = [Math]::Ceiling((($east - $west) * 111320 * [Math]::Cos($latitudeAtCenter * [Math]::PI / 180)) / $ResolutionMeters)
 
 # SoilGrids 2.0 coverage identifiers use wv0033 for water content at 33 kPa.
 $properties = @("sand", "silt", "clay", "soc", "bdod", "cfvo", "wv0010", "wv0033", "wv1500")
@@ -76,6 +85,10 @@ $manifest = [ordered]@{
     statistics = $statistics
     downloads = $downloads
     conditioning_applied = $false
+    buffer_degrees = $BufferDegrees
+    downloaded_bounds = @{ south = $south; north = $north; west = $west; east = $east }
+    coverage_validation = "coverage_validation.json"
 }
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $OutputDirectory "manifest.json") -Encoding utf8
+Confirm-StaticDownload -ExpectedCount 18
 Write-Host "Saved 18 raw SoilGrids WCS layers to: $OutputDirectory"

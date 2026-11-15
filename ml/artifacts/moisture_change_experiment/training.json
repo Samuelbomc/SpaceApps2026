@@ -1,0 +1,179 @@
+{
+  "created_at_utc": "2026-11-15T06:02:19.256191+00:00",
+  "features": [
+    "t2m_mean_7d",
+    "t2m_mean_14d",
+    "t2m_mean_30d",
+    "t2m_min_mean_7d",
+    "t2m_min_mean_14d",
+    "t2m_min_mean_30d",
+    "t2m_max_mean_7d",
+    "t2m_max_mean_14d",
+    "t2m_max_mean_30d",
+    "rh2m_mean_7d",
+    "rh2m_mean_14d",
+    "rh2m_mean_30d",
+    "qv2m_mean_7d",
+    "qv2m_mean_14d",
+    "qv2m_mean_30d",
+    "ws2m_mean_7d",
+    "ws2m_mean_14d",
+    "ws2m_mean_30d",
+    "t2m_last",
+    "radiation_sum_7d",
+    "gpm_late_sum_1d_mm",
+    "gpm_late_sum_3d_mm",
+    "gpm_late_sum_7d_mm",
+    "gpm_late_sum_14d_mm",
+    "gpm_late_sum_30d_mm",
+    "gpm_late_max_daily_7d_mm",
+    "rainy_days_7d",
+    "elevation_m",
+    "week_of_year",
+    "day_of_year_sin",
+    "day_of_year_cos",
+    "smap_mean_7d",
+    "smap_last_valid_m3_m3",
+    "smap_age_days",
+    "smap_observed_days_7d",
+    "slope_degrees",
+    "soil_sand_mean",
+    "soil_sand_uncertainty",
+    "soil_silt_mean",
+    "soil_silt_uncertainty",
+    "soil_clay_mean",
+    "soil_clay_uncertainty",
+    "soil_soc_mean",
+    "soil_soc_uncertainty",
+    "soil_bdod_mean",
+    "soil_bdod_uncertainty",
+    "soil_wv0010_mean",
+    "soil_wv0010_uncertainty",
+    "soil_wv0033_mean",
+    "soil_wv0033_uncertainty",
+    "soil_wv1500_mean",
+    "soil_wv1500_uncertainty"
+  ],
+  "target": "target",
+  "baseline_feature": "smap_mean_7d",
+  "formula": "predicted_weekly_moisture = smap_mean_7d + predicted_change",
+  "learned_target": "target - smap_mean_7d",
+  "units": "m3/m3",
+  "source_file": "data\\prepared\\expanded\\moisture.csv",
+  "source_sha256": "a0d4130a5f21bbeb15ceb942b9712fa4b43c2d09138b64e08446c116053bbd61",
+  "parameters": {
+    "objective": "reg:squarederror",
+    "eval_metric": "mae",
+    "tree_method": "hist",
+    "max_depth": 3,
+    "min_child_weight": 5,
+    "eta": 0.03,
+    "lambda": 10,
+    "alpha": 0.1,
+    "seed": 42,
+    "nthread": 2
+  },
+  "xgboost_version": "3.4.1",
+  "selected_rounds": 10,
+  "split_source": "ml\\artifacts\\expanded_xgboost_experiment\\moisture\\partitions.csv",
+  "partitions": {
+    "train": {
+      "rows": 2310,
+      "first_issue": "2015-04-04",
+      "last_issue": "2016-04-22",
+      "change_model": {
+        "mae": 0.03236732082857512,
+        "rmse": 0.04028976894307138,
+        "bias": -0.00017578255720505367,
+        "r2": 0.5365850659962055
+      },
+      "absolute_model": {
+        "mae": 0.01991218013363698,
+        "rmse": 0.02497070714877071,
+        "bias": -0.00011328671837136844,
+        "r2": 0.8219909204901878
+      },
+      "persistence": {
+        "mae": 0.035408101411372385,
+        "rmse": 0.043955648479352114,
+        "bias": 0.00026449661664288576,
+        "r2": 0.4484182925160294
+      }
+    },
+    "validation": {
+      "rows": 738,
+      "first_issue": "2016-05-02",
+      "last_issue": "2021-07-29",
+      "change_model": {
+        "mae": 0.03464922880655652,
+        "rmse": 0.043555496771167816,
+        "bias": 0.009942446558960474,
+        "r2": 0.2623177525194835
+      },
+      "absolute_model": {
+        "mae": 0.04763102879833562,
+        "rmse": 0.0570728662108181,
+        "bias": -0.03250715328648,
+        "r2": -0.26660954415769966
+      },
+      "persistence": {
+        "mae": 0.03549168673432294,
+        "rmse": 0.04452913621896876,
+        "bias": 0.014583847121871477,
+        "r2": 0.22896883820808422
+      }
+    },
+    "test": {
+      "rows": 792,
+      "first_issue": "2021-08-08",
+      "last_issue": "2022-01-08",
+      "change_model": {
+        "mae": 0.03593788088985969,
+        "rmse": 0.045882815020830546,
+        "bias": -0.0014681569356398809,
+        "r2": -0.5650895001157612
+      },
+      "absolute_model": {
+        "mae": 0.07729303202112063,
+        "rmse": 0.08724043225449471,
+        "bias": -0.07666278774207239,
+        "r2": -4.658152978282023
+      },
+      "persistence": {
+        "mae": 0.03763295110026594,
+        "rmse": 0.04790797569602605,
+        "bias": 0.0013840318754666581,
+        "r2": -0.7062973208571304
+      }
+    }
+  },
+  "limitations": [
+    "Existing holdout was previously inspected and motivated this experiment; comparison is exploratory, not independent confirmation.",
+    "Daily targets overlap, spatial cells are correlated, and SMAP coverage is sparse.",
+    "Moisture targets average variable numbers of valid days; uncertainty is often missing.",
+    "Final refit includes all rows; test metrics apply only to evaluation_model.json.",
+    "model.json predicts a CHANGE, not absolute moisture. Use MoistureChangePredictor to add the baseline.",
+    "No post-prediction clipping or validation-selected blend was applied."
+  ],
+  "test_nonoverlapping_targets": {
+    "rows": 114,
+    "change_model": {
+      "mae": 0.037883074092848926,
+      "rmse": 0.047685823600852766,
+      "bias": -0.0035861388451014008,
+      "r2": -0.781317422537755
+    },
+    "absolute_model": {
+      "mae": 0.08012032748706507,
+      "rmse": 0.08978895339994651,
+      "bias": -0.07935467530368713,
+      "r2": -5.3155119106319955
+    },
+    "persistence": {
+      "mae": 0.039400126748004846,
+      "rmse": 0.049619220100405176,
+      "bias": -0.0006263919414309717,
+      "r2": -0.9286907942766858
+    }
+  }
+}

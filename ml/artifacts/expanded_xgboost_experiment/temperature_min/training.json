@@ -1,0 +1,85 @@
+{
+  "rows": 48105,
+  "train_rows": 28782,
+  "validation_rows": 9540,
+  "test_rows": 9621,
+  "purged_rows": 162,
+  "features": [
+    "t2m_mean_7d",
+    "t2m_mean_14d",
+    "t2m_mean_30d",
+    "t2m_min_mean_7d",
+    "t2m_min_mean_14d",
+    "t2m_min_mean_30d",
+    "t2m_max_mean_7d",
+    "t2m_max_mean_14d",
+    "t2m_max_mean_30d",
+    "rh2m_mean_7d",
+    "rh2m_mean_14d",
+    "rh2m_mean_30d",
+    "qv2m_mean_7d",
+    "qv2m_mean_14d",
+    "qv2m_mean_30d",
+    "ws2m_mean_7d",
+    "ws2m_mean_14d",
+    "ws2m_mean_30d",
+    "t2m_last",
+    "radiation_sum_7d",
+    "gpm_late_sum_1d_mm",
+    "gpm_late_sum_3d_mm",
+    "gpm_late_sum_7d_mm",
+    "gpm_late_sum_14d_mm",
+    "gpm_late_sum_30d_mm",
+    "gpm_late_max_daily_7d_mm",
+    "rainy_days_7d",
+    "elevation_m",
+    "week_of_year",
+    "day_of_year_sin",
+    "day_of_year_cos"
+  ],
+  "target": "target",
+  "units": "C",
+  "selected_rounds": 236,
+  "constant_features_in_training": [],
+  "test_xgboost": {
+    "mae": 0.457642243408949,
+    "rmse": 0.5841072778738828,
+    "bias": -0.20055451482749917,
+    "r2": 0.9644453496810222
+  },
+  "test_persistence": {
+    "mae": 0.5201703119663831,
+    "rmse": 0.6723442731850309,
+    "bias": -0.0006900084636286779,
+    "r2": 0.9528920075501326
+  },
+  "test_training_mean": {
+    "mae": 2.599884226393564,
+    "rmse": 3.1516301768518153,
+    "bias": -0.5803482218184807,
+    "r2": -0.035098494861592666
+  },
+  "source_sha256": "8574c7ede8dfb34efe8f58c7db9f9f3e612765a9eb0f110b3058e16dee090fb8",
+  "source_file": "data\\prepared\\expanded\\temperature_min.csv",
+  "locations": 9,
+  "first_issue": "2011-12-16",
+  "last_issue": "2026-09-02",
+  "test_first_issue": "2023-09-30",
+  "test_last_issue": "2026-09-02",
+  "artifact_note": "evaluation_model.json has held-out metrics; model.json is refitted on all rows and has no independent evaluation after refitting",
+  "test_nonoverlapping_targets": {
+    "rows": 1377,
+    "xgboost": {
+      "mae": 0.45080275069679115,
+      "rmse": 0.577729374648888,
+      "bias": -0.20292692972993143,
+      "r2": 0.9651806554064607
+    },
+    "persistence": {
+      "mae": 0.5027440605871979,
+      "rmse": 0.6540429655092582,
+      "bias": -0.002310405643738921,
+      "r2": 0.9553743812790432
+    }
+  }
+}

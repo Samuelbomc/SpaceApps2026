@@ -1,6 +1,6 @@
 """Extract strict weekly temperature datasets from local raw products.
 
-Run: .venv-data/Scripts/python scripts/prepare_temperature_datasets.py
+Run: .venv-data/Scripts/python -m ml.scripts.prepare_temperature_datasets
 Requires numpy, pandas and rasterio. Raw files are never modified.
 """
 from __future__ import annotations
@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 from rasterio.warp import transform
+from ml.scripts.dataset_sources import netcdf_samples, select_static, smap_dates
 
 
 POWER = ("T2M", "T2M_MIN", "T2M_MAX", "RH2M", "ALLSKY_SFC_SW_DWN", "WS2M")
@@ -22,6 +23,8 @@ POWER = ("T2M", "T2M_MIN", "T2M_MAX", "RH2M", "ALLSKY_SFC_SW_DWN", "WS2M")
 
 def samples(path, points):
     """Use containing native cell, including south-up rasters; reject outside cells."""
+    if path.suffix == ".nc4":
+        return netcdf_samples(path, points)
     result = []
     with rasterio.open(path) as ds:
         xs, ys = transform("EPSG:4326", ds.crs, [p[0] for p in points], [p[1] for p in points])
@@ -89,20 +92,22 @@ def main():
 
     # GPM daily V07 renamed precipitationCal to precipitation; use mm/day only.
     late = unique_paths((args.data / "GPM").rglob("*3IMERGDL*precipitation_reformatted.tif"), r"3IMERG\.(\d{8})-")
+    late.update(unique_paths((args.data / "GPM").rglob("*3IMERGDL*.nc4"), r"3IMERG\.(\d{8})-"))
     final = unique_paths((args.data / "GPM").rglob("*3IMERGDF*precipitation_reformatted.tif"), r"3IMERG\.(\d{8})-")
     rain = pd.DataFrame(np.nan, index=index, columns=range(len(coords)))
     for date, path in late.items():
         if date not in index:
             continue
-        with rasterio.open(path) as ds:
-            if ds.tags().get("units") != "mm/day":
-                raise ValueError(f"Unrecognized daily precipitation units: {path}")
+        if path.suffix != ".nc4":
+            with rasterio.open(path) as ds:
+                if ds.tags().get("units") != "mm/day":
+                    raise ValueError(f"Unrecognized daily precipitation units: {path}")
         values = np.array(samples(path, coords))
         values[values < 0] = np.nan
         rain.loc[date] = values
         inventory.append(str(path))
 
-    smap_files = unique_paths((args.data / "SMAP").rglob("*AM_soil_moisture_reformatted.tif"), r"_E_(\d{8})_")
+    smap_files = smap_dates(args.data / "SMAP", "*AM_soil_moisture_reformatted.tif")
     moisture = pd.DataFrame(np.nan, index=index, columns=range(len(coords)))
     for date, path in smap_files.items():
         quality = path.with_name(path.name.replace("AM_soil_moisture_reformatted", "AM_retrieval_qual_flag_reformatted"))
@@ -117,7 +122,7 @@ def main():
         moisture.loc[date] = values
         inventory.extend((str(path), str(quality)))
 
-    dems = list((args.data / "SRTM").rglob("srtmgl1_dem_raw.tif"))
+    dems = list(select_static(args.data / "SRTM").rglob("srtmgl1_dem_raw.tif"))
     if len(dems) != 1:
         raise ValueError("Expected exactly one raw SRTM DEM")
     elevations = samples(dems[0], coords)
