@@ -49,25 +49,41 @@ const municipal = (code = '05002') => ({
 
 describe('Public map workspace', () => {
   const municipality = vi.fn(async (code: string) => municipal(code));
-  const request = vi.fn(async (path: string) =>
-    path === 'automation/refresh'
-      ? null
-      : path === 'regions'
-        ? [
-            {
-              region_id: 'test-only',
-              name: 'Referencia de prueba',
-              latitude: 5.95,
-              longitude: -75.35,
+  const request = vi.fn(async (path: string, options?: RequestInit) =>
+    path === 'geographic-analyses'
+      ? {
+          request_id: '00000000-0000-4000-8000-000000000001',
+          area_id: 'test-only',
+          geometry: JSON.parse(options!.body as string).geometry,
+          sampling_point: { type: 'Point', coordinates: [-75.375, 5.925] },
+          sampling_method: 'interior_reference_point',
+          horizon_days: JSON.parse(options!.body as string).horizon_days,
+          status: 'completed',
+          attempts: 1,
+          forecast_start_date: '2026-11-15',
+          created_at: '2026-11-15T15:00:00Z',
+          updated_at: '2026-11-15T15:00:00Z',
+          messages: [],
+          result: null,
+        }
+      : path === 'automation/refresh'
+        ? null
+        : path === 'regions'
+          ? [
+              {
+                region_id: 'test-only',
+                name: 'Referencia de prueba',
+                latitude: 5.95,
+                longitude: -75.35,
+              },
+            ]
+          : {
+              status: 'insufficient_data',
+              messages: [],
+              climate: null,
+              soil: null,
+              recommendations: null,
             },
-          ]
-        : {
-            status: 'insufficient_data',
-            messages: [],
-            climate: null,
-            soil: null,
-            recommendations: null,
-          },
   );
   beforeEach(() => {
     sessionStorage.clear();
@@ -131,11 +147,11 @@ describe('Public map workspace', () => {
     await vi.waitFor(() => {
       harness.detectChanges();
       expect(harness.routeNativeElement?.querySelector('app-plot-map')).not.toBeNull();
-      expect(harness.routeNativeElement?.textContent).toContain('Faltan datos recientes');
+      expect(harness.routeNativeElement?.textContent).toContain('Analizar municipio');
     });
     expect(TestBed.inject(AuthService).isAuthenticated()).toBe(false);
     expect(TestBed.inject(Router).url).toBe('/explorar');
-    expect(harness.routeNativeElement?.querySelector('app-analysis')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-analysis')).toBeNull();
     const map = harness.routeDebugElement!.query(
       (node) => node.componentInstance instanceof PlotMapStub,
     ).componentInstance as PlotMapStub;
@@ -153,19 +169,76 @@ describe('Public map workspace', () => {
       expect(TestBed.inject(AnalysisJourneyStore).plotConfirmed()).toBe(true);
     });
     expect(TestBed.inject(AuthService).isAuthenticated()).toBe(false);
-    map.shapeChange.emit(null);
-    harness.detectChanges();
-    expect(TestBed.inject(AnalysisJourneyStore).plot()).toBeNull();
     const horizon = harness.routeNativeElement!.querySelector<HTMLSelectElement>(
-      'select[aria-label="Plazo"]',
+      'select[aria-label="Periodo del terreno"]',
     )!;
     horizon.value = '30';
     horizon.dispatchEvent(new Event('change'));
+    harness.detectChanges();
+    [...harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('button')]
+      .find((button) => button.textContent?.includes('Analizar esta área'))!
+      .click();
     await vi.waitFor(() => {
       harness.detectChanges();
-      expect(request.mock.calls.some(([path]) => path.includes('horizon_days=30'))).toBe(true);
+      const sent = request.mock.calls.find(([path]) => path === 'geographic-analyses');
+      expect(sent).toBeDefined();
+      const body = JSON.parse(sent![1]!.body as string);
+      expect(body.horizon_days).toBe(30);
+      expect(body.geometry.coordinates[0][0]).toEqual([-75.38, 5.92]);
+      expect(harness.routeNativeElement?.querySelector('app-analysis')).toBeNull();
     });
     expect(harness.routeNativeElement?.textContent).toContain('Crear cuenta para guardar');
+    expect(request.mock.calls.some(([path]) => path.includes('/latest-analysis'))).toBe(false);
+    map.shapeChange.emit(null);
+    harness.detectChanges();
+    expect(TestBed.inject(AnalysisJourneyStore).plot()).toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-analysis')).toBeNull();
+  });
+  it('submits the selected municipality without drawing and restores it after clearing a plot', async () => {
+    const harness = await RouterTestingHarness.create('/explorar?municipio=05002');
+    await vi.waitFor(() => {
+      harness.detectChanges();
+      expect(harness.routeNativeElement?.textContent).toContain('Análisis de Abejorral');
+      expect(harness.routeNativeElement?.textContent).toContain('Analizar municipio');
+    });
+    [...harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('button')]
+      .find((button) => button.textContent?.trim() === 'Analizar municipio')!
+      .click();
+    await vi.waitFor(() => {
+      harness.detectChanges();
+      expect(request.mock.calls.some(([path]) => path === 'geographic-analyses')).toBe(true);
+    });
+    const body = JSON.parse(
+      request.mock.calls.find(([path]) => path === 'geographic-analyses')![1]!.body as string,
+    );
+    expect(body.geometry.type).toBe('Point');
+    expect(body.geometry.coordinates[0]).toBeCloseTo(-75.35, 6);
+    expect(body.geometry.coordinates[1]).toBeCloseTo(5.95, 6);
+    expect(body.horizon_days).toBe(7);
+    expect(TestBed.inject(AuthService).isAuthenticated()).toBe(false);
+    expect(TestBed.inject(AnalysisJourneyStore).plot()).toBeNull();
+    const map = harness.routeDebugElement!.query(
+      (node) => node.componentInstance instanceof PlotMapStub,
+    ).componentInstance as PlotMapStub;
+    map.shapeChange.emit({
+      ring: [
+        [-75.38, 5.92],
+        [-75.37, 5.92],
+        [-75.37, 5.93],
+      ],
+      closed: false,
+    });
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).not.toContain('Analizar municipio');
+    expect(
+      [...harness.routeNativeElement!.querySelectorAll('button')].some((button) =>
+        button.textContent?.includes('Analizar esta área'),
+      ),
+    ).toBe(false);
+    map.shapeChange.emit(null);
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Analizar municipio');
+    expect(request.mock.calls.filter(([path]) => path === 'geographic-analyses')).toHaveLength(1);
   });
   it('old plot and analysis links remain public while private farm management stays protected', async () => {
     const harness = await RouterTestingHarness.create('/finca/lote?municipio=05002');
@@ -212,7 +285,7 @@ describe('Public map workspace', () => {
       expect(harness.routeNativeElement?.querySelector('app-plot-map')).not.toBeNull();
     });
     expect(TestBed.inject(Router).url).toBe('/explorar?municipio=05002');
-    const oldAnalysis = harness.routeNativeElement!.querySelector('app-analysis');
+    const oldAnalysis = harness.routeNativeElement!.querySelector('app-geographic-analysis');
     const button = [
       ...harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('button'),
     ].find((item) => item.textContent?.includes('Nuevo análisis'))!;
@@ -221,13 +294,15 @@ describe('Public map workspace', () => {
       harness.detectChanges();
       expect(TestBed.inject(Router).url).toBe('/explorar');
       expect(harness.routeNativeElement!.querySelector('app-plot-map')).toBeNull();
-      expect(harness.routeNativeElement!.querySelector('app-analysis')).not.toBe(oldAnalysis);
+      expect(harness.routeNativeElement!.querySelector('app-geographic-analysis')).not.toBe(
+        oldAnalysis,
+      );
     });
     expect(TestBed.inject(AnalysisJourneyStore).municipality()).toBeNull();
     expect(TestBed.inject(AuthService).isAuthenticated()).toBe(true);
     await harness.navigateByUrl('/analisis');
     expect(TestBed.inject(Router).url).toBe('/explorar#resultados');
-    expect(harness.routeNativeElement!.querySelector('app-analysis')).not.toBeNull();
+    expect(harness.routeNativeElement!.querySelector('app-geographic-analysis')).not.toBeNull();
   });
   it('late municipality responses cannot replace the newest map selection', async () => {
     let resolveFirst!: (value: ReturnType<typeof municipal>) => void;
@@ -242,7 +317,8 @@ describe('Public map workspace', () => {
       harness.detectChanges();
       expect(municipality).toHaveBeenCalledWith('05002');
     });
-    const resultsWhileLoading = harness.routeNativeElement!.querySelector('app-analysis');
+    const resultsWhileLoading =
+      harness.routeNativeElement!.querySelector('app-geographic-analysis');
     expect(resultsWhileLoading).not.toBeNull();
     expect(request.mock.calls.some(([path]) => path.includes('/latest-analysis'))).toBe(false);
     const select =
@@ -262,6 +338,8 @@ describe('Public map workspace', () => {
         ?.query((node) => node.componentInstance instanceof PlotMapStub)
         ?.componentInstance.municipality().code,
     ).toBe('05615');
-    expect(harness.routeNativeElement!.querySelector('app-analysis')).toBe(resultsWhileLoading);
+    expect(harness.routeNativeElement!.querySelector('app-geographic-analysis')).toBe(
+      resultsWhileLoading,
+    );
   });
 });

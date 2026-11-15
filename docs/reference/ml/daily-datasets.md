@@ -1,6 +1,6 @@
 # Direct daily forecasting datasets
 
-The full prepared tables and pair indexes stay local and are excluded from Git. Model inference from a fresh checkout uses the committed production weights and the small snapshot in ml/examples; it does not need these training tables. See [../README.md](../README.md) for inference setup. Source downloads and local evaluation artifacts are required only to reproduce preparation, training or full holdout validation.
+The full prepared tables and pair indexes stay local and are excluded from Git. Model inference from a fresh checkout uses the committed production weights and the small snapshot in ml/examples; it does not need these training tables. See [ML README](../../../ml/README.md) for inference setup. Source downloads and local evaluation artifacts are required only to reproduce preparation, training or full holdout validation.
 
 The current models predict individual future days at leads 1 through 60. This replaces period-average temperature/moisture and accumulated multi-day rainfall targets. The output-named daily models use purged rolling-origin selection; verified scores are in [seven-day-results.md](seven-day-results.md).
 

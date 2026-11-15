@@ -10,7 +10,9 @@ from packages.contracts.observations import PowerObservation, power_location_id
 from pipelines.ingestion.http import IngestionError
 
 
-def process_power_point(raw: dict) -> list[PowerObservation]:
+def process_power_point(raw: dict, *, expected_time_standard="UTC") -> list[PowerObservation]:
+    if expected_time_standard not in ("UTC", "LST"):
+        raise ValueError("El estándar temporal debe ser UTC o LST.")
     try:
         point = GeoPoint(raw["point"]["latitude"], raw["point"]["longitude"])
         period = DateRange.parse(raw["period"]["start"], raw["period"]["end"])
@@ -25,8 +27,8 @@ def process_power_point(raw: dict) -> list[PowerObservation]:
         try:
             payload = item["response"]
             header = payload["header"]
-            if header["time_standard"] != "UTC":
-                raise IngestionError("La respuesta POWER no está en UTC.")
+            if header["time_standard"] != expected_time_standard:
+                raise IngestionError(f"La respuesta POWER no está en {expected_time_standard}.")
             lon, lat = payload["geometry"]["coordinates"][:2]
             GeoPoint(lat, lon)
             parameters = tuple(dict.fromkeys(item["query"]["parameters"].split(",")))
@@ -104,7 +106,7 @@ def process_power_point(raw: dict) -> list[PowerObservation]:
                     "raw_value": json.dumps(value_raw) if value_raw is not None else None,
                     "unit": unit,
                     "quality": quality,
-                    "time_standard": "UTC",
+                    "time_standard": expected_time_standard,
                     "resolution": resolution,
                     "retrieved_at": retrieved_at,
                     "data_sources": json.dumps(header.get("sources", [])),

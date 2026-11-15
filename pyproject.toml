@@ -11,6 +11,7 @@ dependencies = []
 
 [project.optional-dependencies]
 download = ["earthaccess>=0.15,<1"]
+processing = ["h5py>=3.12,<4", "rasterio>=1.4,<2"]
 storage = ["pyarrow>=20,<30"]
 geospatial = ["geographiclib>=2,<3"]
 api = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "psycopg[binary]>=3.2,<4", "argon2-cffi>=25,<26", "python-multipart>=0.0.20,<1", "email-validator>=2,<3"]
@@ -25,12 +26,13 @@ agrogeo-ingest = "scripts.ingest:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["apps", "apps.api*", "pipelines*", "packages*", "scripts*", "ml*"]
+include = ["apps", "apps.api*", "pipelines*", "packages*", "scripts*", "ml*", "modulo_rotacion"]
 exclude = ["*.tests", "*.tests.*"]
 
 [tool.setuptools.package-data]
 "packages.contracts" = ["*.schema.json", "openapi.json", "*.ts"]
 "ml.configs" = ["*.json"]
+"modulo_rotacion" = ["datos/cultivos.csv"]
 
 [tool.ruff]
 target-version = "py311"

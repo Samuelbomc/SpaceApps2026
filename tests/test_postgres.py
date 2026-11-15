@@ -49,7 +49,7 @@ class PostgreSQLTests(unittest.TestCase):
         migrate(self.db)
         with self.db.connect() as conn:
             self.assertEqual(
-                conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 7
+                conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 10
             )
         self.assertEqual(len(self.repo.regions()), 1)
 

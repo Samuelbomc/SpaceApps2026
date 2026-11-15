@@ -129,16 +129,17 @@ class DailyModelBundle:
                 )
         return snapshot
 
-    def predict(self, snapshot, *, horizon_days=7):
+    def predict(self, snapshot, *, horizon_days=7, analysis_region_id=None):
         import pandas as pd
 
         from ml.inference.forecast import ForecastPredictor
 
         snapshot = self.validate_inputs(snapshot, horizon_days=horizon_days)
+        region_id = analysis_region_id or snapshot.region_id
         records = self._metadata()
         series, versions, validated = {}, {}, {}
         releases = {
-            name: self.registry.current(f"{snapshot.region_id}:daily:{name}")
+            name: self.registry.current(f"{region_id}:daily:{name}")
             if self.registry is not None
             else None
             for name in BASELINES
@@ -182,7 +183,7 @@ class DailyModelBundle:
             versions[name], validated[name] = version, release is not None
         start = snapshot.issue_date + timedelta(days=1)
         request = AnalysisRequest(
-            region_id=snapshot.region_id,
+            region_id=region_id,
             reference_date=snapshot.observation_cutoff,
             forecast_start_date=start,
             horizon_days=horizon_days,
@@ -216,7 +217,7 @@ class DailyModelBundle:
                 validation_status="validated"
                 if all(validated[name] for name in names)
                 else "experimental",
-                region_id=snapshot.region_id,
+                region_id=region_id,
                 reference_date=snapshot.observation_cutoff,
                 forecast_start_date=start,
                 horizon_days=horizon_days,
@@ -232,6 +233,7 @@ class DailyModelBundle:
             )
 
         identity = {
+            "region_id": region_id,
             "snapshot": snapshot.model_dump(mode="json"),
             "horizon_days": horizon_days,
             "versions": versions,

@@ -277,11 +277,87 @@ class DownloadTests(unittest.TestCase):
             self.assertTrue(cached["files"][0]["cached"])
             self.assertEqual(session.get.call_count, 1)
 
+    def test_download_rate_limit_preserves_provider_retry_after(self):
+        with tempfile.TemporaryDirectory() as folder:
+            session = self.session()
+            session.get.return_value.status_code = 429
+            session.get.return_value.headers["Retry-After"] = "7200"
+            with self.assertRaises(IngestionError) as error:
+                GranuleDownloader(session).download(self.manifest(), Path(folder))
+            self.assertEqual(error.exception.retry_after_seconds, 7200)
+            self.assertEqual(list(Path(folder).rglob("*.part")), [])
+
+    def test_signed_url_refresh_preserves_partial_progress_and_budget(self):
+        with tempfile.TemporaryDirectory() as folder:
+            manifest = self.manifest()
+            manifest["subset_applied"] = True
+            manifest["granules"] = [
+                {
+                    "id": name,
+                    "asset_identity": name,
+                    "data_urls": [f"https://example.test/{name}.tif?token=first"],
+                }
+                for name in ("part-a", "part-b")
+            ]
+            session = Mock()
+            good, bad = self.session().get.return_value, self.session().get.return_value
+            bad.status_code = 503
+            session.get.side_effect = [good, bad]
+            with self.assertRaises(IngestionError) as error:
+                GranuleDownloader(session).download(manifest, Path(folder), max_bytes=12)
+            self.assertEqual(error.exception.downloaded_bytes, 6)
+            self.assertEqual(len(list(Path(folder).rglob("*.tif"))), 1)
+            for granule in manifest["granules"]:
+                granule["data_urls"][0] = granule["data_urls"][0].replace("first", "renewed")
+            restarted = self.session()
+            result = GranuleDownloader(restarted).download(manifest, Path(folder), max_bytes=6)
+            self.assertEqual(result["downloaded_bytes"], 6)
+            self.assertEqual([item["cached"] for item in result["files"]], [True, False])
+            self.assertTrue(all(item["subset_applied"] for item in result["files"]))
+            restarted.get.assert_called_once()
+
+    def test_corrupt_cache_metadata_or_file_is_repaired(self):
+        for corrupt_metadata in (True, False):
+            with self.subTest(metadata=corrupt_metadata), tempfile.TemporaryDirectory() as folder:
+                result = GranuleDownloader(self.session()).download(
+                    self.manifest(), Path(folder), max_files=1
+                )
+                target = Path(result["files"][0]["path"])
+                if corrupt_metadata:
+                    target.with_name(target.name + ".metadata.json").write_text("[]")
+                else:
+                    target.write_bytes(b"broken")
+                fresh = self.session()
+                repaired = GranuleDownloader(fresh).download(
+                    self.manifest(), Path(folder), max_files=1
+                )
+                fresh.get.assert_called_once()
+                self.assertFalse(repaired["files"][0]["cached"])
+                self.assertEqual(target.read_bytes(), b"raster")
+
     def test_stream_limit_cleans_partial_file(self):
         with tempfile.TemporaryDirectory() as folder:
             downloader = GranuleDownloader(self.session((b"a" * 5, b"b" * 5), length=""))
             with self.assertRaisesRegex(IngestionError, "límite de bytes"):
                 downloader.download(self.manifest(), Path(folder), max_bytes=7)
+            self.assertEqual(list(Path(folder).rglob("*.part")), [])
+            self.assertEqual(list(Path(folder).rglob("*.tif")), [])
+
+    def test_slow_stream_has_total_deadline_and_cleans_its_partial_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            current = [0.0]
+            session = self.session(length="6")
+
+            def chunks():
+                yield b"abc"
+                current[0] = 301.0
+                yield b"def"
+
+            session.get.return_value.iter_content.return_value = chunks()
+            with self.assertRaisesRegex(IngestionError, "tiempo de descarga"):
+                GranuleDownloader(session, clock=lambda: current[0]).download(
+                    self.manifest(), Path(folder), max_files=1
+                )
             self.assertEqual(list(Path(folder).rglob("*.part")), [])
             self.assertEqual(list(Path(folder).rglob("*.tif")), [])
 

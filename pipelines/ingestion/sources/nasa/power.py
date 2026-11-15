@@ -15,10 +15,17 @@ class PowerClient:
         self.http = http if http is not None else JsonHTTPClient()
 
     def fetch_point_daily(
-        self, period: DateRange, point: GeoPoint, parameters=POWER_PARAMETERS
+        self,
+        period: DateRange,
+        point: GeoPoint,
+        parameters=POWER_PARAMETERS,
+        *,
+        time_standard="UTC",
     ) -> dict:
         """Consulta puntual nativa; no crea un bbox ni un radio arbitrario."""
         parameters = tuple(dict.fromkeys(parameters))
+        if time_standard not in ("UTC", "LST"):
+            raise ValueError("POWER admite UTC o LST.")
         if not 1 <= len(parameters) <= 20 or any(
             not p or not p.replace("_", "").isalnum() for p in parameters
         ):
@@ -32,7 +39,7 @@ class PowerClient:
             "longitude": point.longitude,
             "start": period.start.strftime("%Y%m%d"),
             "end": period.end.strftime("%Y%m%d"),
-            "time-standard": "UTC",
+            "time-standard": time_standard,
         }
         payload = self.http.get(endpoint, query)
         if "properties" not in payload or "header" not in payload:

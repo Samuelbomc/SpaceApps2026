@@ -1,6 +1,8 @@
 import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
-import { DatePipe, DecimalPipe, JsonPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, JsonPipe, PercentPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AnalysisSummary } from './analysis-summary';
+import { CropCondition } from './crop-condition';
 import { BoundaryGeometry } from '../../explorer/models/geo.models';
 import { pointInPolygons, LngLat } from '../../../shared/geo/geodesy';
 import { Backend, errorMessage } from '../../../core/api/backend';
@@ -11,6 +13,7 @@ import type {
   AgronomicCatalog,
   Forecast,
   ModelCatalog,
+  GeographicAnalysis,
 } from '@agrogeo/api-client';
 import {
   summarizeObservations,
@@ -27,12 +30,23 @@ const today = () =>
   }).format(new Date());
 @Component({
   selector: 'app-analysis',
-  imports: [FormsModule, DatePipe, DecimalPipe, JsonPipe],
+  imports: [
+    FormsModule,
+    DatePipe,
+    DecimalPipe,
+    JsonPipe,
+    PercentPipe,
+    AnalysisSummary,
+    CropCondition,
+  ],
   templateUrl: './analysis.html',
   styleUrl: './analysis.scss',
 })
 export class Analysis {
   readonly embedded = input(false);
+  readonly geographicMode = input(false);
+  readonly referenceMode = input(false);
+  readonly geographic = input<GeographicAnalysis | null>(null);
   readonly historyEnabled = input(false);
   readonly locationState = input<'ready' | 'loading' | 'error'>('ready');
   protected readonly historyOpen = signal(false);
@@ -43,7 +57,10 @@ export class Analysis {
   protected readonly selectedPast = signal<AnalysisResult | null>(null);
   protected readonly displayedAnalysis = computed(() => this.selectedPast() ?? this.analysis());
   protected readonly displayedHorizon = computed(
-    () => this.selectedPast()?.request.horizon_days ?? this.horizon(),
+    () =>
+      this.selectedPast()?.request.horizon_days ??
+      this.geographic()?.horizon_days ??
+      this.horizon(),
   );
   readonly area = input<BoundaryGeometry | null>(null);
   protected readonly showOtherLocations = signal(false);
@@ -60,14 +77,25 @@ export class Analysis {
     );
   });
   protected readonly availableRegions = computed(() =>
-    this.locationState() !== 'ready'
-      ? []
-      : this.showOtherLocations()
-        ? this.regions()
-        : this.matchingRegions(),
+    this.geographicMode()
+      ? this.geographic()
+        ? [
+            {
+              region_id: 'geo-' + this.geographic()!.area_id,
+              name: this.referenceMode() ? 'Referencia regional' : 'Área seleccionada',
+              longitude: this.geographic()!.sampling_point.coordinates[0],
+              latitude: this.geographic()!.sampling_point.coordinates[1],
+            },
+          ]
+        : []
+      : this.locationState() !== 'ready'
+        ? []
+        : this.showOtherLocations()
+          ? this.regions()
+          : this.matchingRegions(),
   );
   protected readonly selectedRegion = computed(() =>
-    this.regions().find((region) => region.region_id === this.region()),
+    this.availableRegions().find((region) => region.region_id === this.region()),
   );
   protected readonly outsideSelection = computed(
     () =>
@@ -85,10 +113,17 @@ export class Analysis {
   protected readonly history = signal<ObservationHistory | null>(null);
   protected readonly analysis = signal<AnalysisResult | null>(null);
   protected readonly crops = signal<AgronomicCatalog['crops']>([]);
+  protected readonly annualRainfallByCrop = computed(
+    () => new Map(this.crops().map((crop) => [crop.crop_id, crop.annual_rainfall.optimal])),
+  );
   protected readonly models = signal<ModelCatalog | null>(null);
   protected readonly currentModels = computed(
     () =>
-      this.models()?.models.filter((model) => (model.supported_leads?.includes(this.displayedHorizon()) || model.horizon_days === this.displayedHorizon())) || [],
+      this.models()?.models.filter(
+        (model) =>
+          model.supported_leads?.includes(this.displayedHorizon()) ||
+          model.horizon_days === this.displayedHorizon(),
+      ) || [],
   );
   protected readonly modelError = signal('');
   protected readonly page = signal(0);
@@ -142,10 +177,20 @@ export class Analysis {
   protected readonly hasExperimentalForecasts = computed(() =>
     this.forecasts().some((forecast) => forecast.validation_status === 'experimental'),
   );
+  protected readonly compatibleCrops = computed(() =>
+    [...(this.displayedAnalysis()?.rotation_assessment?.candidates ?? [])]
+      .filter((crop) => crop.status !== 'excluded')
+      .sort(
+        (a, b) => Number(b.temperature_fit === 'optimal') - Number(a.temperature_fit === 'optimal'),
+      ),
+  );
   private readonly destroyed = inject(DestroyRef);
   constructor() {
     const controller = new AbortController();
     this.destroyed.onDestroy(() => controller.abort());
+    effect(() => {
+      if (this.geographicMode()) this.analysis.set(this.geographic()?.result ?? null);
+    });
     void this.backend.client
       .request<Region[]>('regions', { signal: controller.signal })
       .then((regions) => {
@@ -202,7 +247,7 @@ export class Analysis {
       this.refresh();
       this.selectedPast.set(null);
       this.history.set(null);
-      this.analysis.set(null);
+      if (!this.geographicMode()) this.analysis.set(null);
       this.page.set(0);
       if (!region) {
         this.loading.set(false);
@@ -212,7 +257,21 @@ export class Analysis {
       onCleanup(() => request.abort());
       this.loading.set(true);
       this.error.set('');
-      void this.load(region, horizon, request.signal);
+      if (this.referenceMode()) {
+        this.loading.set(false);
+      } else if (this.geographicMode()) {
+        void this.backend.client
+          .loadObservationHistory(region, request.signal)
+          .then((history) => {
+            if (!request.signal.aborted) this.history.set(history);
+          })
+          .catch((error) => {
+            if (!request.signal.aborted) this.error.set(errorMessage(error));
+          })
+          .finally(() => {
+            if (!request.signal.aborted) this.loading.set(false);
+          });
+      } else void this.load(region, horizon, request.signal);
     });
   }
   private async loadArchive(region: string, signal: AbortSignal) {
@@ -246,6 +305,11 @@ export class Analysis {
     if (result.request.forecast_start_date) return result.request.forecast_start_date;
     const date = new Date(result.request.reference_date + 'T00:00:00Z');
     date.setUTCDate(date.getUTCDate() + 1);
+    return date.toISOString().slice(0, 10);
+  }
+  protected forecastEnd(result: AnalysisResult): string {
+    const date = new Date(this.forecastStart(result) + 'T00:00:00Z');
+    date.setUTCDate(date.getUTCDate() + (result.request.horizon_days ?? 7) - 1);
     return date.toISOString().slice(0, 10);
   }
   protected statusLabel(status: AnalysisResult['status']) {

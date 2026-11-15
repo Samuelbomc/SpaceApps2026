@@ -120,6 +120,9 @@ class CropRecommendationPipeline:
         identity = {
             "request": request.model_dump(mode="json"),
             "inputs": result.input_snapshot_id,
+            "spatial_match": result.spatial_match.model_dump(mode="json")
+            if result.spatial_match
+            else None,
             "climate": result.climate.model_version if result.climate else None,
             "soil": result.soil.model_version if result.soil else None,
             "rotation_assessment": result.rotation_assessment.input_snapshot_id

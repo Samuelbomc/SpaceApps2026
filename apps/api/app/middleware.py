@@ -11,7 +11,9 @@ class PrivateRequestLimits:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        private = scope.get("path", "").startswith(("/api/v1/auth/", "/api/v1/farms"))
+        private = scope.get("path", "").startswith(
+            ("/api/v1/auth/", "/api/v1/farms", "/api/v1/geographic-analyses")
+        )
         if scope["type"] != "http" or not private:
             return await self.app(scope, receive, send)
         upload = scope["method"] == "POST" and scope["path"].endswith("/datasets")

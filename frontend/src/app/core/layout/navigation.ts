@@ -30,6 +30,7 @@ export const PUBLIC_NAV: readonly NavEntry[] = [
 
 /** Shown once the user is signed in. */
 export const APP_NAV: readonly NavEntry[] = [
+  { kind: 'link', label: 'Inicio', path: '/' },
   { kind: 'link', label: 'Exploración', path: '/explorar' },
   { kind: 'link', label: 'Mis fincas', path: '/fincas' },
 ];

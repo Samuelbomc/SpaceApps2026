@@ -53,12 +53,21 @@ describe('App shell', () => {
     await fixture.whenStable();
     const header = (fixture.nativeElement as HTMLElement).querySelector('header')!.textContent!;
     expect(header).toContain('Mis fincas');
+    const links = [
+      ...(fixture.nativeElement as HTMLElement).querySelectorAll('header .nav__list a'),
+    ];
+    expect(links.map((link) => link.textContent?.trim())).toEqual([
+      'Inicio',
+      'Exploración',
+      'Mis fincas',
+    ]);
+    expect(links[0].getAttribute('href')).toBe('/');
     expect(header).toContain('Exploración');
     expect(header).not.toContain('Resultados');
     expect(header).not.toContain('Mi panel');
     expect(
       (fixture.nativeElement as HTMLElement).querySelector('header .brand')?.getAttribute('href'),
-    ).toBe('/explorar');
+    ).toBe('/');
     expect(header).toContain('Ana gomez');
     expect(header).not.toContain('Demo');
     expect(header).toContain('Cerrar sesión');

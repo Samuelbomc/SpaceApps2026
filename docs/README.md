@@ -28,6 +28,7 @@ cambios pertenece a Git y a las descripciones de los pull requests.
 | Área | Contratos y comportamiento |
 | --- | --- |
 | HTTP | [Superficie de API](reference/http-api.md), [DTOs](../packages/contracts/README.md) y [cliente compartido](../packages/api-client/README.md) |
+| Selección geográfica | [Análisis por ubicación](reference/geographic-analysis.md) |
 | Datos NASA | [Consulta unificada](reference/nasa-query.md), [POWER](reference/nasa-power.md) y [soporte geoespacial](reference/geospatial.md) |
 | Identidad y fincas | [Cuentas, ficha y CSV](reference/accounts-and-farms.md) |
 | Procesos autónomos | [Calendario y jobs](reference/scheduler.md) |

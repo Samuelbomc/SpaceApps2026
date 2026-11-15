@@ -17,6 +17,8 @@ La documentación interactiva local se sirve en `http://localhost:8000/docs`.
 | GET /api/v1/models | Catálogo del bundle y sus métricas; no carga Boosters |
 | GET /api/v1/regions/{id}/observations | Observaciones operativas paginadas y última actualización |
 | GET /api/v1/regions/{id}/latest-analysis | Resultado guardado para inicio y horizonte exactos |
+| POST /api/v1/geographic-analyses | Encola una geometría y periodo sin sesión; responde 202 |
+| GET /api/v1/geographic-analyses/{request_id} | Progreso y resultado de esa área |
 | POST /api/v1/analyses | Consulta resultado/estado; no ejecuta el pipeline |
 | GET /api/v1/crops/catalog | Requisitos agronómicos y estado de revisión |
 | GET /api/v1/places/reverse | Etiqueta aproximada de coordenadas; no modifica el análisis |
@@ -24,6 +26,8 @@ La documentación interactiva local se sirve en `http://localhost:8000/docs`.
 Las rutas de autenticación y fincas se describen en
 [cuentas y datasets](accounts-and-farms.md). Los archivos privados requieren
 propietario autorizado; no forman parte de las observaciones públicas.
+
+El contrato geográfico, muestreo y recuperación están en [análisis por ubicación](geographic-analysis.md).
 
 ## Fechas, paginación y estados
 

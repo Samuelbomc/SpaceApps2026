@@ -7,12 +7,14 @@ from ml.inference.expanded import ExpandedModelBundle
 from ml.inference.registered import RegisteredPredictorFactory
 from ml.recommendations.rotation import ForecastRotationEngine
 from ml.training.artifacts import ModelArtifactStore
+from ml.training.daily_config import load_daily_training_config
 from ml.training.expanded_config import load_training_config, training_policies
 from ml.training.expanded_dataset import ExpandedTrainingDatasetBuilder, ExpandedTrainingSnapshots
 from ml.training.xgboost import ExpandedXGBoostTrainer
 from packages.contracts.rotation import RotationWaterRules
 from pipelines.ingestion.flows.weekly import WeeklyIngestionJob
 from pipelines.recommendations.job import CropRecommendationJob
+from pipelines.training.daily import DailyModelTrainingPipeline
 from pipelines.training.job import ModelTrainingJob
 from pipelines.training.pipeline import ModelTrainingPipeline
 
@@ -36,11 +38,22 @@ def build_job(
         raise ValueError("Job no soportado.")
     operational = OperationalRepository(database)
     if name == "ingestion":
-        return WeeklyIngestionJob(operational)
+        return WeeklyIngestionJob(operational, max_lag_days=settings.source_fallback_max_lag_days)
 
     results, registry = runtime_stores(settings, operational)
     artifacts = ModelArtifactStore(settings.model_directory)
     if name == "training":
+        if all(value is None for value in (builder, trainer, policies, snapshots)):
+            return ModelTrainingJob(
+                operational,
+                DailyModelTrainingPipeline(
+                    load_daily_training_config(settings.training_config_path),
+                    settings.training_data_directory,
+                    settings.dataset_directory,
+                    artifacts,
+                    registry,
+                ),
+            )
         config = load_training_config(settings.training_config_path)
         snapshots = (
             snapshots
@@ -79,7 +92,9 @@ def build_job(
         artifacts,
         predictor_factory=predictor_factory,
         engine=engine,
-        bundled_models=ExpandedModelBundle(settings.pretrained_model_directory),
+        bundled_models=ExpandedModelBundle(
+            settings.pretrained_model_directory, registry=registry, artifacts=artifacts
+        ),
         feature_store=feature_store,
         rotation_engine=rotation_engine,
     )

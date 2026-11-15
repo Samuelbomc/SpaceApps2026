@@ -35,9 +35,25 @@ def stage_summary(phase, result):
     stage = UpdateStage(phase=phase, status="completed", message="Etapa completada.")
     if phase == "ingestion":
         stage.message = "Consultas NASA completadas; se conservaron las observaciones disponibles."
+        summary = result.get("summary", {})
+        failed = summary.get("failed_sources", [])
+        stage.counts = dict(
+            Counter(
+                entry["status"]
+                for name, entry in summary.items()
+                if name != "downstream" and isinstance(entry, dict) and "status" in entry
+            )
+        )
         stage.limitations = [
             "La ingesta procesa POWER y consulta catálogos de otras fuentes. El procesamiento multifuente de entradas XGBoost aún debe completarse."
         ]
+        if failed:
+            stage.status = "retry_scheduled"
+            stage.message = (
+                "Datos incompletos en "
+                + ", ".join(name.upper() for name in failed)
+                + ". Se conserva la información disponible."
+            )
     else:
         stage.counts = dict(Counter(item["status"] for item in result.get("outcomes", [])))
         if phase == "training":
@@ -124,6 +140,21 @@ def poll_manual_updates(
                     )
                     exhausted = row["attempts"] >= 3
                     message = "La etapa no pudo completarse; se conserva la información anterior."
+                    if (
+                        phase == "ingestion"
+                        and captured is not None
+                        and isinstance(captured.result, dict)
+                    ):
+                        try:
+                            partial = stage_summary(phase, captured.result)
+                            row["stages"][index] = partial
+                            if captured.result.get("summary", {}).get("failed_sources"):
+                                message = partial["message"]
+                        except (ValueError, TypeError, KeyError, AttributeError):
+                            # Un resumen inválido también debe cerrar el estado running.
+                            LOG.error(
+                                "Resumen de ingesta no disponible en la actualización manual."
+                            )
                     row.update(
                         status="failed" if exhausted else "retry_scheduled",
                         retry_at=None if exhausted else retry_at,

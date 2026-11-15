@@ -40,6 +40,7 @@ services:
       REGION_LONGITUDE: ${REGION_LONGITUDE:--75.5812}
       RECENT_OBSERVATION_DAYS: ${RECENT_OBSERVATION_DAYS:-90}
       INGESTION_LAG_DAYS: ${INGESTION_LAG_DAYS:-3}
+      SOURCE_FALLBACK_MAX_LAG_DAYS: ${SOURCE_FALLBACK_MAX_LAG_DAYS:-5}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
       AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
       FARM_UPLOAD_DIRECTORY: /app/data/farms
@@ -48,10 +49,13 @@ services:
       MONGODB_DATABASE: ${MONGODB_DATABASE:-agrogeo}
       DATASET_DIRECTORY: /app/data/datasets
       MODEL_DIRECTORY: /app/data/models
-      TRAINING_DATA_DIRECTORY: /app/data/prepared
+      TRAINING_DATA_DIRECTORY: /app/data/prepared/daily
       TRAINING_CONFIG_PATH: ${TRAINING_CONFIG_PATH:-}
       PRETRAINED_MODEL_DIRECTORY: /app/ml/artifacts
       FEATURE_DIRECTORY: /app/data/features/daily-direct-v1
+      MODEL_SOURCE_DIRECTORY: /app/data
+      MODEL_DOWNLOAD_MAX_MB: ${MODEL_DOWNLOAD_MAX_MB:-128}
+      NEAREST_INPUT_MAX_DISTANCE_KM: ${NEAREST_INPUT_MAX_DISTANCE_KM:-200}
       ROTATION_WATER_RULES_PATH: ${ROTATION_WATER_RULES_PATH:-}
       GEOCODER_URL: ${GEOCODER_URL:-https://photon.komoot.io/reverse}
     ports:
@@ -69,9 +73,13 @@ services:
       context: .
       dockerfile: infra/docker/api.Dockerfile
       args:
-        PYTHON_EXTRAS: api,storage,geospatial,mongo,ml
+        PYTHON_EXTRAS: api,storage,geospatial,mongo,ml,processing,download
     command: ["python", "-m", "scripts.worker", "--job", "ingestion"]
-    environment: *runtime
+    environment:
+      <<: *runtime
+      EARTHDATA_TOKEN: ${EARTHDATA_TOKEN:-}
+      EARTHDATA_USERNAME: ${EARTHDATA_USERNAME:-}
+      EARTHDATA_PASSWORD: ${EARTHDATA_PASSWORD:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -89,6 +97,9 @@ services:
   manual-update-worker:
     <<: *worker_service
     command: ["python", "-m", "scripts.worker", "--manual-only", "--poll-seconds", "5"]
+  geographic-analysis-worker:
+    <<: *worker_service
+    command: ["python", "-m", "scripts.geographic_worker"]
   web:
     build:
       context: .

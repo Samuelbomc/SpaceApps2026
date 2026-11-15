@@ -1,118 +1,78 @@
 # Contrato de entradas e inferencia XGBoost
 
-El worker usa snapshots procesados de la receta `expanded-v1` y modelos propios
-para 7, 15, 30 y 60 días. FastAPI consulta resultados guardados y metadatos;
-no descarga fuentes, entrena ni calcula predicciones durante esa consulta.
+La receta integrada es `daily-direct-1-60-v1`. Cinco modelos compartidos predicen
+cada día objetivo entre 1 y 60 días después de la emisión. Sus pesos están en
+`ml/artifacts/forecasts/{modelo}/model.json`, acompañados de `training.json`.
+`ml/configs/pretrained-bundle.json` fija sus hashes y se comprueba antes de inferir.
 
-## Modelos y versiones
+## Entradas y fechas
 
-Los veinte artefactos están en `ml/artifacts/forecasts/{H}d/{modelo}/`.
-Los nombres son `temperature_mean`, `temperature_min`, `temperature_max`,
-`precipitation` y `moisture`. `models.json` indexa la colección científica y
-`ml/configs/pretrained-bundle.json` fija SHA-256 de metadatos, Booster reajustado
-y Booster de evaluación. Una alteración se rechaza antes de inferir.
+`GET /api/v1/models/input-contract` expone las columnas ordenadas y metadatos.
+El productor entrega 49 variables climáticas o 71 de suelo, incluidas las comunes.
+El predictor añade `lead_days`, `target_day_of_year_sin`,
+`target_day_of_year_cos` y `target_week_of_year`: los Boosters reciben 53 o 75
+columnas. Estas cuatro variables se derivan del calendario conocido, no de
+observaciones futuras.
 
-`ForecastPredictor` implementa la carga compartida entre reproducción científica
-y `ExpandedModelBundle`. `model.json` es un reajuste con todos los datos;
-`evaluation_model.json` fue ajustado sin las filas del test. Las métricas del
-catálogo pertenecen al segundo. Ninguno se convierte en campeón operativo por
-estar disponible en el repositorio; el catálogo los identifica como experimentales.
-La selección usa cuatro ventanas expansivas purgadas. Ver
-[resultados por horizonte](ml/horizon-results.md) y [protocolo](ml/rolling-origin-results.md).
+Se requieren `point_id`, coordenadas WGS84, `issue_date`, `observation_cutoff`
+exactamente emisión menos dos días y `radiation_observation_cutoff` exactamente
+emisión menos siete días. El receptor calcula SHA-256 y asigna `region_id`.
+Clima y suelo deben compartir sus variables comunes; suelo completo u omitido.
+No se requieren etiquetas futuras para inferir.
 
-## Salidas y periodo
+POWER utiliza días LST; GPM y SMAP, UTC. El productor debe respetar ventanas,
+rellenos causales acotados, edades y contadores de calidad de la receta entrenada.
+El receptor exige entradas finitas y no rellena huecos. No convierte datos UTC
+en LST renombrando su metadato ni cambia coordenadas o emisiones de las observaciones.
+La selección de una referencia cercana es explícita y conserva esa diferencia
+en el resultado geográfico.
 
-| Modelo | Salida |
-| --- | --- |
-| temperature_mean | Temperatura media del periodo, °C |
-| temperature_min | Media de mínimas diarias, °C |
-| temperature_max | Media de máximas diarias, °C |
-| precipitation | Precipitación acumulada del periodo, mm |
-| moisture | Humedad superficial media de observaciones válidas, m³/m³ |
+## Salidas diarias y periodos
 
-Los objetivos cubren **t+1..t+H**, con observaciones hasta **t-2**. Para mostrar
-predicciones desde el día de consulta D se exige `issue_date=D-1` y
-`observation_cutoff=D-3`. No son condiciones de un día aislado ni trayectorias diarias.
-Cada horizonte usa sus propios Boosters; no se extrapola recursivamente un modelo.
+Las salidas son temperatura media, mínima y máxima diarias (°C), precipitación
+diaria (mm) y humedad superficial (m³/m³). Humedad reconstruye
+`smap_mean_7d + XGBoost(features)` una sola vez. La lluvia es una salida absoluta;
+no se multiplica por el horizonte.
 
-La humedad reconstruye `smap_mean_7d + XGBoost(features)` exactamente una vez.
-Las salidas climáticas son absolutas. La escala H/7 de la lluvia corresponde a
-su baseline de persistencia, no a una multiplicación de la predicción del Booster.
+Para una consulta el día D se exige emisión D−1. Se calculan D hasta D+H−1 y
+se conservan los valores diarios. Los resúmenes de 7/15/30/60 días son medias
+de las temperaturas y humedad y suma de lluvia diaria. Predecir el día 30 no
+equivale a predecir la media de los treinta días.
 
-## Contrato de recepción
+## Recepción, uso y trazabilidad
 
-`GET /api/v1/models/input-contract` devuelve la receta, las columnas ordenadas,
-fuentes y reglas de recepción. El mismo objeto está en `input_contract` del
-catálogo `GET /api/v1/models`. Ambos endpoints leen JSON y verifican hashes;
-no ejecutan los modelos. Los tipos HTTP se generan en `packages/contracts/`.
-
-| Entrada | Regla |
-| --- | --- |
-| region_id | Parámetro del receptor; vincula el snapshot a una región registrada |
-| point_id | Selección exacta de la celda del archivo; se conserva en el snapshot |
-| latitude / longitude | Coordenadas finitas WGS84; deben coincidir con las de la región al consumir |
-| issue_date | Fecha exacta de la receta, anterior al día actual en America/Bogota |
-| observation_cutoff | Exactamente issue_date − 2 días |
-| climate | Las 31 variables completas de los modelos climáticos |
-| soil | Las 52 variables completas, incluidas las 31 climáticas, u omisión total del grupo |
-| source_sha256 | Calculado por el receptor sobre el archivo original |
-
-Clima necesita POWER —incluidos QV2M y viento a 2 m—, GPM IMERG Late, elevación
-y calendario. Suelo añade SMAP, pendiente y SoilGrids. Las ventanas son 7/14/30
-días; lluvia añade ventanas 1/3 y máximos y conteos. Se respeta la preparación de
-`ml/scripts/prepare_expanded_datasets.py`, sus unidades, rejillas nativas y calidad.
-Los datos recientes deben producir esas mismas variables; un GET o catálogo CMR
-no equivale a un snapshot procesado de toda la receta.
-
-Todas las variables deben ser finitas. No se sustituyen ausencias por cero,
-valores interpolados, vecinos ni fechas cercanas. Suelo parcial se rechaza;
-clima completo sin ninguna variable adicional de suelo permite inferencia solo
-climática. Clima y suelo deben compartir exactamente sus variables comunes.
-El orden de columnas del CSV puede variar; el orden que recibe XGBoost es el
-publicado en los metadatos, verificado contra el propio Booster.
-
-## Importar y conservar un snapshot
-
-El productor entrega CSV UTF-8 con las columnas de metadatos y variables del
-contrato. **No necesita target, target_start ni target_end futuros.** Si se
-incluyen fechas de etiquetas históricas, se verifica que correspondan al horizonte.
-`features_available_on`, cuando está presente, no puede ser posterior a issue_date.
-Se rechazan encabezados duplicados, filas mal formadas y celdas/fechas duplicadas.
-El hash se comprueba antes y después de leer para detectar cambios durante la recepción.
-
-Ejemplo con una fila histórica real de la muestra versionada:
+`ml/features/daily.py` recibe CSV sin etiquetas. Admite filas por lead solo cuando
+sus variables base son idénticas; rechaza duplicados contradictorios, columnas
+incompletas, entradas no finitas y fechas incompatibles. `ExpandedFeatureStore`
+conserva snapshots diarios y revisiones por contenido. El nombre histórico de
+esa clase no cambia la receta que debe declarar el documento recibido.
 
 ```bash
 python -m scripts.import_model_features \
-  --dataset samples/xgboost/moisture_99_20220108.csv \
-  --region-id ejemplo-historico --point-id moisture_99 \
-  --issue-date 2022-01-08 --horizon-days 7 --preview
+  --dataset ml/examples/inputs/moisture.csv \
+  --region-id ejemplo-publico --point-id smap_0 \
+  --issue-date 2026-11-15 --horizon-days 7 --preview
 ```
 
-`--preview` calcula sin escribir en las bases. Sin esa opción se guarda un
-snapshot JSON en FEATURE_DIRECTORY, tras validar sus entradas contra los modelos.
-Es una demostración histórica, no un pronóstico actual. Las rutas Windows
-contenidas en los artefactos se interpretan de forma portable; no se modifican
-los archivos científicos ni se permiten rutas de fuente que escapen del proyecto.
+El ejemplo conserva sus coordenadas y fecha; `--preview` no escribe en las bases.
+La carga automática por ubicación y la búsqueda de referencias cercanas están
+descritas en [análisis geográfico](geographic-analysis.md). La respuesta conserva
+las coordenadas solicitadas y utilizadas en `spatial_match`; las coordenadas del
+snapshot no cambian. La cercanía no permite sustituir la fecha requerida.
 
-`ExpandedFeatureStore` conserva revisiones por contenido en `versions/` y un
-puntero por región/fecha. Los snapshots anteriores sin point_id siguen siendo
-legibles. El job pide exclusivamente la fecha y coordenadas exactas. Guardar CSV
-privados de finca no los incorpora automáticamente al modelo regional.
+`DailyModelBundle` resuelve campeones en slots `<region>:daily:<modelo>` cuando
+existen, verifica artefactos y alcance y, en ausencia de campeón, identifica el
+bundle distribuido como experimental. El resultado conserva versiones por
+componente, versión compuesta, snapshot, fecha de entrada y serie diaria.
 
-## Trabajo programado, resultados y límites
+## Evaluación y límites
 
-`CropRecommendationJob` prioriza campeones publicados con receta compatible.
-Cuando no existen usa el bundle experimental identificado; si falta el snapshot
-reciente devuelve `insufficient_data`, sin recuperar observaciones antiguas como
-si fueran actuales. Clima sin suelo también puede producir ese estado parcial.
-Los errores de integridad o ejecución conservan resultados y activan el backoff.
+Los pesos distribuidos se reajustaron con todas las etiquetas observadas. Las
+métricas incluidas proceden de la evaluación pre-test local y no son una evaluación
+independiente posterior al reajuste. Los archivos de evaluación completos no se
+incluyen en Git. Los MAE diarios conjuntos de leads 1–60 tampoco son errores
+medidos del resumen de un periodo.
 
-Las predicciones, versiones y hash de entradas pasan al motor de rotación y se
-guardan en el backend de resultados configurado. Las recomendaciones necesitan
-reglas agronómicas revisadas. Ni integrar artefactos ni recibir variables supone
-publicación científica o autorización de siembra.
-
-La extracción y preparación reciente de toda la receta multisensor sigue siendo
-DATA-01 en [capacidades](capabilities.md). La actualización diaria no elimina ese
-requisito. Entrenamiento y publicación se rigen por [su contrato](model-training.md).
+La disponibilidad de pesos no completa la extracción reciente multisensor ni
+publica campeones científicos. La inferencia y la evaluación de rotación se
+realizan en workers; HTTP solo encola o consulta resultados almacenados.

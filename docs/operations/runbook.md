@@ -103,6 +103,22 @@ El stack local incluye este consumidor y Compose lo ejecuta como
 `--manual-only --once` permite revisar una solicitud pendiente una vez. Si se
 mantiene `queued`, comprobar que el consumidor está activo y comparte PostgreSQL.
 
+El botón distingue **Solicitud en cola**, la fase que está ejecutándose y
+**Reintento programado**. Una solicitud en cola no implica una descarga activa.
+La pantalla muestra la etapa, la última modificación de su estado y el próximo
+intento en horario de Colombia. **Consultar estado** vuelve a leer la solicitud
+sin crear otra ni adelantar el backoff.
+
+En las herramientas de red del navegador se ven el POST y los GET de seguimiento
+a `/backend/automation/refresh`. Los GET de proveedores NASA salen del worker
+Python y se revisan en sus logs y en `ingestion_runs`, no en la red del navegador.
+La ingesta POWER intenta cortes anteriores hasta `SOURCE_FALLBACK_MAX_LAG_DAYS`
+(5 días por defecto) si el corte inicial está incompleto. En esos intentos consulta
+solo los huecos, conserva lo ya descargado y registra las fechas probadas. El
+calendario y `Retry-After` siguen vigentes.
+La ingesta parcial conserva los datos obtenidos e informa las fuentes incompletas
+en el resumen de su etapa; no se presenta como entrenamiento en curso.
+
 La cola agrupa clics concurrentes en una sola ejecución global y aplica cinco
 minutos entre solicitudes nuevas. Respuestas `429` incluyen `Retry-After`.
 El worker recorre ingesta → evaluación de entrenamiento → recomendaciones con

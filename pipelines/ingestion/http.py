@@ -18,9 +18,10 @@ from urllib.request import Request, urlopen
 class IngestionError(RuntimeError):
     """Error operativo que puede mostrarse sin incluir secretos."""
 
-    def __init__(self, message, *, retry_after_seconds=0):
+    def __init__(self, message, *, retry_after_seconds=0, http_status=None):
         super().__init__(message)
         self.retry_after_seconds = retry_after_seconds
+        self.http_status = http_status
 
 
 def retry_delay(header: str, *, now=None) -> float | None:
@@ -102,12 +103,14 @@ class JsonHTTPClient:
                     raise IngestionError(
                         f"HTTP {code} al consultar {endpoint}.",
                         retry_after_seconds=server_delay or 0,
+                        http_status=code,
                     ) from None
                 # Esperas largas se delegan al scheduler persistente, sin bloquear el worker.
                 if server_delay is not None and server_delay > 60:
                     raise IngestionError(
                         f"HTTP {code}: proveedor solicita reintentar después.",
                         retry_after_seconds=server_delay,
+                        http_status=code,
                     ) from None
                 delay = server_delay if server_delay is not None else self._backoff(attempt)
             except (

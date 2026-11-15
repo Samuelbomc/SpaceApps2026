@@ -5,6 +5,7 @@ The model name remains moisture. A single lead-conditioned XGBoost predicts the 
 ```python
 import pandas as pd
 from ml.inference.forecast import ForecastPredictor
+
 frame = pd.read_csv("data/prepared/daily/moisture/inference.csv")
 absolute_moisture = ForecastPredictor("moisture").predict(frame)
 ```

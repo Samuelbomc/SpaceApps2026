@@ -209,7 +209,8 @@ class MongoIntegrationTests(unittest.TestCase):
         self.store = MongoResultsRepository(os.environ["TEST_MONGODB_URI"], self.name)
 
     def test_real_models_survive_corrupt_horizon_and_restart_without_duplicate_results(self):
-        from ml.features.expanded import ExpandedFeatureStore, snapshot_from_csv
+        from ml.features.daily import daily_snapshot_from_csv as snapshot_from_csv
+        from ml.features.expanded import ExpandedFeatureStore
         from ml.inference.expanded import ExpandedModelBundle
         from ml.recommendations.rotation import ForecastRotationEngine
         from pipelines.recommendations.job import CropRecommendationJob
@@ -221,20 +222,18 @@ class MongoIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="agrogeo-real-model-recovery-") as directory:
             root = Path(directory)
             artifacts = root / "models"
-            for name in ("model.json", "training.json", "evaluation_model.json"):
+            for name in ("model.json", "training.json"):
                 for source in original.rglob(name):
                     target = artifacts / source.relative_to(original)
                     target.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copyfile(source, target)
             snapshot = snapshot_from_csv(
-                repository / "samples/xgboost/moisture_99_20220108.csv",
+                repository / "ml/examples/inputs/moisture.csv",
                 region_id="historical-test-only",
-                point_id="moisture_99",
-                issue_date=date(2022, 1, 8),
-                climate_features=next(
-                    m.features for m in catalog.models if m.model_kind == "climate"
-                ),
-                soil_features=next(m.features for m in catalog.models if m.model_kind == "soil"),
+                point_id="smap_0",
+                issue_date=date(2026, 11, 15),
+                climate_features=catalog.input_contract.climate_features,
+                soil_features=catalog.input_contract.soil_features,
             )
             features = ExpandedFeatureStore(root / "features")
             features.save(snapshot)
@@ -259,19 +258,28 @@ class MongoIntegrationTests(unittest.TestCase):
                     rotation_engine=ForecastRotationEngine(),
                 )
 
-            damaged = artifacts / "forecasts/7d/temperature_mean/model.json"
+            damaged = artifacts / "forecasts/temperature_mean/model.json"
+            clock_patch = patch("pipelines.recommendations.job.datetime")
+            clock = clock_patch.start()
+            self.addCleanup(clock_patch.stop)
+            clock.now.return_value.date.return_value = target_start
+            self.assertEqual(restart().run(as_of=target_start)["status"], "ok")
             damaged.write_text("{}")
             first = restart().run(as_of=target_start)
             self.assertEqual(first["status"], "partial")
             self.assertEqual(
-                first["failed_tasks"], [{"region_id": snapshot.region_id, "horizon_days": 7}]
+                first["failed_tasks"],
+                [
+                    {"region_id": snapshot.region_id, "horizon_days": horizon}
+                    for horizon in (7, 15, 30, 60)
+                ],
             )
             healthy = {r["analysis_id"] for r in self.store.analyses(snapshot.region_id)}
-            self.assertEqual(len(healthy), 3)
+            self.assertEqual(len(healthy), 4)
             shutil.copyfile(original / damaged.relative_to(artifacts), damaged)
             recovered = restart().run(as_of=target_start, tasks=first["failed_tasks"])
             self.assertEqual(recovered["status"], "ok")
-            self.assertEqual(len(recovered["outcomes"]), 1)
+            self.assertEqual(len(recovered["outcomes"]), 4)
             self.assertEqual(restart().run(as_of=target_start)["status"], "ok")
             rows = self.store.analyses(snapshot.region_id)
             self.assertEqual(len(rows), 4)

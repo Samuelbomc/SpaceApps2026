@@ -5,23 +5,23 @@
     [disabled]="sending() || running()"
     (click)="requestUpdate()"
   >
-    {{
-      sending()
-        ? 'Enviando solicitud…'
-        : running()
-          ? 'Actualización en curso…'
-          : 'Actualizar datos y modelos'
-    }}
+    {{ buttonLabel() }}
   </button>
-  <p>Actualiza los datos y evalúa los modelos de las ubicaciones configuradas.</p>
+  <p>Actualiza las ubicaciones configuradas y muestra el avance por etapa.</p>
   @if (error()) {
     <p role="alert" class="form-alert">{{ error() }}</p>
+  }
+  @if (error() || running()) {
     <button type="button" class="link-btn" (click)="checkStatus()">Consultar estado</button>
   }
   @if (update(); as update) {
     <p role="status">{{ update.message }}</p>
+    <p>
+      Etapa: {{ phases[update.phase] }} · Último cambio:
+      {{ update.updated_at | date: 'short' : '-0500' }}.
+    </p>
     @if (update.retry_at) {
-      <p>Próximo intento: {{ update.retry_at | date: 'medium' : 'America/Bogota' }}.</p>
+      <p>Próximo intento: {{ update.retry_at | date: 'medium' : '-0500' }}.</p>
     }
     <details [open]="update.status === 'completed_with_limitations' || update.status === 'failed'">
       <summary>Detalle de la actualización</summary>

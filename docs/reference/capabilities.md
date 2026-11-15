@@ -7,14 +7,18 @@ de aceptación. Los estados pendientes forman parte del comportamiento del siste
 
 - Angular, autenticación HTTP real, sesión por cookie y gestión privada de fincas/CSV.
 - Mapa MapLibre, selección de superficies y persistencia del polígono.
+- [Análisis público por ubicación](geographic-analysis.md): geometría, cola durable, muestreo interior, recepción de entradas exactas, predicciones y seguimiento por UUID.
 - POWER procesado/Parquet; descubrimiento de productos de las demás fuentes.
+- Preparación por coordenadas con POWER LST, GPM Late, subconjuntos SMAP y capas
+  estáticas nativas. Acceso protegido y aprovisionamiento SRTM/SoilGrids condicionan
+  su ejecución real; no se considera cerrado DATA-01.
 - Scheduler durable con bloqueos, reintentos y tres jobs independientes.
 - Actualización manual autenticada: cola PostgreSQL, coalescencia, progreso, recuperación
   por etapa y uso de las mismas políticas de publicación; límites de extracción DATA-01 vigentes.
-- Constructor multiespacial de datasets procesados para clima y suelo en 7/15/30/60 días.
+- Constructor diario compacto por ubicación y lead, con tablas de variables, etiquetas e índices separados.
 - Entrenador XGBoost con parada temprana, humedad residual y selección rolling-origin con cuatro folds purgados y test cronológico.
 - Políticas versionadas, artefactos inmutables, candidatos y publicación condicionada.
-- Adapter de inferencia para campeones publicados; preview separado de los veinte artefactos experimentales.
+- Adapter de inferencia para campeones publicados; preview separado de los cinco artefactos diarios experimentales.
 - Evaluación de rotación conectada a las cinco salidas de los modelos y persistida con ellas.
 - Contratos generados, pruebas automáticas y lectura de resultados sin calcular modelos desde HTTP.
 

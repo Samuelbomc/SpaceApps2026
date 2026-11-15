@@ -27,6 +27,12 @@ flowchart TD
     BROWSER[Navegador: Angular y MapLibre] -->|HTTP, cookie y CSRF| WEB[Nginx o proxy de desarrollo]
     WEB -->|API HTTP| API[FastAPI]
     API -->|Identidad, fincas, observaciones y cola manual| PG[(PostgreSQL)]
+    API -->|Geometría pública y periodo| GEOQUEUE[Cola geográfica PostgreSQL]
+    GEOQUEUE --> GEOWORKER[Worker geográfico]
+    GEOWORKER --> POINT[Adquisición y preparación puntual]
+    NASA --> POINT
+    POINT --> FEATURES
+    GEOWORKER --> RECOMMEND
     PG -->|Solicitudes manuales autenticadas| MANUAL[Consumidor de actualización manual]
     MANUAL --> INGEST
     MANUAL --> TRAIN
@@ -72,8 +78,8 @@ requieren FastAPI para entrenar o inferir. Ubicación de clases y archivos en
 
 Los jobs tienen calendarios y locks independientes. La ingesta diaria puede
 actualizar datos sin producir suficientes etiquetas para entrenar o sin publicar
-un candidato. Los horizontes tienen modelos separados; los targets agregan
-`t+1..t+H` con entradas hasta `t-2`.
+un candidato. Cinco modelos diarios comparten leads 1–60; los resúmenes agregan sus días para
+7/15/30/60 días. Las entradas llegan hasta `t-2` y radiación hasta `t-7`.
 
 Una versión técnicamente apta permanece en revisión hasta satisfacer las barreras
 científicas. La publicación agronómica requiere además reglas revisadas. La ficha

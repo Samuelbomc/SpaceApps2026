@@ -111,4 +111,31 @@ describe('Manual data/model update', () => {
     fixture.destroy();
     expect(options.signal?.aborted).toBe(true);
   });
+  it.each([
+    ['queued', 'ingestion', 'Solicitud en cola'],
+    ['retry_scheduled', 'ingestion', 'Reintento programado'],
+    ['running', 'ingestion', 'Consultando datos…'],
+    ['running', 'training', 'Evaluando modelos…'],
+    ['running', 'recommendations', 'Actualizando análisis…'],
+  ] as const)('distinguishes %s in %s from active downloads', async (status, phase, label) => {
+    const update = {
+      ...state(status),
+      phase,
+      retry_at: status === 'retry_scheduled' ? '2026-11-15T22:03:00Z' : null,
+    };
+    request.mockResolvedValue(update);
+    const fixture = TestBed.createComponent(ManualRefresh);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    expect(button.textContent).toContain(label);
+    expect(button.disabled).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Último cambio:');
+    if (status === 'retry_scheduled') {
+      expect(fixture.nativeElement.textContent).toContain('Próximo intento:');
+      expect(fixture.nativeElement.textContent).not.toContain('Actualización en curso');
+    }
+    expect(write).not.toHaveBeenCalled();
+    fixture.destroy();
+  });
 });

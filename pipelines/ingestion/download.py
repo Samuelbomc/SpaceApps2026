@@ -2,13 +2,16 @@
 
 import fnmatch
 import hashlib
+import json
 import os
 import shutil
 import tempfile
+import time
+from math import ceil, isfinite
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-from .http import IngestionError, utc_now, write_json
+from .http import IngestionError, retry_delay, utc_now, write_json
 
 
 def earthdata_session():
@@ -49,8 +52,11 @@ def file_digest(path: Path) -> str:
 
 
 class GranuleDownloader:
-    def __init__(self, session=None):
+    def __init__(self, session=None, *, max_elapsed_seconds=300, clock=time.monotonic):
         self.session = session
+        if not isfinite(max_elapsed_seconds) or max_elapsed_seconds <= 0:
+            raise ValueError("El tiempo máximo de descarga debe ser finito y positivo.")
+        self.max_elapsed_seconds, self.clock = max_elapsed_seconds, clock
 
     def download(
         self,
@@ -63,6 +69,7 @@ class GranuleDownloader:
     ) -> dict:
         if max_files < 1 or max_bytes < 1:
             raise ValueError("Los límites de archivos y bytes deben ser positivos.")
+        product_identity = json.loads(json.dumps(manifest["product"]))
         assets = []
         for granule in manifest["granules"]:
             for url in granule["data_urls"]:
@@ -70,13 +77,24 @@ class GranuleDownloader:
                 if patterns and not any(fnmatch.fnmatchcase(name, p) for p in patterns):
                     continue
                 if url not in {a[1] for a in assets}:
-                    assets.append((granule["id"], url, name))
+                    assets.append((granule["id"], url, name, granule.get("asset_identity")))
         selected = assets[:max_files]
         if not selected:
             return {"files": [], "matching_assets": len(assets), "limit_reached": False}
-        session = self.session if self.session is not None else earthdata_session()
+        deadline = self.clock() + self.max_elapsed_seconds
         results, used = [], 0
-        for granule_id, url, name in selected:
+
+        def check_deadline():
+            if self.clock() >= deadline:
+                error = IngestionError(
+                    "Se agotó el tiempo de descarga; se conservarán los archivos completos para reintentar."
+                )
+                error.downloaded_bytes = used
+                raise error
+
+        session = self.session if self.session is not None else earthdata_session()
+        for granule_id, url, name, identity in selected:
+            check_deadline()
             if not name or name in (".", "..") or "/" in name or "\\" in name:
                 raise IngestionError("Nombre de archivo remoto inválido.")
             # Evitar colisiones entre granules y permitir reanudar con checksum.
@@ -84,14 +102,18 @@ class GranuleDownloader:
             asset_dir.mkdir(parents=True, exist_ok=True)
             target, sidecar = asset_dir / name, asset_dir / f"{name}.metadata.json"
             if target.exists() and sidecar.exists():
-                import json
-
                 try:
                     previous = json.loads(sidecar.read_text(encoding="utf-8"))
                 except (ValueError, OSError):
                     previous = {}
+                if not isinstance(previous, dict):
+                    previous = {}
                 if (
-                    previous.get("url") == url
+                    (
+                        previous.get("url") == url
+                        or (identity is not None and previous.get("asset_identity") == identity)
+                    )
+                    and previous.get("product") == product_identity
                     and previous.get("bytes") == target.stat().st_size
                     and previous.get("sha256") == file_digest(target)
                 ):
@@ -100,9 +122,14 @@ class GranuleDownloader:
             temporary = None
             try:
                 with session.get(url, stream=True, timeout=(15, 120)) as response:
+                    check_deadline()
                     if response.status_code != 200:
                         raise IngestionError(
-                            f"Descarga HTTP {response.status_code}; revisa permisos Earthdata/DAAC."
+                            f"Descarga HTTP {response.status_code}; revisa permisos Earthdata/DAAC.",
+                            retry_after_seconds=ceil(
+                                retry_delay(response.headers.get("Retry-After", "")) or 0
+                            ),
+                            http_status=response.status_code,
                         )
                     content_type = response.headers.get("Content-Type", "").lower()
                     if "text/html" in content_type:
@@ -124,6 +151,7 @@ class GranuleDownloader:
                     ) as handle:
                         temporary = Path(handle.name)
                         for chunk in response.iter_content(chunk_size=1024 * 1024):
+                            check_deadline()
                             if used + size + len(chunk) > max_bytes:
                                 raise IngestionError(
                                     "Se alcanzó el límite de bytes; se elimina el archivo parcial."
@@ -141,6 +169,7 @@ class GranuleDownloader:
                     record = {
                         "url": url,
                         "granule_id": granule_id,
+                        "asset_identity": identity,
                         "bytes": size,
                         "sha256": digest.hexdigest(),
                         "path": str(target),
@@ -149,18 +178,23 @@ class GranuleDownloader:
                         "bbox_requested": manifest["bbox"],
                         "point_requested": manifest.get("point"),
                         "period_requested": manifest.get("period_requested"),
-                        "subset_applied": False,
+                        "subset_applied": manifest.get("subset_applied", False),
                         "content_type": content_type,
                     }
                     write_json(sidecar, record)
                     results.append({**record, "cached": False})
                     used += size
-            except (IngestionError, OSError):
+            except IngestionError as exc:
+                exc.downloaded_bytes = used
+                raise
+            except OSError:
                 raise
             except Exception:
-                raise IngestionError(
+                error = IngestionError(
                     "La descarga falló; revisa conexión y autorización del proveedor."
-                ) from None
+                )
+                error.downloaded_bytes = used
+                raise error from None
             finally:
                 if temporary is not None:
                     temporary.unlink(missing_ok=True)
@@ -169,6 +203,6 @@ class GranuleDownloader:
             "matching_assets": len(assets),
             "limit_reached": len(assets) > max_files,
             "downloaded_bytes": used,
-            "notes": "Archivos originales completos, sin recorte espacial o temporal. "
+            "notes": "Archivos completos del catálogo; subset_applied identifica recortes remotos. "
             "Cada archivo completo conserva un sidecar para reanudar incluso tras un error.",
         }

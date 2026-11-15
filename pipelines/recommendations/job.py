@@ -159,11 +159,44 @@ class CropRecommendationJob:
         )
         return {"status": result.status, "analysis_id": result.analysis_id}
 
-    def _bundled(self, region, target_start, horizon):
-        snapshot = self.feature_store.load(region, target_start - timedelta(days=1))
+    def _bundled(self, region, target_start, horizon, *, matched=None):
+        snapshot = (
+            matched.snapshot
+            if matched is not None
+            else self.feature_store.load(region, target_start - timedelta(days=1))
+        )
         if snapshot is not None:
-            result = self.bundled_models.predict(snapshot, horizon_days=horizon)
+            if matched is not None:
+                if matched.spatial.issue_date != target_start - timedelta(days=1):
+                    raise ValueError(
+                        "La referencia cercana debe conservar la fecha de emisión requerida."
+                    )
+                if (
+                    matched.spatial.source_sha256 != snapshot.source_sha256
+                    or matched.spatial.issue_date != snapshot.issue_date
+                    or matched.spatial.source_point_id != snapshot.point_id
+                    or matched.spatial.used_longitude != snapshot.longitude
+                    or matched.spatial.used_latitude != snapshot.latitude
+                    or matched.spatial.requested_longitude != region["longitude"]
+                    or matched.spatial.requested_latitude != region["latitude"]
+                ):
+                    raise ValueError(
+                        "La referencia espacial no coincide con las entradas y la selección."
+                    )
+                result = self.bundled_models.predict(
+                    snapshot, horizon_days=horizon, analysis_region_id=region["region_id"]
+                )
+                result.spatial_match = matched.spatial
+                if matched.spatial.method == "nearest":
+                    result.messages.insert(
+                        0,
+                        f"Estimación con datos del punto disponible más cercano, a {matched.spatial.distance_km:.1f} km de tu selección.",
+                    )
+            else:
+                result = self.bundled_models.predict(snapshot, horizon_days=horizon)
         else:
+            daily = getattr(self.bundled_models, "forecast_type", None) == "direct_daily"
+            recipe = "daily-direct-1-60-v1" if daily else "expanded-v1"
             request = AnalysisRequest(
                 region_id=region["region_id"],
                 reference_date=target_start - timedelta(days=3),
@@ -174,12 +207,18 @@ class CropRecommendationJob:
                 status="insufficient_data",
                 request=request,
                 analysis_id=fingerprint(
-                    {"request": request.model_dump(mode="json"), "missing": "expanded-v1"}
+                    {"request": request.model_dump(mode="json"), "missing": recipe}
                 ),
                 messages=[
-                    "Los cinco modelos XGBoost están integrados. Faltan las variables procesadas expanded-v1 "
-                    "para esta región y fecha: POWER, GPM Late, elevación y, para suelo, SMAP y SoilGrids. "
-                    "No se usan filas de otras fechas o ubicaciones."
+                    f"Los modelos XGBoost están disponibles, pero no hay una entrada procesada {recipe} "
+                    f"para {region['region_id']} con emisión {(target_start - timedelta(days=1)).isoformat()}. "
+                    "El histórico de entrenamiento y los valores observados de la pantalla no sustituyen esta entrada.",
+                    "La receta diaria requiere POWER en LST, lluvia GPM Late y elevación; "
+                    "para suelo también SMAP y SoilGrids. Meteorología hasta emisión menos 2 días "
+                    "y radiación hasta emisión menos 7 días. Los ejemplos incluidos corresponden "
+                    "a sus propias coordenadas y fechas; no se reasignan a esta ubicación."
+                    if daily
+                    else "Se requieren POWER, GPM Late, elevación y, para suelo, SMAP y SoilGrids.",
                 ],
             )
         pipeline = CropRecommendationPipeline(

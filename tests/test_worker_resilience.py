@@ -50,7 +50,7 @@ class JobConstructionTests(unittest.TestCase):
         job = build_job(
             "training", Mock(), Settings(rotation_water_rules_path=Path("fixture-missing.json"))
         )
-        self.assertEqual(len(job.pipeline.policies), 8)
+        self.assertEqual(len(job.pipeline.config["models"]), 5)
 
     def test_recommendations_load_published_recipe_without_training_override(self):
         job = build_job(

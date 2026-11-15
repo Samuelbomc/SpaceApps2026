@@ -139,7 +139,7 @@ class PowerParquetRepository:
                 row["location_id"] != expected_id
                 or row["source"] != "NASA_POWER"
                 or row["product"] != "POWER_DAILY"
-                or row["time_standard"] != "UTC"
+                or row["time_standard"] not in ("UTC", "LST")
             ):
                 raise ValueError("Identidad de observación POWER inválida.")
             partitions[(expected_id, day.year)][self._key(row)] = dict(row)

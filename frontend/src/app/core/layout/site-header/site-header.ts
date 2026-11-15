@@ -10,7 +10,7 @@ import { NavDropdown } from '../nav-dropdown/nav-dropdown';
 /**
  * Sticky site header. Navigation adapts to the session:
  * visitors see public links + "Iniciar sesión / Crear cuenta";
- * signed-in users keep Exploration, private farms, results and their account area.
+ * signed-in users keep Home, Exploration, private farms and their account area.
  * Below 900px the links collapse into a disclosure menu (Escape closes it).
  */
 @Component({

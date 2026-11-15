@@ -95,11 +95,34 @@ class Forecast(Contract):
         return self
 
 
+class ProbabilityEstimate(Contract):
+    status: Literal["unavailable", "calibrated"] = "unavailable"
+    value: FiniteFloat | None = Field(default=None, ge=0, le=1)
+    event: str | None = None
+    model_version: str | None = None
+    calibration_version: str | None = None
+
+    @model_validator(mode="after")
+    def calibrated_evidence(self):
+        if self.status == "calibrated":
+            if self.value is None or not all(
+                value and value.strip()
+                for value in (self.event, self.model_version, self.calibration_version)
+            ):
+                raise ValueError(
+                    "Una probabilidad requiere evento, modelo y calibración identificados."
+                )
+        elif self.value is not None:
+            raise ValueError("No se puede publicar un porcentaje sin calibración.")
+        return self
+
+
 class Rotation(Contract):
     name: str
     crops: list[str] = Field(min_length=1)
     reasons: list[str] = Field(min_length=1)
     risks: list[str] = Field(default_factory=list)
+    probability: ProbabilityEstimate = Field(default_factory=ProbabilityEstimate)
 
 
 class Recommendations(Contract):
@@ -114,6 +137,16 @@ class RotationCheck(Contract):
     value: FiniteFloat | None = None
     unit: str
     explanation: str
+    minimum: FiniteFloat | None = None
+    maximum: FiniteFloat | None = None
+
+    @model_validator(mode="after")
+    def ordered_range(self):
+        if (self.minimum is None) != (self.maximum is None):
+            raise ValueError("La comparación requiere ambos límites o ninguno.")
+        if self.minimum is not None and self.minimum > self.maximum:
+            raise ValueError("Los límites de la comparación deben estar ordenados.")
+        return self
 
 
 class RotationCandidate(Contract):
@@ -122,6 +155,11 @@ class RotationCandidate(Contract):
     family: str
     status: Literal["excluded", "pending_requirements", "within_checked_ranges"]
     checks: list[RotationCheck]
+    catalog_crop_id: str | None = None
+    temperature_fit: Literal["optimal", "tolerated", "outside_range", "unknown"] = "unknown"
+    temperature_optimal_min_c: FiniteFloat | None = None
+    temperature_optimal_max_c: FiniteFloat | None = None
+    probability: ProbabilityEstimate = Field(default_factory=ProbabilityEstimate)
 
 
 class RotationStage(Contract):
@@ -135,6 +173,7 @@ class RotationScenario(Contract):
     stages: list[RotationStage]
     status: Literal["conditional"] = "conditional"
     explanation: str
+    probability: ProbabilityEstimate = Field(default_factory=ProbabilityEstimate)
 
 
 class RotationAssessment(Contract):
@@ -158,6 +197,20 @@ class RotationAssessment(Contract):
     scenarios: list[RotationScenario] = Field(default_factory=list)
     limitations: list[str]
     recommendation_ready: bool = False
+    crop_list_source: str | None = None
+    crop_list_sha256: str | None = None
+
+
+class SpatialMatch(Contract):
+    method: Literal["exact", "nearest"]
+    requested_longitude: FiniteFloat = Field(ge=-180, le=180)
+    requested_latitude: FiniteFloat = Field(ge=-90, le=90)
+    used_longitude: FiniteFloat = Field(ge=-180, le=180)
+    used_latitude: FiniteFloat = Field(ge=-90, le=90)
+    distance_km: FiniteFloat = Field(ge=0)
+    source_point_id: str | None = None
+    source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    issue_date: date
 
 
 class AnalysisResult(Contract):
@@ -172,6 +225,7 @@ class AnalysisResult(Contract):
     recommendations: Recommendations | None = None
     rotation_assessment: RotationAssessment | None = None
     messages: list[str] = Field(default_factory=list)
+    spatial_match: SpatialMatch | None = None
 
     @model_validator(mode="after")
     def ready_requires_results(self):

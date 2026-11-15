@@ -26,7 +26,12 @@ export type Forecast = components['schemas']['Forecast'];
 export type Analysis = components['schemas']['AnalysisResult'];
 export type ModelCatalog = components['schemas']['ModelCatalog'];
 export type ModelInputContract = components['schemas']['ModelInputContract'];
+export type ProbabilityEstimate = components['schemas']['ProbabilityEstimate'];
+export type RotationCheck = components['schemas']['RotationCheck'];
 export type ManualUpdate = components['schemas']['ManualUpdate'];
+export type GeographicAnalysis = components['schemas']['GeographicAnalysis'];
+export type GeographicAnalysisRequest = components['schemas']['GeographicAnalysisRequest'];
+export type GeographicObservation = components['schemas']['GeographicObservation'];
 
 export type ObservationHistory = Pick<
   ObservationPage,

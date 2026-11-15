@@ -65,9 +65,16 @@ class CMRClient:
     ) -> dict:
         if source not in PRODUCTS:
             raise ValueError(f"Fuente CMR desconocida: {source}")
+        return self.search_product(
+            PRODUCTS[source], period, bbox, point=point, limit=limit, page_size=page_size
+        )
+
+    def search_product(
+        self, product: Product, period=None, bbox=None, *, point=None, limit=20, page_size=100
+    ):
+        """Producto explícito: las recetas ML no cambian el catálogo de exploración."""
         if not 1 <= limit <= 10000 or not 1 <= page_size <= 2000:
             raise ValueError("limit debe estar entre 1 y 10000; page_size entre 1 y 2000.")
-        product = PRODUCTS[source]
         if bbox is not None and point is not None:
             raise ValueError("Selecciona punto o bbox, no ambos.")
         if point is None and bbox is None:

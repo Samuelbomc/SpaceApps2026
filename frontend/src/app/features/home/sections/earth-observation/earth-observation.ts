@@ -14,8 +14,8 @@ export class HomeEarthObservation {
   protected readonly steps = [
     {
       verb: 'Observar',
-      title: 'Satélites de la NASA',
-      text: 'Precipitación (GPM IMERG), humedad superficial del suelo (SMAP), vegetación (HLS), temperatura de superficie (ECOSTRESS), relieve (SRTM) y variables agroclimáticas (NASA POWER).',
+      title: 'Datos NASA y UPRA',
+      text: 'Precipitación (GPM IMERG), humedad superficial del suelo (SMAP), vegetación (HLS), relieve (SRTM), variables agroclimáticas (NASA POWER) y datos agrícolas de UPRA.',
     },
     {
       verb: 'Procesar',

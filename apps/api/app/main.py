@@ -17,6 +17,7 @@ from apps.api.app.repositories.operational import OperationalRepository
 from apps.api.app.repositories.runtime import runtime_stores
 from apps.api.app.routers.crop_catalog import router as crop_catalog_router
 from apps.api.app.routers.farmers import farmer_router
+from apps.api.app.routers.geographic_analyses import geographic_analysis_router
 from apps.api.app.routers.manual_updates import manual_update_router
 from apps.api.app.routers.map_places import map_places_router
 from apps.api.app.services.analysis import AnalysisService
@@ -79,6 +80,7 @@ def create_app(
     access = session_access(database, settings)
     app.include_router(farmer_router(database, settings, access=access))
     app.include_router(manual_update_router(database, access))
+    app.include_router(geographic_analysis_router(database, access, results_repository))
     app.include_router(
         map_places_router(
             place_service if place_service is not None else MapPlaceService(settings.geocoder_url)

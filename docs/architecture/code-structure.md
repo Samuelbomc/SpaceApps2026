@@ -47,6 +47,10 @@ AgroGeo/
 
 | Necesidad | Archivo o módulo |
 | --- | --- |
+| Analizar un área pública | `apps/api/app/routers/geographic_analyses.py`, `scripts/geographic_worker.py` |
+| Recibir variables de la ubicación | `ml/features/prepared_daily.py` |
+| Obtener y preparar entradas por coordenadas | `pipelines/ingestion/flows/model_point.py`, `pipelines/processing/geospatial/model_point.py` |
+| Compartir la receta causal con entrenamiento | `ml/features/recipe.py` |
 | Servir HTTP | `apps/api/app/main.py` |
 | Construir dependencias y jobs | `scripts/runtime.py` |
 | Ejecutar trabajos periódicos | `scripts/worker.py` |

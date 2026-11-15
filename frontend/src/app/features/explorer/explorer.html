@@ -37,9 +37,7 @@
                   </option>
                 }
               </optgroup>
-              <optgroup
-                [label]="'Otros municipios de ' + territory.department + ' — solo exploración'"
-              >
+              <optgroup [label]="'Otros municipios de ' + territory.department">
                 @for (m of otherMunicipalities(); track m.code) {
                   <option [value]="m.code" [selected]="m.code === selectedCode()">
                     {{ m.name }}
@@ -120,17 +118,11 @@
     </div>
     <section id="resultados" class="workspace-results" aria-label="Resultados del análisis">
       @for (session of [analysisSession()]; track session) {
-        <app-analysis
-          [embedded]="true"
-          [area]="analysisArea()"
+        <app-geographic-analysis
+          [geometry]="analysisGeometry()"
+          [selectionKind]="shape() ? 'plot' : 'municipality'"
+          [selectionName]="boundary()?.name || ''"
           [historyEnabled]="auth.isAuthenticated()"
-          [locationState]="
-            boundaryState() === 'loading'
-              ? 'loading'
-              : boundaryState() === 'error'
-                ? 'error'
-                : 'ready'
-          "
         />
       }
       <div class="save-option">

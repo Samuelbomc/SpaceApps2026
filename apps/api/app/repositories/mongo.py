@@ -127,6 +127,11 @@ class MongoResultsRepository:
             )
             return row["body"] if row else None
 
+    def analysis_by_id(self, analysis_id):
+        with self._database() as db:
+            row = db.analyses.find_one({"_id": analysis_id})
+            return row["body"] if row else None
+
     def analysis_for_period(self, region_id, horizon, target_start):
         with self._database() as db:
             query = {

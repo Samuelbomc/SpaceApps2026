@@ -33,10 +33,10 @@ export const MUNICIPAL_COVERAGE: Readonly<Record<string, MunicipalCoverage>> = {
   // La Unión — team climate module (Modulo_climatico/, see LEEME_datos_clima.md).
   '05400': {
     status: 'processed-pending',
-    sourceIds: ['nasa-power', 'gpm-imerg', 'ideam-dhime'],
+    sourceIds: ['nasa-power', 'gpm-imerg'],
     period: '2000–2026 (diario y mensual)',
     spatialSupport:
-      'Celda de NASA POWER en el punto 5,97° N, 75,36° O (≈ 55 km) y lluvia GPM IMERG (≈ 10 km), validadas con estaciones IDEAM del municipio.',
+      'Celda de NASA POWER en el punto 5,97° N, 75,36° O (≈ 55 km) y lluvia GPM IMERG (≈ 10 km).',
     note: 'Series procesadas por el equipo en el módulo climático; aún no se cargan en el portal.',
   },
 };

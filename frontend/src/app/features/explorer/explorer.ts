@@ -22,9 +22,10 @@ import { PILOT_TERRITORY, isSupportedMunicipality } from '../../core/catalog/pil
 import { AnalysisJourneyStore } from '../../core/journey/analysis-journey.store';
 import { PlotMap, PlotMunicipality, PlotShape } from '../farm/plot/components/plot-map/plot-map';
 import { summarizePlot, toPlotSelection } from '../farm/plot/plot-summary';
-import { Analysis } from '../farm/analysis/analysis';
-import { openRing, formatArea } from '../../shared/geo/geodesy';
-import { displayName } from './utils/geo-utils';
+import { GeographicAnalysis } from './components/geographic-analysis/geographic-analysis';
+import type { GeographicAnalysisRequest } from '@agrogeo/api-client';
+import { openRing, formatArea, LngLat } from '../../shared/geo/geodesy';
+import { displayName, municipalityReferencePoint } from './utils/geo-utils';
 import { ManualRefresh } from './components/manual-refresh/manual-refresh';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -38,7 +39,7 @@ import { AuthService } from '../../core/auth/auth.service';
     MapProvenance,
     GeoSearch,
     PlotMap,
-    Analysis,
+    GeographicAnalysis,
     ManualRefresh,
   ],
   templateUrl: './explorer.html',
@@ -48,7 +49,7 @@ import { AuthService } from '../../core/auth/auth.service';
 export class Explorer {
   private readonly geo = inject(GeoBoundariesService);
   private readonly journey = inject(AnalysisJourneyStore);
-  private readonly analysisView = viewChild(Analysis);
+  private readonly analysisView = viewChild(GeographicAnalysis);
   protected readonly auth = inject(AuthService);
   protected readonly focusTarget = signal<{ kind: 'department' | 'region'; id: string } | null>(
     null,
@@ -64,6 +65,7 @@ export class Explorer {
   protected readonly boundary = signal<PlotMunicipality | null>(null);
   protected readonly boundaryState = signal<'idle' | 'loading' | 'ready' | 'error'>('idle');
   protected readonly shape = signal<PlotShape | null>(null);
+  private readonly municipalityPoint = signal<LngLat | null>(null);
   private boundaryRequest = 0;
   protected readonly plotSummary = computed(() => {
     const shape = this.shape(),
@@ -85,6 +87,17 @@ export class Explorer {
       ? toPlotSelection(summary, municipality.code).geometry
       : (municipality?.geometry ?? null);
   });
+  protected readonly analysisGeometry = computed<GeographicAnalysisRequest['geometry'] | null>(
+    () => {
+      const plot = this.plotSummary();
+      const municipality = this.boundary();
+      if (!municipality || municipality.code !== this.selectedCode()) return null;
+      if (this.shape() !== null)
+        return plot?.valid ? toPlotSelection(plot, municipality.code).geometry : null;
+      const point = this.municipalityPoint();
+      return point ? { type: 'Point', coordinates: point } : null;
+    },
+  );
 
   protected readonly selectedCode = signal<string | null>(
     this.route.snapshot.queryParamMap.get('municipio') ?? this.journey.municipality()?.code ?? null,
@@ -139,6 +152,7 @@ export class Explorer {
   private async loadBoundary(code: string | null) {
     const request = ++this.boundaryRequest;
     this.boundary.set(null);
+    this.municipalityPoint.set(null);
     this.shape.set(null);
     this.boundaryState.set(code ? 'loading' : 'idle');
     if (!code) return;
@@ -154,6 +168,12 @@ export class Explorer {
         name: displayName(feature.properties.name),
         geometry: feature.geometry,
       });
+      this.municipalityPoint.set(
+        municipalityReferencePoint(feature.geometry, [
+          feature.properties.labelLon,
+          feature.properties.labelLat,
+        ]),
+      );
       this.boundaryState.set('ready');
     } catch {
       if (request === this.boundaryRequest) this.boundaryState.set('error');

@@ -1,12 +1,12 @@
 """Evaluación de rotación alimentada por inferencias, sin clima supuesto ni umbrales inventados."""
 
-import json
 import math
 import unicodedata
+from collections import Counter
 from datetime import timedelta
-from importlib.resources import files
 
 from ml.recommendations.catalog import load_crop_catalog
+from ml.recommendations.rotation_catalog import load_rotation_traits
 from packages.contracts.api import (
     RotationAssessment,
     RotationCandidate,
@@ -17,7 +17,7 @@ from packages.contracts.api import (
 from packages.contracts.rotation import RotationWaterRules
 from pipelines.training.snapshots import fingerprint
 
-ENGINE_VERSION = "forecast-rotation-v1"
+ENGINE_VERSION = "forecast-rotation-v3"
 
 
 def normalized(value):
@@ -31,18 +31,42 @@ def normalized(value):
 
 
 class ForecastRotationEngine:
-    def __init__(self, catalog=None, water_rules=None):
+    def __init__(self, catalog=None, water_rules=None, traits_path=None):
         self.catalog = catalog if catalog is not None else load_crop_catalog()
         self.water_rules = (
             water_rules
             if water_rules is not None
             else RotationWaterRules(version="unconfigured", review_status="pending")
         )
-        self.traits = json.loads(files("ml.configs").joinpath("rotation-traits.json").read_text())
+        self.traits = load_rotation_traits(traits_path)
+        # El universo de alternativas procede del CSV; ECOCROP aporta sus rangos.
+        allowed = []
+        for trait in self.traits["traits"]:
+            matches = [
+                crop
+                for crop in self.catalog.crops
+                if normalized(crop.scientific_name) == normalized(trait["scientific_name"])
+                and normalized(crop.chain) == normalized(trait["chain"])
+            ]
+            if len(matches) != 1:
+                raise ValueError(
+                    f"El cultivo {trait['legacy_id']} requiere un perfil ECOCROP inequívoco."
+                )
+            allowed.extend(matches)
+        self.catalog = self.catalog.model_copy(update={"crops": allowed})
+        names = Counter(crop.crop_name for crop in allowed)
+        self.crop_names = {
+            crop.crop_id: crop.chain if names[crop.crop_name] > 1 else crop.crop_name
+            for crop in allowed
+        }
 
     @property
     def rules_version(self):
-        rules_identity = {"traits": self.traits, "water": self.water_rules.model_dump(mode="json")}
+        rules_identity = {
+            "traits": self.traits,
+            "water": self.water_rules.model_dump(mode="json"),
+            "crop_names": self.crop_names,
+        }
         return f"{self.water_rules.version}:{fingerprint(rules_identity)[:12]}"
 
     @staticmethod
@@ -110,6 +134,7 @@ class ForecastRotationEngine:
             "previous_family": previous_family,
             "excluded_crops": sorted(excluded_crops),
             "engine": ENGINE_VERSION,
+            "rules_version": self.rules_version,
         }
         limitations = [
             "Evaluación provisional: el catálogo ECOCROP y las reglas locales requieren revisión agronómica.",
@@ -132,6 +157,8 @@ class ForecastRotationEngine:
             status="pending_forecasts" if values is None else "pending_agronomic_requirements",
             engine_version=ENGINE_VERSION,
             catalog_version=self.catalog.version,
+            crop_list_source=self.traits["source"],
+            crop_list_sha256=self.traits["source_sha256"],
             rules_version=self.rules_version,
             input_snapshot_id=fingerprint(identity),
             region_id=request.region_id,
@@ -150,12 +177,15 @@ class ForecastRotationEngine:
             trait = self._trait(crop)
             temp = values["temperature_mean"]
             fits = crop.temperature.absolute.minimum <= temp <= crop.temperature.absolute.maximum
+            optimal = crop.temperature.optimal.minimum <= temp <= crop.temperature.optimal.maximum
             checks = [
                 RotationCheck(
                     variable="temperature",
                     status="within_range" if fits else "outside_range",
                     value=temp,
                     unit="C",
+                    minimum=crop.temperature.absolute.minimum,
+                    maximum=crop.temperature.absolute.maximum,
                     explanation=f"Media XGBoost del periodo frente al rango absoluto ECOCROP "
                     f"{crop.temperature.absolute.minimum:g}–{crop.temperature.absolute.maximum:g} °C.",
                 )
@@ -193,6 +223,8 @@ class ForecastRotationEngine:
                         status=status,
                         value=value,
                         unit=unit,
+                        minimum=low,
+                        maximum=high,
                         explanation=f"Falta un requisito revisado por cultivo para {request.horizon_days} días."
                         if rule is None
                         else f"Comparado con {low:g}–{high:g} {unit}; fuente: {rule.source}.",
@@ -235,7 +267,15 @@ class ForecastRotationEngine:
             report.candidates.append(
                 RotationCandidate(
                     crop_id=crop.crop_id,
-                    crop_name=crop.crop_name,
+                    crop_name=self.crop_names[crop.crop_id],
+                    catalog_crop_id=trait["legacy_id"],
+                    temperature_fit="optimal"
+                    if optimal
+                    else "tolerated"
+                    if fits
+                    else "outside_range",
+                    temperature_optimal_min_c=crop.temperature.optimal.minimum,
+                    temperature_optimal_max_c=crop.temperature.optimal.maximum,
                     family=family,
                     status=state,
                     checks=checks,
@@ -246,6 +286,8 @@ class ForecastRotationEngine:
             for crop in report.candidates
             if crop.status != "excluded" and crop.family != "unknown"
         ]
+        # Grupos de compatibilidad, sin puntajes de rendimiento ni probabilidades.
+        possible.sort(key=lambda crop: crop.temperature_fit != "optimal")
         # Las etapas posteriores son alternativas estructurales, no clima extrapolado.
         for first in possible[:3]:
             stages = [
@@ -269,7 +311,7 @@ class ForecastRotationEngine:
                 stages.append(
                     RotationStage(
                         crop_id=crop.crop_id,
-                        crop_name=crop.crop_name,
+                        crop_name=self.crop_names[crop.crop_id],
                         family=trait["family"],
                         forecast_evaluated=False,
                     )

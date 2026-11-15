@@ -20,6 +20,19 @@ export class ManualRefresh {
   protected readonly sending = signal(false);
   protected readonly error = signal('');
   protected readonly running = computed(() => active(this.update()));
+  protected readonly buttonLabel = computed(() => {
+    if (this.sending()) return 'Enviando solicitud…';
+    const update = this.update();
+    if (update?.status === 'queued') return 'Solicitud en cola';
+    if (update?.status === 'retry_scheduled') return 'Reintento programado';
+    if (update?.status === 'running')
+      return {
+        ingestion: 'Consultando datos…',
+        training: 'Evaluando modelos…',
+        recommendations: 'Actualizando análisis…',
+      }[update.phase];
+    return 'Actualizar datos y modelos';
+  });
   protected readonly phases = {
     ingestion: 'Datos NASA',
     training: 'Modelos XGBoost',

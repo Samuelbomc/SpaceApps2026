@@ -14,27 +14,28 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from apps.api.app.main import create_app
-from ml.features.expanded import ExpandedFeatureStore, snapshot_from_csv
+from ml.features.daily import daily_snapshot_from_csv as snapshot_from_csv
+from ml.features.expanded import ExpandedFeatureStore
 from ml.inference.expanded import CLIMATE, HORIZONS, ExpandedModelBundle
 from packages.contracts.api import AnalysisResult
-from packages.contracts.pretrained import ExpandedFeatures
+from packages.contracts.pretrained import DailyFeatures as ExpandedFeatures
 from pipelines.recommendations.job import CropRecommendationJob
 
 ROOT = Path(__file__).resolve().parents[1]
-SAMPLE = ROOT / "samples/xgboost/moisture_99_20220108.csv"
+SAMPLE = ROOT / "ml/examples/inputs/moisture.csv"
 
 
 class PretrainedModelTests(unittest.TestCase):
     def setUp(self):
         self.bundle = ExpandedModelBundle(ROOT / "ml/artifacts")
         catalog = self.bundle.catalog()
-        self.climate = next(m.features for m in catalog.models if m.model_kind == "climate")
-        self.soil = next(m.features for m in catalog.models if m.model_kind == "soil")
+        self.climate = catalog.input_contract.climate_features
+        self.soil = catalog.input_contract.soil_features
         self.snapshot = snapshot_from_csv(
             SAMPLE,
             region_id="test-only",
-            point_id="moisture_99",
-            issue_date=date(2022, 1, 8),
+            point_id="smap_0",
+            issue_date=date(2026, 11, 15),
             climate_features=self.climate,
             soil_features=self.soil,
         )
@@ -48,13 +49,13 @@ class PretrainedModelTests(unittest.TestCase):
     def test_catalog_exposes_real_versions_semantics_and_evaluation_metrics(self):
         catalog = self.bundle.catalog()
         self.assertEqual(catalog.supported_horizons, [7, 15, 30, 60])
-        self.assertEqual(len(catalog.models), 20)
-        soil = next(m for m in catalog.models if m.model_kind == "soil" and m.horizon_days == 7)
+        self.assertEqual(len(catalog.models), 5)
+        soil = next(m for m in catalog.models if m.model_kind == "soil")
         self.assertIn("smap_mean_7d", soil.formula)
-        self.assertEqual(len(soil.features), 52)
-        self.assertAlmostEqual(soil.evaluation_mae, 0.03310611989038711)
-        self.assertEqual(len(catalog.input_contract.climate_features), 31)
-        self.assertEqual(len(catalog.input_contract.soil_features), 52)
+        self.assertEqual(len(soil.features), 75)
+        self.assertAlmostEqual(soil.evaluation_mae, 0.04584025573013225)
+        self.assertEqual(len(catalog.input_contract.climate_features), 49)
+        self.assertEqual(len(catalog.input_contract.soil_features), 71)
         self.assertTrue(all(m.validation_status == "experimental" for m in catalog.models))
 
     def test_http_input_contract_exposes_ordered_columns_without_running_models(self):
@@ -84,7 +85,7 @@ class PretrainedModelTests(unittest.TestCase):
                 store.load({**self.region, "longitude": -75}, self.snapshot.issue_date)
             with self.assertRaises(ValidationError):
                 ExpandedFeatures.model_validate(
-                    {**self.snapshot.model_dump(), "observation_cutoff": date(2022, 1, 7)}
+                    {**self.snapshot.model_dump(), "observation_cutoff": date(2026, 11, 14)}
                 )
             with self.assertRaises(ValidationError):
                 ExpandedFeatures.model_validate(
@@ -96,7 +97,7 @@ class PretrainedModelTests(unittest.TestCase):
                 )
 
     def test_import_does_not_select_nearest_date_or_cell(self):
-        for point, day in [("wrong-point", date(2022, 1, 8)), ("moisture_99", date(2026, 11, 14))]:
+        for point, day in [("wrong-point", date(2026, 11, 15)), ("smap_0", date(2026, 11, 14))]:
             with self.assertRaisesRegex(ValueError, "celda y fecha exactas"):
                 snapshot_from_csv(
                     SAMPLE,
@@ -111,14 +112,14 @@ class PretrainedModelTests(unittest.TestCase):
 
     def test_altered_artifact_is_rejected_before_loading_xgboost(self):
         with tempfile.TemporaryDirectory() as folder:
-            for horizon in HORIZONS:
+            for horizon in (7,):
                 for name in (*CLIMATE, "moisture"):
                     source = self.bundle._directory(name, horizon)
                     destination = Path(folder) / source.relative_to(self.bundle.root)
                     destination.mkdir(parents=True)
-                    for filename in ("model.json", "training.json", "evaluation_model.json"):
+                    for filename in ("model.json", "training.json"):
                         shutil.copyfile(source / filename, destination / filename)
-            path = Path(folder) / "forecasts/7d/moisture/model.json"
+            path = Path(folder) / "forecasts/moisture/model.json"
             path.write_text(path.read_text() + " ")
             with self.assertRaisesRegex(ValueError, "no coincide"):
                 ExpandedModelBundle(folder).catalog()
@@ -129,7 +130,14 @@ class PretrainedModelTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "inputs.csv"
             for include_soil in (True, False):
-                columns = ["point_id", "issue_date", "observation_cutoff", "latitude", "longitude"]
+                columns = [
+                    "point_id",
+                    "issue_date",
+                    "observation_cutoff",
+                    "radiation_observation_cutoff",
+                    "latitude",
+                    "longitude",
+                ]
                 columns += self.soil if include_soil else self.climate
                 with path.open("w", newline="") as handle:
                     writer = csv.DictWriter(handle, fieldnames=columns)
@@ -138,8 +146,8 @@ class PretrainedModelTests(unittest.TestCase):
                 received = snapshot_from_csv(
                     path,
                     region_id="test-only",
-                    point_id="moisture_99",
-                    issue_date=date(2022, 1, 8),
+                    point_id="smap_0",
+                    issue_date=date(2026, 11, 15),
                     climate_features=self.climate,
                     soil_features=self.soil,
                 )
@@ -159,7 +167,7 @@ class PretrainedModelTests(unittest.TestCase):
                     if mistake == "partial_soil":
                         del row["smap_mean_7d"]
                     if mistake == "future_availability":
-                        row["features_available_on"] = "2022-01-09"
+                        row["features_available_on"] = "2026-11-16"
                     columns = list(row)
                     if mistake == "duplicate":
                         columns.append("t2m_last")
@@ -171,8 +179,8 @@ class PretrainedModelTests(unittest.TestCase):
                         snapshot_from_csv(
                             path,
                             region_id="test-only",
-                            point_id="moisture_99",
-                            issue_date=date(2022, 1, 8),
+                            point_id="smap_0",
+                            issue_date=date(2026, 11, 15),
                             climate_features=self.climate,
                             soil_features=self.soil,
                         )
@@ -180,7 +188,7 @@ class PretrainedModelTests(unittest.TestCase):
     def test_unexpected_input_columns_are_rejected_before_any_inference(self):
         altered = self.snapshot.model_copy(deep=True)
         altered.climate["target"] = 100
-        with patch.object(self.bundle, "_predict") as inference:
+        with patch("ml.inference.forecast.ForecastPredictor") as inference:
             with self.assertRaisesRegex(ValueError, "sobran.*target"):
                 self.bundle.predict(altered)
             inference.assert_not_called()
@@ -197,20 +205,31 @@ class PretrainedModelTests(unittest.TestCase):
         self.assertEqual(result.status, "pending_recommendations")
         self.assertIsNone(result.recommendations)
         self.assertEqual(len(result.climate.values), 4)
-        self.assertEqual(result.request.forecast_start_date, date(2022, 1, 9))
-        self.assertEqual(result.request.reference_date, date(2022, 1, 6))
+        self.assertEqual(result.request.forecast_start_date, date(2026, 11, 16))
+        self.assertEqual(result.request.reference_date, date(2026, 11, 13))
         self.assertEqual(result.climate.validation_status, "experimental")
+        import pandas as pd
+
+        from ml.datasets.calendar import target_calendar
+
+        config = json.loads((self.bundle._directory("moisture") / "training.json").read_text())
         booster = xgb.Booster(params={"nthread": 1})
-        booster.load_model(ROOT / "ml/artifacts/forecasts/7d/moisture/model.json")
-        delta = float(
-            booster.predict(
-                xgb.DMatrix([[self.snapshot.soil[k] for k in self.soil]], feature_names=self.soil)
-            )[0]
+        booster.load_model(self.bundle._directory("moisture") / "model.json")
+        frame = pd.DataFrame([{**self.snapshot.soil, "lead_days": lead} for lead in range(1, 8)])
+        dates = pd.to_datetime(
+            [self.snapshot.issue_date + timedelta(days=lead) for lead in range(1, 8)]
+        )
+        for name, values in target_calendar(dates).items():
+            frame[name] = values
+        delta = booster.predict(
+            xgb.DMatrix(frame[config["features"]], feature_names=config["features"])
         )
         self.assertAlmostEqual(
-            result.soil.values[0].value, self.snapshot.soil["smap_mean_7d"] + delta
+            result.soil.values[0].value,
+            float(delta.mean()) + self.snapshot.soil["smap_mean_7d"],
+            places=6,
         )
-        self.assertNotAlmostEqual(result.soil.values[0].value, delta)
+        self.assertNotAlmostEqual(result.soil.values[0].value, float(delta.mean()))
         broken = self.snapshot.model_copy(deep=True)
         del broken.climate["t2m_last"]
         with self.assertRaisesRegex(ValueError, "t2m_last"):
@@ -224,40 +243,22 @@ class PretrainedModelTests(unittest.TestCase):
         self.assertIsNone(result.soil)
 
     @unittest.skipUnless(importlib.util.find_spec("xgboost"), "Requiere el extra ml")
-    def test_every_horizon_uses_its_own_real_boosters_and_residual_baseline(self):
-        import xgboost as xgb
-
-        versions, identities = set(), set()
+    def test_period_summaries_aggregate_the_same_real_daily_models(self):
+        identities = set()
+        versions = set()
         for horizon in HORIZONS:
-            with self.subTest(horizon=horizon):
-                result = self.bundle.predict(self.snapshot, horizon_days=horizon)
-                self.assertEqual(result.request.horizon_days, horizon)
-                self.assertEqual(result.climate.horizon_days, horizon)
-                self.assertIn(str(horizon), result.climate.values[3].aggregation)
-                versions.add(result.climate.model_version)
-                identities.add(result.analysis_id)
-                for name, expected in [
-                    ("precipitation", result.climate.values[3].value),
-                    ("moisture", result.soil.values[0].value),
-                ]:
-                    config = json.loads(
-                        (self.bundle._directory(name, horizon) / "training.json").read_text()
+            result = self.bundle.predict(self.snapshot, horizon_days=horizon)
+            self.assertEqual(len(result.climate.daily), horizon)
+            self.assertEqual(len(result.soil.daily), horizon)
+            versions.add(result.climate.model_version)
+            identities.add(result.analysis_id)
+            for forecast in (result.climate, result.soil):
+                for index, value in enumerate(forecast.values):
+                    total = sum(day.values[index].value for day in forecast.daily)
+                    self.assertAlmostEqual(
+                        value.value, total / (1 if value.variable == "precipitation" else horizon)
                     )
-                    features = self.snapshot.soil if name == "moisture" else self.snapshot.climate
-                    booster = xgb.Booster(params={"nthread": 1})
-                    booster.load_model(self.bundle._directory(name, horizon) / "model.json")
-                    raw = float(
-                        booster.predict(
-                            xgb.DMatrix(
-                                [[features[key] for key in config["features"]]],
-                                feature_names=config["features"],
-                            )
-                        )[0]
-                    )
-                    if name == "moisture":
-                        raw += features["smap_mean_7d"]
-                    self.assertAlmostEqual(expected, raw)
-        self.assertEqual(len(versions), 4)
+        self.assertEqual(len(versions), 1)
         self.assertEqual(len(identities), 4)
         with self.assertRaisesRegex(ValueError, "Horizonte no soportado"):
             self.bundle.predict(self.snapshot, horizon_days=90)
@@ -282,7 +283,7 @@ class PretrainedModelTests(unittest.TestCase):
             self.bundle, "predict", side_effect=AssertionError("HTTP no debe inferir")
         ):
             client = TestClient(create_app(repo, pretrained_models=self.bundle))
-            self.assertEqual(len(client.get("/api/v1/models").json()["models"]), 20)
+            self.assertEqual(len(client.get("/api/v1/models").json()["models"]), 5)
             response = client.get("/api/v1/regions/test-only/latest-analysis?as_of=2022-01-09")
             self.assertEqual(response.json()["analysis_id"], "historical-test")
             self.assertIsNone(
@@ -335,7 +336,9 @@ class PretrainedModelTests(unittest.TestCase):
                 feature_store=store,
                 horizons=(7,),
             )
-            job.run(as_of=date(2022, 1, 9))
+            with patch("pipelines.recommendations.job.datetime") as clock:
+                clock.now.return_value.date.return_value = date(2026, 11, 16)
+                job.run(as_of=date(2026, 11, 16))
             saved = results.save_analysis.call_args.args[0]
             self.assertIsNotNone(saved.climate)
             self.assertIsNotNone(saved.soil)

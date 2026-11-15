@@ -268,6 +268,30 @@ describe('Analysis with connected XGBoost models', () => {
     });
   });
 
+  it('labels the real dates of a regional reference and does not load observations for the selected point', async () => {
+    const history = vi.spyOn(TestBed.inject(Backend).client, 'loadObservationHistory');
+    const fixture = TestBed.createComponent(Analysis);
+    fixture.componentRef.setInput('geographicMode', true);
+    fixture.componentRef.setInput('referenceMode', true);
+    fixture.componentRef.setInput('geographic', {
+      area_id: 'test-only',
+      horizon_days: 15,
+      sampling_point: { type: 'Point', coordinates: [-75, 6] },
+      result: savedAnalysis,
+    });
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Referencia regional');
+    });
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Análisis para un periodo de los próximos',
+    );
+    expect(fixture.nativeElement.textContent).not.toContain('Datos observados');
+    expect(history).not.toHaveBeenCalled();
+    history.mockRestore();
+    fixture.destroy();
+  });
+
   it('shows conditional stages and never presents later crops as forecasted', async () => {
     request.mockImplementation(async (path: string) => {
       if (!path.includes('latest-analysis')) return defaultRequest(path);
@@ -323,6 +347,63 @@ describe('Analysis with connected XGBoost models', () => {
     expect(text).toContain('requiere nuevas predicciones');
     expect(text).not.toContain('Qué sembrar este año');
   });
+  it('shows crop compatibility from the decision engine and keeps unresolved requirements explicit', async () => {
+    request.mockImplementation(async (path: string) => {
+      if (!path.includes('latest-analysis')) return defaultRequest(path);
+      return {
+        status: 'pending_recommendations',
+        messages: [],
+        rotation_assessment: {
+          status: 'pending_agronomic_requirements',
+          candidates: [
+            {
+              crop_id: 'excluded',
+              crop_name: 'Cultivo excluido',
+              status: 'excluded',
+              temperature_fit: 'outside_range',
+              checks: [],
+            },
+            {
+              crop_id: 'tolerated',
+              crop_name: 'Cultivo tolerado',
+              status: 'pending_requirements',
+              temperature_fit: 'tolerated',
+              checks: [],
+            },
+            {
+              crop_id: 'optimal',
+              crop_name: 'Fríjol arbustivo',
+              status: 'pending_requirements',
+              temperature_fit: 'optimal',
+              temperature_optimal_min_c: 16,
+              temperature_optimal_max_c: 25,
+              checks: [
+                { variable: 'precipitation', status: 'unknown' },
+                { variable: 'surface_soil_moisture', status: 'unknown' },
+              ],
+            },
+          ],
+          scenarios: [],
+          limitations: [],
+          forecast_values: { temperature_mean: 22 },
+        },
+      };
+    });
+    const fixture = TestBed.createComponent(Analysis);
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(
+        'Cultivos compatibles con la temperatura prevista',
+      );
+    });
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('Fríjol arbustivo');
+    expect(text).toContain('Rango óptimo: 16–25 °C');
+    expect(text).not.toContain('Por confirmar:');
+    expect(text).not.toContain('Cultivo excluido');
+    expect(text.indexOf('Fríjol arbustivo')).toBeLessThan(text.indexOf('Cultivo tolerado'));
+  });
+
   it('does not render scenarios before forecasts exist', async () => {
     request.mockImplementation(async (path: string) => {
       if (!path.includes('latest-analysis')) return defaultRequest(path);

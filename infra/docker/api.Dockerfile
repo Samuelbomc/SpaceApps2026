@@ -8,6 +8,8 @@ COPY packages ./packages
 COPY pipelines ./pipelines
 COPY scripts ./scripts
 COPY ml ./ml
+COPY modulo_rotacion/*.py ./modulo_rotacion/
+COPY modulo_rotacion/datos/cultivos.csv ./modulo_rotacion/datos/cultivos.csv
 COPY infra/database ./infra/database
 RUN pip install --no-cache-dir ".[${PYTHON_EXTRAS}]"
 EXPOSE 8000

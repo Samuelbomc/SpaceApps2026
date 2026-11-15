@@ -49,12 +49,15 @@ crear uno vacío. Ver [operación y recuperación](../operations/runbook.md).
 | Variable | Ruta local predeterminada | Contenido |
 | --- | --- | --- |
 | FARM_UPLOAD_DIRECTORY | data/farms | CSV originales privados |
-| TRAINING_DATA_DIRECTORY | data/prepared | Tablas procesadas y validación de origen |
-| TRAINING_CONFIG_PATH | Sin override | Configuración empaquetada expanded-training.json |
+| TRAINING_DATA_DIRECTORY | data/prepared/daily | Tablas procesadas y validación de origen |
+| TRAINING_CONFIG_PATH | Sin override | Configuración empaquetada daily-training.json |
 | DATASET_DIRECTORY | data/datasets | Snapshots inmutables y muestras preparadas |
 | MODEL_DIRECTORY | data/models | Artefactos de candidatos/registro |
 | PRETRAINED_MODEL_DIRECTORY | ml/artifacts | Bundle experimental empaquetado |
-| FEATURE_DIRECTORY | data/features/expanded-v1 | Variables recientes para inferencia |
+| FEATURE_DIRECTORY | data/features/daily-direct-v1 | Variables recientes para inferencia |
+| MODEL_SOURCE_DIRECTORY | data | Archivos científicos y capas estáticas de la preparación puntual |
+| MODEL_DOWNLOAD_MAX_MB | 128 | Presupuesto de descarga científica por intento; no limita el histórico |
+| NEAREST_INPUT_MAX_DISTANCE_KM | 200 | Distancia máxima de referencias públicas cercanas; 0 limita a la ubicación exacta |
 | ROTATION_WATER_RULES_PATH | Sin archivo predeterminado | RotationWaterRules revisadas |
 
 Compose monta `./data` en `/app/data` y fija allí los directorios operativos.
@@ -68,7 +71,8 @@ Las rutas privadas no se sirven como archivos públicos.
 | REGION_ID / REGION_NAME | Identidad y etiqueta operativa de la región |
 | REGION_LATITUDE / REGION_LONGITUDE | Coordenadas WGS84 de referencia |
 | RECENT_OBSERVATION_DAYS | Ventana operativa reciente, 90 días por defecto |
-| INGESTION_LAG_DAYS | Corte del job de ingesta, 3 días por defecto |
+| INGESTION_LAG_DAYS | Corte inicial del job de ingesta, 3 días por defecto, desde el día de consulta en Colombia |
+| SOURCE_FALLBACK_MAX_LAG_DAYS | Hasta 5 días de margen para consultas de respaldo por publicación tardía; no es la longitud del histórico |
 
 La retención reciente no limita el dataset histórico Parquet de entrenamiento.
 La ingesta y la evaluación de entrenamiento son diarias; no obligan a publicar

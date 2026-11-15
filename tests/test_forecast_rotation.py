@@ -1,11 +1,14 @@
 """Contratos de arquitectura: XGBoost -> rotación, sin clima ni umbrales inventados."""
 
+import csv
+import hashlib
 import importlib.util
 import tempfile
 import unittest
 from copy import deepcopy
 from datetime import date
-from unittest.mock import Mock
+from pathlib import Path
+from unittest.mock import Mock, patch
 
 from ml.recommendations.rotation import ForecastRotationEngine
 from modulo_rotacion.motor_rotacion import recomendar
@@ -82,6 +85,55 @@ class ForecastRotationTests(unittest.TestCase):
     def setUp(self):
         self.engine = ForecastRotationEngine()
 
+    def test_crop_universe_and_families_come_from_the_live_rotation_csv(self):
+        path = Path(__file__).resolve().parents[1] / "modulo_rotacion/datos/cultivos.csv"
+        with path.open() as handle:
+            rows = [row for row in csv.DictReader(handle) if row["TIPO"] != "cobertura"]
+        report = self.engine.assess(*fixtures())
+        self.assertEqual(
+            {candidate.catalog_crop_id for candidate in report.candidates},
+            {row["CULTIVO"] for row in rows},
+        )
+        self.assertEqual(report.crop_list_sha256, hashlib.sha256(path.read_bytes()).hexdigest())
+        self.assertEqual(report.crop_list_source, "modulo_rotacion/datos/cultivos.csv")
+        families = {row["CULTIVO"]: row["FAMILIA"] for row in rows}
+        for candidate in report.candidates:
+            self.assertEqual(candidate.family, families[candidate.catalog_crop_id])
+        with tempfile.TemporaryDirectory() as directory:
+            changed = Path(directory) / "cultivos.csv"
+            changed.write_text(path.read_text().replace("Poaceae", "TestFamily"))
+            engine = ForecastRotationEngine(traits_path=changed)
+            revised = engine.assess(*fixtures())
+            self.assertEqual(revised.candidates[0].family, "TestFamily")
+            self.assertNotEqual(revised.crop_list_sha256, report.crop_list_sha256)
+            self.assertNotEqual(revised.input_snapshot_id, report.input_snapshot_id)
+
+    def test_temperature_compatibility_is_explicit_without_fabricating_water_requirements(self):
+        for temperature in (12, 22, 34, 60):
+            report = self.engine.assess(*fixtures(temperature=temperature))
+            for crop, candidate in zip(self.engine.catalog.crops, report.candidates):
+                expected = (
+                    "optimal"
+                    if crop.temperature.optimal.minimum
+                    <= temperature
+                    <= crop.temperature.optimal.maximum
+                    else "tolerated"
+                    if crop.temperature.absolute.minimum
+                    <= temperature
+                    <= crop.temperature.absolute.maximum
+                    else "outside_range"
+                )
+                self.assertEqual(candidate.temperature_fit, expected)
+                if expected == "outside_range":
+                    self.assertEqual(candidate.status, "excluded")
+            self.assertFalse(report.recommendation_ready)
+            for candidate in report.candidates:
+                for check in candidate.checks[1:3]:
+                    self.assertIsNone(check.minimum)
+                    self.assertIsNone(check.maximum)
+                self.assertEqual(candidate.probability.status, "unavailable")
+                self.assertIsNone(candidate.probability.value)
+
     def test_legacy_motor_without_models_never_uses_interview_climate(self):
         for zone in ["fria", "templada", "calida"]:
             result = recomendar({"finca": {"zona": zone, "lluvias": "bimodal"}})
@@ -154,6 +206,10 @@ class ForecastRotationTests(unittest.TestCase):
         request, climate, soil = fixtures()
         normal = engine.assess(request, climate, soil, previous_family="Fabaceae").candidates[0]
         self.assertEqual(normal.status, "within_checked_ranges")
+        self.assertEqual(
+            [(check.minimum, check.maximum) for check in normal.checks[1:3]],
+            [(0, 100), (0.1, 0.4)],
+        )
         _, wet, saturated = fixtures(rain=200, moisture=0.7)
         rejected = engine.assess(request, wet, saturated, previous_family="Fabaceae").candidates[0]
         self.assertEqual(rejected.status, "excluded")
@@ -280,7 +336,11 @@ class ForecastRotationTests(unittest.TestCase):
                 feature_store=features,
                 rotation_engine=self.engine,
             )
-            job.run(as_of=fixture.snapshot.issue_date + timedelta(days=1))
+            with patch("pipelines.recommendations.job.datetime") as clock:
+                clock.now.return_value.date.return_value = fixture.snapshot.issue_date + timedelta(
+                    days=1
+                )
+                job.run(as_of=fixture.snapshot.issue_date + timedelta(days=1))
             self.assertEqual(results.save_analysis.call_count, 4)
             for call in results.save_analysis.call_args_list:
                 result = call.args[0]

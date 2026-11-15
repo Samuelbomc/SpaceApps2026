@@ -20,8 +20,12 @@ class Settings:
     pretrained_model_directory: Path = Path("ml/artifacts")
     feature_directory: Path = Path("data/features/daily-direct-v1")
     rotation_water_rules_path: Path | None = None
-    training_data_directory: Path = Path("data/prepared")
+    training_data_directory: Path = Path("data/prepared/daily")
     training_config_path: Path | None = None
+    nearest_input_max_distance_km: float = 200.0
+    model_source_directory: Path = Path("data")
+    model_download_max_mb: int = 128
+    source_fallback_max_lag_days: int = 5
 
     @classmethod
     def from_env(cls):
@@ -49,8 +53,14 @@ class Settings:
             rotation_water_rules_path=Path(os.environ["ROTATION_WATER_RULES_PATH"])
             if os.getenv("ROTATION_WATER_RULES_PATH")
             else None,
-            training_data_directory=Path(os.getenv("TRAINING_DATA_DIRECTORY", "data/prepared")),
+            training_data_directory=Path(
+                os.getenv("TRAINING_DATA_DIRECTORY", "data/prepared/daily")
+            ),
             training_config_path=Path(os.environ["TRAINING_CONFIG_PATH"])
             if os.getenv("TRAINING_CONFIG_PATH")
             else None,
+            nearest_input_max_distance_km=float(os.getenv("NEAREST_INPUT_MAX_DISTANCE_KM", "200")),
+            model_source_directory=Path(os.getenv("MODEL_SOURCE_DIRECTORY", "data")),
+            model_download_max_mb=int(os.getenv("MODEL_DOWNLOAD_MAX_MB", "128")),
+            source_fallback_max_lag_days=int(os.getenv("SOURCE_FALLBACK_MAX_LAG_DAYS", "5")),
         )

@@ -13,7 +13,9 @@ class OperationalRepository:
 
     def regions(self):
         with self.database.connect() as conn:
-            return conn.execute("SELECT * FROM regions ORDER BY name").fetchall()
+            return conn.execute(
+                "SELECT * FROM regions WHERE region_id NOT LIKE 'geo-%' ORDER BY name"
+            ).fetchall()
 
     def region(self, region_id):
         with self.database.connect() as conn:
@@ -81,7 +83,7 @@ class OperationalRepository:
                         for row in observations
                     ],
                 )
-            # El caller solo invoca esto después de persistir/verificar Parquet.
+            # El caller conserva primero Parquet o el original verificable para reconstruirlo.
             conn.execute(
                 """DELETE FROM observations WHERE region_id=%s AND source='NASA_POWER'
                          AND product='POWER_DAILY' AND observed_date < %s""",
@@ -163,6 +165,13 @@ class OperationalRepository:
                     if request.forecast_start_date
                     else None,
                 ),
+            ).fetchone()
+            return row["body"] if row else None
+
+    def analysis_by_id(self, analysis_id):
+        with self.database.connect() as conn:
+            row = conn.execute(
+                "SELECT body FROM analyses WHERE analysis_id=%s", (analysis_id,)
             ).fetchone()
             return row["body"] if row else None
 

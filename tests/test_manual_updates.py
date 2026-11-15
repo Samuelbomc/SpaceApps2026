@@ -138,12 +138,18 @@ class ManualUpdateTests(unittest.TestCase):
         self.jobs["ingestion"].run.side_effect = None
         self.jobs["ingestion"].run.return_value = {
             "status": "partial",
-            "summary": {"failed_sources": ["gpm"]},
+            "summary": {
+                "gpm": {"status": "failed"},
+                "power": {"status": "ok"},
+                "failed_sources": ["gpm"],
+            },
         }
         self.assertEqual(poll_manual_updates(self.db, self.jobs.__getitem__), "retry_scheduled")
         update = self.repository.latest()
         self.assertEqual(update.phase, "ingestion")
         self.assertIsNotNone(update.retry_at)
+        self.assertIn("GPM", update.message)
+        self.assertEqual(update.stages[0].counts, {"failed": 1, "ok": 1})
         self.jobs["training"].run.assert_not_called()
         self.assertEqual(poll_manual_updates(self.db, self.jobs.__getitem__), "not_due")
         self.jobs["ingestion"].run.return_value = {
@@ -235,3 +241,11 @@ class ManualUpdateTests(unittest.TestCase):
         self.assertEqual(self.repository.latest().phase, "training")
         self.assertIsNotNone(self.repository.latest().retry_at)
         self.jobs["recommendations"].run.assert_not_called()
+
+    def test_malformed_ingestion_summary_does_not_leave_an_eternal_running_state(self):
+        self.enqueue()
+        self.jobs["ingestion"].run.side_effect = None
+        self.jobs["ingestion"].run.return_value = {"status": "partial", "summary": None}
+        self.assertEqual(poll_manual_updates(self.db, self.jobs.__getitem__), "retry_scheduled")
+        self.assertIsNotNone(self.repository.latest().retry_at)
+        self.assertEqual(self.repository.latest().phase, "ingestion")

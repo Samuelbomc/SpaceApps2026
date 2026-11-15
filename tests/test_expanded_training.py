@@ -275,9 +275,10 @@ class ExpandedTrainingTests(unittest.TestCase):
         from scripts.runtime import build_jobs
 
         jobs = build_jobs(Mock(), Settings())
-        self.assertIsInstance(jobs["training"].pipeline.builder, ExpandedTrainingDatasetBuilder)
-        self.assertIsInstance(jobs["training"].pipeline.trainer, ExpandedXGBoostTrainer)
-        self.assertEqual(len(jobs["training"].pipeline.policies), 8)
+        from pipelines.training.daily import DailyModelTrainingPipeline
+
+        self.assertIsInstance(jobs["training"].pipeline, DailyModelTrainingPipeline)
+        self.assertEqual(len(jobs["training"].pipeline.config["models"]), 5)
         self.assertTrue(jobs["recommendations"].predictor_factory.uses_feature_snapshots)
 
     def test_rolling_origin_folds_keep_cells_grouped_and_purge_each_target_before_test(self):

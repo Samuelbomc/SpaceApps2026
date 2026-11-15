@@ -7,7 +7,7 @@ Trabajar en una rama de funcionalidad y describir comportamiento, validación y 
 ## Entorno y controles
 
 ```bash
-python -m pip install '.[api,storage,geospatial,local,mongo,ml,test,dev]'
+python -m pip install '.[api,storage,geospatial,local,mongo,ml,processing,test,dev]'
 npm ci --prefix frontend
 ruff check .
 ruff format --check .

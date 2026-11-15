@@ -11,36 +11,35 @@ sequenceDiagram
     actor User as Usuario
     participant Web as Angular
     participant API as FastAPI
-    participant PG as PostgreSQL
+    participant PG as Cola PostgreSQL
+    participant Worker as Worker geográfico
     participant Results as Backend de resultados
-    User->>Web: Abrir mapa público, seleccionar ubicación y horizonte
-    Web->>API: GET observaciones (páginas)
-    API->>PG: Leer histórico operativo
-    PG-->>API: Filas y última actualización
-    API-->>Web: ObservationPage
-    Web->>API: GET latest-analysis (as_of, horizonte)
-    API->>Results: Buscar periodo exacto almacenado
-    Results-->>API: Resultado o ausencia
-    API-->>Web: Inferencias/evaluación o estado pendiente
-    Web-->>User: Vista simple o técnica con alcance y fechas
+    User->>Web: Delimitar lote y elegir periodo
+    Web->>API: POST geographic-analyses (geometry, horizon_days)
+    API->>PG: Persistir selección y solicitud idempotente
+    API-->>Web: 202 con UUID y punto de muestreo
+    Worker->>PG: Adquirir tarea y lock
+    Worker->>Worker: Preparar entradas de la ubicación y emitir inferencias
+    Worker->>Results: Guardar predicciones y evaluación agrícola
+    Worker->>PG: Estado, resultado y próximo reintento
+    Web->>API: GET geographic-analyses/{UUID}
+    API-->>Web: Progreso y resultado de esa selección
 ```
 
-El explorador muestra mapa, delimitación opcional y resultados en la misma página.
-Es también el destino predeterminado tras autenticarse. Las direcciones de panel
-y análisis redirigen a este espacio. Con sesión se pueden consultar hasta veinte
-resultados regionales recientes de la ubicación elegida y abrirlos con su fecha,
-plazo, estado y trazabilidad originales. Una consulta nueva limpia la selección
-temporal; la generación de resultados continúa en los workers.
-La consulta no exige cuenta ni ficha de finca. Las ubicaciones de referencia se
-filtran por el área seleccionada y los resultados mantienen su ámbito regional;
-si no hay coincidencia se informa la ausencia. Otras ubicaciones solo se consultan
-mediante selección explícita. Guardar una finca o subir mediciones sí requiere
-sesión; la API mantiene autorización por propietario y CSRF.
+El mapa, delimitación y resultados comparten página y no requieren cuenta.
+Cambiar de lote o plazo limpia la presentación y cancela respuestas anteriores.
+La solicitud conserva su ubicación; cualquier referencia cercana se identifica
+con sus propias coordenadas y fechas. El punto interior conserva
+su soporte regional; no se calcula un promedio de todos los píxeles del lote.
+Ver [contrato geográfico](../reference/geographic-analysis.md).
 
-Los periodos operativos comienzan el día de consulta en `America/Bogota`. El corte
-de entradas conserva la fecha real del snapshot. La consulta no descarga NASA,
-entrena ni ejecuta modelos. El histórico de la pantalla es el operativo paginado;
-el entrenamiento utiliza el histórico procesado elegible en Parquet.
+El periodo comienza el día de consulta en `America/Bogota`. HTTP no descarga,
+entrena ni ejecuta modelos. La preparación y los reintentos pertenecen al worker.
+La preparación puntual consulta POWER LST, GPM Late y SMAP L3 Enhanced, extrae
+celdas nativas y aplica la receta compartida con entrenamiento antes de publicar
+un snapshot. Earthdata y las capas estáticas aprovisionadas condicionan su
+ejecución real. La actualización histórica multifuente para reentrenamiento
+sigue siendo DATA-01; tener pesos o catálogos no satisface sus entradas.
 
 ## Registro, finca y mediciones privadas
 
@@ -96,8 +95,7 @@ flowchart TD
 
 La ingesta y el entrenamiento se revisan diariamente en calendarios independientes;
 las recomendaciones se revisan cada hora y al recibir nuevas entradas o modelos.
-Las tablas procesadas alimentan ocho tareas:
-clima/suelo por horizontes 7/15/30/60, con veinte regresores. Una ingesta nueva no
+Las tablas procesadas alimentan cinco tareas diarias con leads 1–60. Una ingesta nueva no
 obliga a publicar otra versión. Un campeón vigente puede seguir siendo la versión
 utilizada si un candidato falla o no hay etiquetas suficientes.
 

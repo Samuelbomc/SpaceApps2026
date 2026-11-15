@@ -203,6 +203,13 @@ def main(argv=None):
                             start_new_session=True,
                         )
                     )
+            processes.append(
+                subprocess.Popen(
+                    [sys.executable, "-m", "scripts.geographic_worker"],
+                    env=environment,
+                    start_new_session=True,
+                )
+            )
             if not args.api_only:
                 processes.append(
                     subprocess.Popen(
