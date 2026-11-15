@@ -7,7 +7,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { safeReturnUrl } from '../../../core/auth/auth.guards';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthLayout } from '../auth-layout/auth-layout';
 import {
@@ -28,6 +29,9 @@ import {
 export class Register {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  protected readonly returnUrl = safeReturnUrl(
+    inject(ActivatedRoute).snapshot.queryParamMap.get('volver'),
+  );
   private readonly formEl = viewChild.required<ElementRef<HTMLFormElement>>('formEl');
 
   protected readonly form = inject(NonNullableFormBuilder).group(
@@ -63,7 +67,7 @@ export class Register {
       const { name, email, password } = this.form.getRawValue();
       await this.auth.register({ name, email, password });
       this.form.reset();
-      await this.router.navigateByUrl('/panel');
+      await this.router.navigateByUrl(this.returnUrl);
     } catch (err) {
       this.error.set(messageFor(err));
     } finally {

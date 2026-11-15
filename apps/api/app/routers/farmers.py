@@ -1,24 +1,24 @@
 """Rutas privadas de cuentas, fincas y archivos locales, separadas de NASA pública."""
 
 import hashlib
-import hmac
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, Response, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, UploadFile
 from fastapi.responses import FileResponse
-from fastapi.security import APIKeyCookie
 from starlette.concurrency import run_in_threadpool
 
 from apps.api.app.repositories.farmers import FarmerRepository
 from apps.api.app.services.auth import (
     COOKIE_NAME,
     HASHER,
+    LEGACY_COOKIE_NAME,
     SESSION_SECONDS,
     csrf_token,
     hash_password,
     new_session,
+    session_token,
     token_hash,
     verify_password,
 )
@@ -28,6 +28,7 @@ from apps.api.app.services.farm_datasets import (
     VARIABLES,
     FarmDatasetService,
 )
+from apps.api.app.services.session_access import session_access
 from packages.contracts.farms import (
     DatasetUploadResult,
     Farm,
@@ -43,18 +44,12 @@ from packages.contracts.farms import (
 from pipelines.ingestion.download import file_digest
 
 
-def farmer_router(database, settings):
+def farmer_router(database, settings, *, access=None):
     router = APIRouter(prefix="/api/v1", tags=["Cuentas y fincas"])
-    cookie_auth = APIKeyCookie(name=COOKIE_NAME, auto_error=False)
+    access = access or session_access(database, settings)
+    trusted_origin, current, write_session = access.trusted_origin, access.current, access.write
     repository = FarmerRepository(database)
     datasets = FarmDatasetService(repository, settings.farm_upload_directory)
-
-    def trusted_origin(request: Request):
-        origin = request.headers.get("origin")
-        if (origin and origin not in settings.cors_origins) or request.headers.get(
-            "sec-fetch-site"
-        ) == "cross-site":
-            raise HTTPException(403, "Origen de la solicitud no permitido.")
 
     def rate_limit(request, purpose, email=None):
         host = request.client.host if request.client else "local"
@@ -70,29 +65,6 @@ def farmer_router(database, settings):
                     "Demasiados intentos. Espera antes de volver a intentarlo.",
                     headers={"Retry-After": str(window)},
                 )
-
-    def current(request: Request, session_cookie: str | None = Depends(cookie_auth)):
-        token = session_cookie or ""
-        row = repository.session(token_hash(token)) if len(token) == 43 else None
-        if row is None:
-            raise HTTPException(401, "Inicia sesión para acceder a tus fincas.")
-        return row
-
-    def write_session(
-        request: Request,
-        session=Depends(current),
-        provided: str = Header(default="", alias="X-CSRF-Token"),
-    ):
-        trusted_origin(request)
-        if (
-            not provided.isascii()
-            or len(provided) != 64
-            or not hmac.compare_digest(provided, csrf_token(request.cookies[COOKIE_NAME]))
-        ):
-            raise HTTPException(
-                403, "La sesión necesita actualizarse. Recarga la página e inténtalo de nuevo."
-            )
-        return session
 
     def own_farm(session, farm_id):
         farm = repository.farm(session["user_id"], farm_id)
@@ -164,18 +136,39 @@ def farmer_router(database, settings):
     @router.get("/auth/me", response_model=FarmerSession)
     def me(request: Request, response: Response, session=Depends(current)):
         response.headers["Cache-Control"] = "no-store"
+        token = session_token(request.cookies)
+        if COOKIE_NAME not in request.cookies:
+            response.set_cookie(
+                COOKIE_NAME,
+                token,
+                max_age=max(0, int((session["expires_at"] - datetime.now(UTC)).total_seconds())),
+                expires=session["expires_at"].astimezone(UTC),
+                httponly=True,
+                secure=settings.auth_cookie_secure,
+                samesite="lax",
+                path="/",
+            )
+        if LEGACY_COOKIE_NAME in request.cookies:
+            response.delete_cookie(
+                LEGACY_COOKIE_NAME,
+                httponly=True,
+                secure=settings.auth_cookie_secure,
+                samesite="lax",
+                path="/",
+            )
         return FarmerSession(
             user=FarmerUser(**{key: session[key] for key in FarmerUser.model_fields}),
-            csrf_token=csrf_token(request.cookies[COOKIE_NAME]),
+            csrf_token=csrf_token(token),
             expires_at=session["expires_at"],
         )
 
     @router.post("/auth/logout", status_code=204)
     def logout(request: Request, response: Response, session=Depends(write_session)):
-        repository.revoke_session(token_hash(request.cookies[COOKIE_NAME]))
-        response.delete_cookie(
-            COOKIE_NAME, httponly=True, secure=settings.auth_cookie_secure, samesite="lax", path="/"
-        )
+        repository.revoke_session(token_hash(session_token(request.cookies)))
+        for name in (COOKIE_NAME, LEGACY_COOKIE_NAME):
+            response.delete_cookie(
+                name, httponly=True, secure=settings.auth_cookie_secure, samesite="lax", path="/"
+            )
 
     @router.get("/farms/catalog", response_model=FarmCatalog)
     def catalog(session=Depends(current)):

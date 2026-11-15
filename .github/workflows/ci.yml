@@ -15,12 +15,12 @@ jobs:
       postgres:
         image: postgres:17-alpine
         env:
-          POSTGRES_USER: fieldshift_test
+          POSTGRES_USER: agrogeo_test
           POSTGRES_PASSWORD: test_only
-          POSTGRES_DB: fieldshift_test
+          POSTGRES_DB: agrogeo_test
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U fieldshift_test -d fieldshift_test"
+          --health-cmd "pg_isready -U agrogeo_test -d agrogeo_test"
           --health-interval 5s --health-timeout 5s --health-retries 20
       mongo:
         image: mongo:8.0
@@ -29,11 +29,11 @@ jobs:
           --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1})'"
           --health-interval 5s --health-timeout 5s --health-retries 20
     env:
-      DATABASE_URL: postgresql://fieldshift_test:test_only@localhost:5432/fieldshift_test
-      TEST_DATABASE_URL: postgresql://fieldshift_test:test_only@localhost:5432/fieldshift_test
+      DATABASE_URL: postgresql://agrogeo_test:test_only@localhost:5432/agrogeo_test
+      TEST_DATABASE_URL: postgresql://agrogeo_test:test_only@localhost:5432/agrogeo_test
       TEST_MONGODB_URI: mongodb://localhost:27017
       MONGODB_URI: mongodb://localhost:27017
-      MONGODB_DATABASE: fieldshift_ci
+      MONGODB_DATABASE: agrogeo_ci
       RESULTS_BACKEND: postgresql
     steps:
       - uses: actions/checkout@v4

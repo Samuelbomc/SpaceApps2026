@@ -1,174 +1,34 @@
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-3);
-  margin-bottom: var(--sp-5);
+h2 {
+  margin-bottom: var(--sp-3);
 }
-
-.toolbar__count {
-  font-size: var(--fs-sm);
-  color: var(--c-ink-subtle);
-}
-
-.segmented {
-  display: inline-flex;
-  padding: 3px;
-  border: 1px solid var(--c-border-strong);
-  border-radius: var(--radius-pill);
-  background: var(--c-surface);
-}
-
-.segmented__btn {
-  min-height: 2.25rem;
-  padding: 0 var(--sp-4);
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: transparent;
+p {
   color: var(--c-ink-muted);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  cursor: pointer;
-
-  &[aria-pressed='true'] {
-    background: var(--c-forest-700);
-    color: var(--c-ink-inverse);
-  }
 }
-
+.source-details {
+  margin-top: var(--sp-4);
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding-block: var(--sp-3);
+}
 .sources {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--sp-4);
   list-style: none;
+  margin-top: var(--sp-4);
 }
-
 .source {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
-  padding: var(--sp-5);
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-lg);
-
-  h3 {
-    font-size: var(--fs-md);
-  }
-}
-
-.source__head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  align-content: start;
   gap: var(--sp-2);
-}
-
-.source__provider {
-  margin-top: calc(var(--sp-2) * -1);
+  padding: var(--sp-4);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
   font-size: var(--fs-sm);
-  color: var(--c-ink-subtle);
 }
-
-.source__contribution,
-.source__caveat {
-  font-size: var(--fs-sm);
-  color: var(--c-ink-muted);
-}
-
-.source__caveat {
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--radius-sm);
-  background: var(--c-earth-100);
-  color: var(--c-earth-600);
-}
-
-.source__link {
-  margin-top: auto;
-  font-size: var(--fs-sm);
-  font-weight: 600;
-}
-
-.footnote {
-  margin-top: var(--sp-3);
-  font-size: var(--fs-xs);
-  color: var(--c-ink-subtle);
-}
-
-.method {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-7);
-  margin-top: var(--sp-8);
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-
-  h3 {
-    font-size: var(--fs-lg);
-    margin-bottom: var(--sp-4);
-  }
-}
-
-.natures,
-.evidence {
-  display: grid;
-  gap: var(--sp-3);
-  list-style: none;
-
-  p {
-    margin-top: var(--sp-1);
-    font-size: var(--fs-sm);
-    color: var(--c-ink-muted);
-  }
-}
-
-.evidence {
-  margin-bottom: var(--sp-4);
-
-  li {
-    display: flex;
-    gap: var(--sp-4);
-    padding: var(--sp-4);
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius-md);
-  }
-}
-
-// Three-bar strength meter; level sets how many bars are filled.
-.evidence__bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 3px;
-  height: 1.25rem;
-  padding-top: 0.2rem;
-
-  i {
-    width: 5px;
-    border-radius: 1px;
-    background: var(--c-border-strong);
-
-    &:nth-child(1) {
-      height: 40%;
-    }
-    &:nth-child(2) {
-      height: 70%;
-    }
-    &:nth-child(3) {
-      height: 100%;
-    }
-  }
-}
-
-.evidence--high i {
-  background: var(--c-green-600);
-}
-.evidence--moderate i:nth-child(-n + 2) {
-  background: var(--c-ochre-600);
-}
-.evidence--limited i:nth-child(1) {
-  background: var(--c-earth-600);
+h3 {
+  font-size: var(--fs-base);
 }

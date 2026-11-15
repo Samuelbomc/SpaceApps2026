@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { createAPIClient, APIError } from '@field-shift/api-client';
+import { createAPIClient, APIError } from '@agrogeo/api-client';
 import { AuthService } from '../auth/auth.service';
 @Injectable({ providedIn: 'root' })
 export class Backend {

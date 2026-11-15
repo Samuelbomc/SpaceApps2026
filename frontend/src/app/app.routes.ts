@@ -1,13 +1,19 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, Routes, RedirectFunction } from '@angular/router';
 import { pageTitle } from './core/config/app-identity';
 import { requireGuest, requireSession } from './core/auth/auth.guards';
 
 /**
  * One integrated platform, organised around the user journey:
- *   cuenta → explorar/municipio → lote → caracterización → análisis, plus panel and perfil.
+ *   exploración, lote y resultados públicos en /explorar; cuenta opcional para guardar.
  * Every screen is lazy-loaded. Guards here only shape the UX; real authorization
  * is enforced by FastAPI.
  */
+const workspaceRedirect: RedirectFunction = ({ queryParams, fragment }) =>
+  inject(Router).createUrlTree(['/explorar'], { queryParams, fragment: fragment ?? undefined });
+const analysisRedirect: RedirectFunction = ({ queryParams }) =>
+  inject(Router).createUrlTree(['/explorar'], { queryParams, fragment: 'resultados' });
+
 export const routes: Routes = [
   {
     path: '',
@@ -38,23 +44,23 @@ export const routes: Routes = [
   // Geographic exploration and municipality selection (public)
   {
     path: 'explorar',
-    title: pageTitle('Explorar el territorio'),
+    title: pageTitle('Exploración'),
     loadComponent: () => import('./features/explorer/explorer').then((m) => m.Explorer),
   },
 
-  // Farm journey (requires a session)
+  // Compatibility addresses: map and results are public; editing private farms requires a session.
   {
     path: 'finca',
-    canActivate: [requireSession],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'lote' },
+      { path: '', pathMatch: 'full', redirectTo: workspaceRedirect },
       {
         path: 'lote',
-        title: pageTitle('Municipio y lote'),
-        loadComponent: () => import('./features/farm/plot/plot').then((m) => m.Plot),
+        pathMatch: 'full',
+        redirectTo: workspaceRedirect,
       },
       {
         path: 'caracterizacion',
+        canActivate: [requireSession],
         title: pageTitle('Caracterización del lote'),
         loadComponent: () =>
           import('./features/farm/characterization/characterization').then(
@@ -63,8 +69,8 @@ export const routes: Routes = [
       },
       {
         path: 'analisis',
-        title: pageTitle('Análisis y recomendaciones'),
-        loadComponent: () => import('./features/farm/analysis/analysis').then((m) => m.Analysis),
+        pathMatch: 'full',
+        redirectTo: workspaceRedirect,
       },
     ],
   },
@@ -76,15 +82,15 @@ export const routes: Routes = [
   },
   {
     path: 'analisis',
-    loadComponent: () => import('./features/farm/analysis/analysis').then((m) => m.Analysis),
+    pathMatch: 'full',
+    redirectTo: analysisRedirect,
   },
   { path: 'login', redirectTo: 'acceso', pathMatch: 'full' },
   // Personal area (requires a session)
   {
     path: 'panel',
-    title: pageTitle('Mi panel'),
-    canActivate: [requireSession],
-    loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+    pathMatch: 'full',
+    redirectTo: workspaceRedirect,
   },
   {
     path: 'perfil',
@@ -95,7 +101,7 @@ export const routes: Routes = [
 
   // Addresses from the previous two-module structure
   { path: 'datos', redirectTo: 'explorar' },
-  { path: 'agricultor', redirectTo: 'panel' },
+  { path: 'agricultor', redirectTo: 'explorar' },
 
   {
     path: '**',

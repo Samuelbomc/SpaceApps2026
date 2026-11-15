@@ -61,3 +61,19 @@ python -m scripts.export_openapi --check
 
 `--check` verifica sin escribir. No editar OpenAPI o tipos generados manualmente.
 Ver [cliente compartido](../../packages/api-client/README.md).
+
+## Actualización manual
+
+`POST /api/v1/automation/refresh` acepta una solicitud sin cuerpo y responde
+`202` con `ManualUpdate`. Requiere cookie de sesión, origen permitido y
+`X-CSRF-Token`. No acepta coordenadas, fuentes ni comandos arbitrarios: ejecuta
+la configuración del worker. Solicitudes concurrentes reutilizan la activa;
+la espera mínima global entre solicitudes nuevas es cinco minutos (`429` y
+`Retry-After`). `GET` devuelve `ManualUpdate | null` y requiere sesión.
+Ambas respuestas usan `Cache-Control: no-store`.
+
+El estado incluye identificador, fechas, etapa, próximo reintento, mensaje y
+etapas tipadas. No expone al solicitante. API encola/consulta; el consumidor
+`--manual-only` ejecuta ingesta, evaluación de candidatos y recomendaciones fuera
+de HTTP. Los resultados parciales no se presentan como publicación de modelos.
+Ver [operación](../operations/runbook.md).

@@ -1,0 +1,31 @@
+.manual-refresh {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  font-size: var(--fs-sm);
+}
+p {
+  color: var(--c-ink-muted);
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+ol {
+  padding-left: var(--sp-4);
+}
+li {
+  margin-top: var(--sp-3);
+}
+li p {
+  margin-top: var(--sp-2);
+}
+.link-btn {
+  border: 0;
+  background: none;
+  text-align: left;
+  color: var(--c-forest-700);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}

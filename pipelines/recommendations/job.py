@@ -8,7 +8,7 @@ from packages.contracts.api import AnalysisRequest, AnalysisResult
 from pipelines.recommendations.pipeline import CropRecommendationPipeline
 from pipelines.training.snapshots import fingerprint
 
-LOG = logging.getLogger("fieldshift.recommendations")
+LOG = logging.getLogger("agrogeo.recommendations")
 
 
 class CropRecommendationJob:

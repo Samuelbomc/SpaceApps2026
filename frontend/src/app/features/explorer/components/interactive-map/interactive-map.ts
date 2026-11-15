@@ -7,6 +7,7 @@ import {
   computed,
   effect,
   inject,
+  input,
   model,
   signal,
   untracked,
@@ -27,6 +28,7 @@ import {
   WebGLUnavailableError,
   loadMapLibre,
 } from '../../../../shared/map/maplibre-loader';
+import { SENTINEL2_CLOUDLESS } from '../../../../shared/map/imagery';
 import {
   ATTRIBUTION,
   LAYER,
@@ -86,6 +88,7 @@ const MAP_LABEL_OVERRIDES: Record<string, string> = { '88': 'San Andrés y Provi
 export class InteractiveMap {
   /** DIVIPOLA code of the selected municipality (two-way bindable). */
   readonly selectedCode = model<string | null>(null);
+  readonly focusTarget = input<{ kind: 'department' | 'region'; id: string } | null>(null);
 
   private readonly geo = inject(GeoBoundariesService);
   private readonly container = viewChild.required<ElementRef<HTMLDivElement>>('mapContainer');
@@ -116,6 +119,14 @@ export class InteractiveMap {
   constructor() {
     afterNextRender(() => void this.init());
 
+    effect(() => {
+      const target = this.focusTarget();
+      if (!target || this.state() !== 'ready') return;
+      untracked(() =>
+        target.kind === 'department' ? this.focusDepartment(target.id) : this.focusRegion(),
+      );
+    });
+
     // React to selection changes coming from outside (search, list, other pages).
     effect(() => {
       const code = this.selectedCode();
@@ -144,7 +155,7 @@ export class InteractiveMap {
         center: GLOBE_VIEW.center,
         zoom: GLOBE_VIEW.zoom,
         minZoom: 0.8,
-        maxZoom: 12,
+        maxZoom: SENTINEL2_CLOUDLESS.maxzoom,
         maxPitch: 60,
         locale: MAP_LOCALE,
         attributionControl: {

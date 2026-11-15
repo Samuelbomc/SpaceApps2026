@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
- * Neutral placeholder logo: stacked data layers over a field.
+ * AgroGeo mark: stacked data layers over a field.
  * Deliberately generic — no NASA insignia or lookalike shapes.
  */
 @Component({

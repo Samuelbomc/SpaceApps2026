@@ -1,7 +1,8 @@
 <app-auth-layout heading="Iniciar sesión" lead="Accede a tus fincas, lotes y análisis anteriores.">
   @if (redirected) {
     <p class="notice notice--info" role="status">
-      <span>Inicia sesión para continuar con el análisis de tu lote.</span>
+      <span>Inicia sesión para guardar tu finca y sus datos.</span>
+      <a routerLink="/explorar">Consultar sin cuenta</a>
     </p>
   }
 
@@ -66,5 +67,8 @@
     </button>
   </form>
 
-  <p>¿Aún no tienes cuenta? <a routerLink="/registro">Crear una cuenta</a></p>
+  <p>
+    ¿Aún no tienes cuenta?
+    <a routerLink="/registro" queryParamsHandling="preserve">Crear una cuenta</a>
+  </p>
 </app-auth-layout>

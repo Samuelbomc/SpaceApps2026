@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Field Shift API",
+    "title": "AgroGeo API",
     "description": "Ingesta NASA y contratos de análisis agrícola",
     "version": "1.0.0"
   },
@@ -670,6 +670,86 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/automation/refresh": {
+      "post": {
+        "tags": [
+          "Actualización manual"
+        ],
+        "summary": "Enqueue",
+        "operationId": "enqueue_api_v1_automation_refresh_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualUpdate"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Actualización manual"
+        ],
+        "summary": "Latest",
+        "operationId": "latest_api_v1_automation_refresh_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ManualUpdate"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Latest Api V1 Automation Refresh Get"
                 }
               }
             }
@@ -2428,6 +2508,93 @@
         ],
         "title": "LoginRequest"
       },
+      "ManualUpdate": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Request Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "retry_scheduled",
+              "completed",
+              "completed_with_limitations",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "retry_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry At"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "ingestion",
+              "training",
+              "recommendations"
+            ],
+            "title": "Phase"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/UpdateStage"
+            },
+            "type": "array",
+            "title": "Stages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "status",
+          "created_at",
+          "updated_at",
+          "phase",
+          "message",
+          "stages"
+        ],
+        "title": "ManualUpdate"
+      },
       "MapPlace": {
         "properties": {
           "latitude": {
@@ -3479,6 +3646,56 @@
         ],
         "title": "TrainingOutcome"
       },
+      "UpdateStage": {
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": [
+              "ingestion",
+              "training",
+              "recommendations"
+            ],
+            "title": "Phase"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "completed",
+              "retry_scheduled",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "phase",
+          "status",
+          "message"
+        ],
+        "title": "UpdateStage"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -3524,7 +3741,7 @@
       "APIKeyCookie": {
         "type": "apiKey",
         "in": "cookie",
-        "name": "fieldshift_session"
+        "name": "agrogeo_session"
       }
     }
   }

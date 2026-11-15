@@ -2,7 +2,7 @@
 
 ## Contexto y referencias
 
-Field Shift integra Angular, FastAPI, pipelines Python y XGBoost para análisis
+AgroGeo integra Angular, FastAPI, pipelines Python y XGBoost para análisis
 agroclimático y evaluación de rotaciones. La documentación principal comienza en
 [docs/README.md](docs/README.md). Consultar [producto](docs/product/overview.md),
 [arquitectura](docs/architecture/overview.md), [estructura](docs/architecture/code-structure.md)

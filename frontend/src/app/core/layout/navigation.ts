@@ -24,13 +24,12 @@ export const HOME_GROUP: NavGroup = {
 
 /** Shown to visitors without a session. */
 export const PUBLIC_NAV: readonly NavEntry[] = [
-  { kind: 'group', ...HOME_GROUP },
-  { kind: 'link', label: 'Explorar el mapa', path: '/explorar' },
+  { kind: 'link', label: 'Inicio', path: '/' },
+  { kind: 'link', label: 'Exploración', path: '/explorar' },
 ];
 
 /** Shown once the user is signed in. */
 export const APP_NAV: readonly NavEntry[] = [
-  { kind: 'group', ...HOME_GROUP },
-  { kind: 'link', label: 'Mi panel', path: '/panel' },
-  { kind: 'link', label: 'Nuevo análisis', path: '/explorar' },
+  { kind: 'link', label: 'Exploración', path: '/explorar' },
+  { kind: 'link', label: 'Mis fincas', path: '/fincas' },
 ];

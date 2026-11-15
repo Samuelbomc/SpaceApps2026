@@ -1,13 +1,9 @@
 .journey {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--sp-4);
   list-style: none;
   counter-reset: none;
-
-  @media (max-width: 1000px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 
   @media (max-width: 560px) {
     grid-template-columns: 1fr;
@@ -44,27 +40,4 @@
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
   font-weight: 700;
-}
-
-.journey__after {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-4);
-  margin-top: var(--sp-6);
-  padding: var(--sp-5) var(--sp-6);
-  border-radius: var(--radius-lg);
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-
-  h3 {
-    font-size: var(--fs-lg);
-  }
-
-  p {
-    max-width: 40rem;
-    margin-top: var(--sp-1);
-    color: var(--c-ink-muted);
-  }
 }

@@ -17,7 +17,7 @@ En Compose:
 
 ```bash
 docker compose ps
-docker compose logs --tail=100 worker training-worker recommendation-worker
+docker compose logs --tail=100 worker training-worker recommendation-worker manual-update-worker
 ```
 
 Los logs pueden incluir información operativa; limitar su acceso. Las conexiones
@@ -65,9 +65,60 @@ o resultados para reintentar. No usar eliminación de volúmenes como recuperaci
 El histórico POWER puede conservar un `.write.lock` tras una interrupción; retirarlo
 solo después de comprobar que no hay escritor activo y de investigar la causa.
 
+Para trasladar almacenamiento a nombres de AgroGeo, detener API y consumidores
+que escriban antes de tomar un respaldo consistente. Conservar los volúmenes
+originales y configurar sus nombres explícitos, o restaurar el respaldo en los
+destinos nuevos. En MongoDB, preservar documentos, `_id`, opciones e índices de
+todas las colecciones y verificar su igualdad antes de cambiar la conexión de
+API y workers. Todos los procesos deben usar la misma base de resultados.
+No borrar el origen antes de comprobar lecturas, sesiones, archivos y resultados.
+La configuración de Compose no migra automáticamente bases o roles existentes.
+
+Las nuevas particiones Parquet usan la clave de metadatos `agrogeo_schema`.
+El lector POWER admite también la clave histórica sin reescribir archivos al
+consultarlos. Una escritura incremental conserva las observaciones y usa la
+clave actual. El nombre comercial no modifica versiones, hashes ni artefactos
+científicos existentes.
+
 La publicación guarda/verifica artefactos antes de cambiar el campeón con control
 de concurrencia. Archivos candidatos sin publicar no autorizan borrado de versiones
 referenciadas. No hay una limpieza TTL de artefactos evaluables.
+
+## Actualización manual desde la aplicación
+
+Un usuario autenticado puede pulsar **Actualizar datos y modelos** en Exploración.
+`POST /api/v1/automation/refresh` exige sesión, origen permitido y CSRF; devuelve
+`202` con la solicitud durable. `GET` sobre la misma ruta devuelve su estado
+más reciente, sin identidad del solicitante. El ámbito es global para los jobs
+configurados, no un recorte bajo demanda de la parcela del mapa.
+
+El consumidor se ejecuta con las mismas conexiones y directorios de API/workers:
+
+```bash
+python -m scripts.worker --manual-only --poll-seconds 5
+```
+
+El stack local incluye este consumidor y Compose lo ejecuta como
+`manual-update-worker`. Estar activo no descarga datos: espera solicitudes.
+`--manual-only --once` permite revisar una solicitud pendiente una vez. Si se
+mantiene `queued`, comprobar que el consumidor está activo y comparte PostgreSQL.
+
+La cola agrupa clics concurrentes en una sola ejecución global y aplica cinco
+minutos entre solicitudes nuevas. Respuestas `429` incluyen `Retry-After`.
+El worker recorre ingesta → evaluación de entrenamiento → recomendaciones con
+los mismos locks y backoff de los procesos periódicos. Respeta un `retry_at`
+vigente; tres fallos técnicos de una etapa terminan esa solicitud manual. Los
+jobs periódicos mantienen su política de reintento independiente. Al reiniciar
+un consumidor se retoma la etapa pendiente, sin repetir etapas ya registradas
+como completadas. No se cambian las barreras científicas de publicación.
+
+Los estados son `queued`, `running`, `retry_scheduled`, `completed`,
+`completed_with_limitations` y `failed`. Cada etapa informa estado, mensaje,
+conteos y limitaciones. `completed_with_limitations` puede indicar ingesta
+correcta sin nuevas etiquetas, modelos no publicados o predicciones incompletas.
+No equivale a un modelo nuevo. Actualmente la ingesta procesa POWER y descubre
+catálogos para otras fuentes; la extracción multifuente y los snapshots recientes
+siguen sujetos a [los límites de datos](../reference/capabilities.md).
 
 ## Respaldos y cambios de entorno
 

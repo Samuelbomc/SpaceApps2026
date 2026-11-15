@@ -48,7 +48,7 @@ def probe_public_access(url: str | None, *, opener=urlopen) -> dict:
     host = urlsplit(url).hostname or ""
     if not host.endswith(".nasa.gov"):
         return {"status": "host_not_probed", "science_values_read": False}
-    request = Request(url, method="HEAD", headers={"User-Agent": "FieldShift-AOI-Probe/0.1"})
+    request = Request(url, method="HEAD", headers={"User-Agent": "AgroGeo-AOI-Probe/0.1"})
     try:
         with opener(request, timeout=20) as response:
             content_type = response.headers.get("Content-Type", "")
@@ -106,9 +106,7 @@ def probe_public_sample(url: str | None, *, opener=urlopen) -> dict:
         "verified_at": utc_now(),
         "science_values_read": False,
     }
-    request = Request(
-        url, headers={"Range": "bytes=0-15", "User-Agent": "FieldShift-AOI-Probe/0.1"}
-    )
+    request = Request(url, headers={"Range": "bytes=0-15", "User-Agent": "AgroGeo-AOI-Probe/0.1"})
     try:
         with opener(request, timeout=20) as response:
             header = response.read(16)  # También se limita si el servidor ignora Range.
@@ -232,7 +230,7 @@ def run_probe(
             .append(pa.field("aoi_id", pa.string()))
             .append(pa.field("spatial_selection", pa.string()))
         )
-        schema = schema.with_metadata({b"field_shift_schema": b"aoi_probe_power_v1"})
+        schema = schema.with_metadata({b"agrogeo_schema": b"aoi_probe_power_v1"})
         records = [
             {**row, "date": datetime.fromisoformat(row["date"]).date()} for row in observations
         ]
@@ -308,7 +306,7 @@ def run_probe(
                 )
                 for key in catalog_rows[0]
             ],
-            metadata={b"field_shift_schema": b"aoi_granule_catalog_v1"},
+            metadata={b"agrogeo_schema": b"aoi_granule_catalog_v1"},
         )
         pq.write_table(
             pa.Table.from_pylist(catalog_rows, schema=schema),

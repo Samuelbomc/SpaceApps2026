@@ -1,4 +1,4 @@
-# Almacenamiento de Field Shift
+# Almacenamiento de AgroGeo
 
 El histórico necesario para reentrenar queda separado de los resultados que
 consume el frontend. Compose usa MongoDB para resultados ML

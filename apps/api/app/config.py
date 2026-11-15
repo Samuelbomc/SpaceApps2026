@@ -7,13 +7,13 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class Settings:
-    database_url: str = "postgresql://fieldshift:fieldshift_dev@localhost:5432/fieldshift"
+    database_url: str = "postgresql://agrogeo:agrogeo_dev@localhost:5432/agrogeo"
     cors_origins: tuple[str, ...] = ("http://localhost:3000", "http://127.0.0.1:3000")
     auth_cookie_secure: bool = False
     farm_upload_directory: Path = Path("data/farms")
     results_backend: str = "postgresql"
     mongodb_uri: str = "mongodb://127.0.0.1:27017"
-    mongodb_database: str = "fieldshift"
+    mongodb_database: str = "agrogeo"
     dataset_directory: Path = Path("data/datasets")
     model_directory: Path = Path("data/models")
     geocoder_url: str = "https://photon.komoot.io/reverse"
@@ -38,7 +38,7 @@ class Settings:
             farm_upload_directory=Path(os.getenv("FARM_UPLOAD_DIRECTORY", "data/farms")),
             results_backend=os.getenv("RESULTS_BACKEND", "postgresql"),
             mongodb_uri=os.getenv("MONGODB_URI", "mongodb://127.0.0.1:27017"),
-            mongodb_database=os.getenv("MONGODB_DATABASE", "fieldshift"),
+            mongodb_database=os.getenv("MONGODB_DATABASE", "agrogeo"),
             dataset_directory=Path(os.getenv("DATASET_DIRECTORY", "data/datasets")),
             model_directory=Path(os.getenv("MODEL_DIRECTORY", "data/models")),
             geocoder_url=os.getenv("GEOCODER_URL", "https://photon.komoot.io/reverse"),

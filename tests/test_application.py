@@ -180,11 +180,11 @@ class ApplicationTests(unittest.TestCase):
             AnalysisService(self.repo, climate, Mock()).run(AnalysisRequest(**self.request))
         self.repo.save_analysis.assert_not_called()
 
-    def test_schedule_is_168_hours_and_skips_missed_slots_without_drift(self):
+    def test_daily_schedule_skips_missed_slots_without_drift(self):
         due = datetime(2024, 1, 1, tzinfo=UTC)
-        self.assertEqual(next_slot(due, due, 604800), due + timedelta(days=7))
-        finished = due + timedelta(days=20)
-        self.assertEqual(next_slot(due, finished, 604800), due + timedelta(days=21))
+        self.assertEqual(next_slot(due, due, 86400), due + timedelta(days=1))
+        finished = due + timedelta(days=20, hours=3)
+        self.assertEqual(next_slot(due, finished, 86400), due + timedelta(days=21))
 
     def test_latest_analysis_uses_available_history_without_date_filters(self):
         self.repo.latest_observation_date.return_value = date(2025, 12, 31)

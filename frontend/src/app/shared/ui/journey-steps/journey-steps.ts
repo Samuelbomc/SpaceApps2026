@@ -4,8 +4,7 @@ import { JOURNEY, JourneyStepId } from '../../../core/journey/journey';
 import { AnalysisJourneyStore } from '../../../core/journey/analysis-journey.store';
 
 /**
- * Visible progress through the unified journey
- * (Cuenta → Explorar → Municipio → Lote → Caracterización → Análisis).
+ * Optional progress indicator for the public workspace stages.
  * Completed steps get a check; the current one is marked with aria-current="step".
  */
 @Component({

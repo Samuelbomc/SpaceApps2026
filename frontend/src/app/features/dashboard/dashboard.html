@@ -2,46 +2,29 @@
   <div class="container">
     <header class="dash__head">
       <div>
-        <span class="eyebrow">Mi panel</span>
         <h1>Hola{{ firstName() ? ', ' + firstName() : '' }}</h1>
-        <p>Desde aquí inicias el análisis de un lote y vuelves a tus fincas y resultados.</p>
+        <p>Tu finca y tus resultados, en un solo lugar.</p>
       </div>
-      <a class="btn btn--primary" routerLink="/explorar">Analizar un lote nuevo</a>
+      <a class="btn btn--primary" routerLink="/explorar">Ubicar mi finca</a>
     </header>
-
     @if (resume(); as r) {
       <article class="card resume">
-        <div>
-          <span class="eyebrow">Análisis en curso</span>
-          <h2>{{ r.municipality }}</h2>
-          <p>
-            Siguiente paso: <strong>{{ r.step.label }}</strong> — {{ r.step.summary }}
-          </p>
-        </div>
+        <h2>{{ r.municipality }}</h2>
         <a class="btn btn--secondary" [routerLink]="r.step.path">Continuar</a>
       </article>
     }
-
     <div class="dash__grid">
       <article class="card panel" aria-labelledby="farms-title">
-        <header>
-          <h2 id="farms-title">Mis fincas y lotes</h2>
-        </header>
-        <p>Consulta y actualiza tus fincas, límites y archivos de mediciones.</p>
-        <a class="btn btn--secondary" routerLink="/fincas">Mis fincas y datos</a>
+        <h2 id="farms-title">Mis fincas</h2>
+        <p>Ubicación, cultivos y mediciones.</p>
+        <a class="btn btn--secondary" routerLink="/fincas">Abrir mis fincas</a>
       </article>
-
-      <article class="card panel" aria-labelledby="history-title">
-        <header>
-          <h2 id="history-title">Análisis anteriores</h2>
-        </header>
-        <div class="empty">
-          <p><strong>Todavía no hay análisis.</strong></p>
-          <p>
-            Aquí verás cada análisis con su fecha de actualización, y podrás comparar resultados
-            anteriores con los más recientes.
-          </p>
-        </div>
+      <article class="card panel" aria-labelledby="results-title">
+        <h2 id="results-title">Resultados</h2>
+        <p>Clima, suelo y opciones de cultivo.</p>
+        <a class="btn btn--secondary" routerLink="/explorar" fragment="resultados"
+          >Ver resultados</a
+        >
       </article>
     </div>
   </div>

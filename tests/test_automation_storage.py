@@ -202,7 +202,7 @@ class MongoIntegrationTests(unittest.TestCase):
     def setUp(self):
         from pymongo import MongoClient
 
-        self.name = "fieldshift_test_" + uuid.uuid4().hex
+        self.name = "agrogeo_test_" + uuid.uuid4().hex
         self.client = MongoClient(os.environ["TEST_MONGODB_URI"], serverSelectionTimeoutMS=3000)
         self.addCleanup(self.client.close)
         self.addCleanup(lambda: self.client.drop_database(self.name))
@@ -218,7 +218,7 @@ class MongoIntegrationTests(unittest.TestCase):
         original = repository / "ml/artifacts"
         clean = ExpandedModelBundle(original)
         catalog = clean.catalog()
-        with tempfile.TemporaryDirectory(prefix="fieldshift-real-model-recovery-") as directory:
+        with tempfile.TemporaryDirectory(prefix="agrogeo-real-model-recovery-") as directory:
             root = Path(directory)
             artifacts = root / "models"
             for name in ("model.json", "training.json"):

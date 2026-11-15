@@ -4,7 +4,7 @@ Las rutas se expresan desde la raíz del repositorio. Las carpetas representan
 responsabilidades lógicas; las dependencias se conectan en el composition root.
 
 ```text
-SpaceApps2026/
+AgroGeo/
 ├── apps/api/app/
 │   ├── routers/          # HTTP de cuentas, fincas, catálogos y geocodificación
 │   ├── services/         # Autenticación, CSV, mapas y consultas NASA

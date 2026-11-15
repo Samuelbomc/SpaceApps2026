@@ -3,7 +3,7 @@
     <header>
       <span class="eyebrow">Datos privados</span>
       <h1>Mis fincas y datos</h1>
-      <p>Guarda la información de tu finca y las mediciones que conoces.</p>
+      <p>Ubicación, cultivos y mediciones.</p>
     </header>
     @if (error()) {
       <p class="form-alert" role="alert">{{ error() }}</p>
@@ -49,79 +49,53 @@
               maxlength="120"
           /></label>
           <div class="full">
-            <a class="btn btn--secondary" routerLink="/finca/lote">Delimitar en el mapa</a>
+            <a class="btn btn--secondary" routerLink="/explorar" fragment="lote"
+              >Ubicar en el mapa</a
+            >
             @if (draft.geometry) {
-              <p>Se conservará el polígono completo del lote.</p>
+              <p>Terreno delimitado · {{ draft.area_ha }} ha</p>
             }
           </div>
-          <label class="field"
-            >Latitud<input
-              class="input"
-              name="latitude"
-              type="number"
-              step="any"
-              min="-80"
-              max="80"
-              [(ngModel)]="draft.latitude"
-              (ngModelChange)="clearBoundary()"
-              required
-          /></label>
-          <label class="field"
-            >Longitud<input
-              class="input"
-              name="longitude"
-              type="number"
-              step="any"
-              min="-180"
-              max="180"
-              [(ngModel)]="draft.longitude"
-              (ngModelChange)="clearBoundary()"
-              required
-          /></label>
-          <label class="field"
-            >Superficie (ha)<input
-              class="input"
-              name="area"
-              type="number"
-              step="any"
-              min="0.0001"
-              max="1000000"
-              [(ngModel)]="draft.area_ha"
-              required
-          /></label>
-          <label class="field"
-            >Altitud (m), opcional<input
-              class="input"
-              name="altitude"
-              type="number"
-              min="-500"
-              max="9000"
-              [(ngModel)]="draft.altitude_m"
-          /></label>
-          <label class="field"
-            >Tipo de suelo<select class="input" name="soil" [(ngModel)]="draft.soil_texture">
-              @for (option of catalog.soil_textures; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select></label
-          >
-          <label class="field"
-            >pH, opcional<input
-              class="input"
-              name="ph"
-              type="number"
-              step="any"
-              min="0"
-              max="14"
-              [(ngModel)]="draft.soil_ph"
-          /></label>
-          <label class="field"
-            >Riego<select class="input" name="irrigation" [(ngModel)]="draft.irrigation">
-              @for (option of catalog.irrigation_types; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select></label
-          >
+          <details class="full" [open]="!selected() && !draft.geometry">
+            <summary>Coordenadas y superficie</summary>
+            <div class="farm-form extra-fields">
+              <label class="field"
+                >Latitud<input
+                  class="input"
+                  name="latitude"
+                  type="number"
+                  step="any"
+                  min="-80"
+                  max="80"
+                  [(ngModel)]="draft.latitude"
+                  (ngModelChange)="clearBoundary()"
+                  required
+              /></label>
+              <label class="field"
+                >Longitud<input
+                  class="input"
+                  name="longitude"
+                  type="number"
+                  step="any"
+                  min="-180"
+                  max="180"
+                  [(ngModel)]="draft.longitude"
+                  (ngModelChange)="clearBoundary()"
+                  required
+              /></label>
+              <label class="field"
+                >Superficie (ha)<input
+                  class="input"
+                  name="area"
+                  type="number"
+                  step="any"
+                  min="0.0001"
+                  max="1000000"
+                  [(ngModel)]="draft.area_ha"
+                  required
+              /></label>
+            </div>
+          </details>
           <label class="field"
             >Cultivos, separados por comas<input
               class="input"
@@ -129,15 +103,53 @@
               [ngModel]="draft.current_crops?.join(', ')"
               (ngModelChange)="crops($event)"
           /></label>
-          <label class="field full"
-            >Notas<textarea
-              class="input"
-              name="notes"
-              rows="3"
-              maxlength="2000"
-              [(ngModel)]="draft.notes"
-            ></textarea>
-          </label>
+          <details class="full">
+            <summary>Suelo, riego y otros datos (opcional)</summary>
+            <div class="farm-form extra-fields">
+              <label class="field"
+                >Altitud (m), opcional<input
+                  class="input"
+                  name="altitude"
+                  type="number"
+                  min="-500"
+                  max="9000"
+                  [(ngModel)]="draft.altitude_m"
+              /></label>
+              <label class="field"
+                >Tipo de suelo<select class="input" name="soil" [(ngModel)]="draft.soil_texture">
+                  @for (option of catalog.soil_textures; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select></label
+              >
+              <label class="field"
+                >pH, opcional<input
+                  class="input"
+                  name="ph"
+                  type="number"
+                  step="any"
+                  min="0"
+                  max="14"
+                  [(ngModel)]="draft.soil_ph"
+              /></label>
+              <label class="field"
+                >Riego<select class="input" name="irrigation" [(ngModel)]="draft.irrigation">
+                  @for (option of catalog.irrigation_types; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select></label
+              >
+              <label class="field full"
+                >Notas<textarea
+                  class="input"
+                  name="notes"
+                  rows="3"
+                  maxlength="2000"
+                  [(ngModel)]="draft.notes"
+                ></textarea>
+              </label>
+            </div>
+          </details>
         </fieldset>
         <div class="actions">
           <button class="btn btn--primary" [disabled]="busy() || form.invalid">
@@ -158,10 +170,7 @@
       @if (selected(); as farm) {
         <section class="card">
           <h2>Mediciones de {{ farm.name }}</h2>
-          <p>
-            CSV UTF-8, hasta 5 MiB. Las mediciones se conservan como datos reportados, pendientes de
-            validación científica.
-          </p>
+          <p>Sube tus mediciones en CSV, hasta 5 MiB.</p>
           <div class="actions">
             <button type="button" class="btn btn--secondary" (click)="template()">
               Descargar plantilla CSV</button
@@ -209,16 +218,19 @@
           }
           @if (context(); as context) {
             <p>
-              {{ context.observation_count }} observaciones locales. Entradas identificadas para
-              preparar el modelo; todavía no están habilitadas para inferencias.
+              {{ context.observation_count }} observaciones locales. Aún no se utilizan en las
+              predicciones.
             </p>
-            @for (note of context.limitations; track note) {
-              <p>{{ note }}</p>
-            }
+            <details>
+              <summary>Estado y detalles de las mediciones</summary>
+              @for (note of context.limitations; track note) {
+                <p>{{ note }}</p>
+              }
+            </details>
           }
         </section>
       }
-      <a class="btn btn--secondary" routerLink="/finca/analisis"
+      <a class="btn btn--secondary" routerLink="/explorar" fragment="resultados"
         >Ver datos y análisis disponibles</a
       >
     }

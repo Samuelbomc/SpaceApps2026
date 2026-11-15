@@ -1,3 +1,5 @@
+name: ${COMPOSE_PROJECT_NAME:-agrogeo}
+
 services:
   mongo:
     image: mongo:8.0
@@ -13,15 +15,15 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: fieldshift
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fieldshift_dev}
-      POSTGRES_DB: fieldshift
+      POSTGRES_USER: ${POSTGRES_USER:-agrogeo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agrogeo_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-agrogeo}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fieldshift -d fieldshift"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -31,7 +33,7 @@ services:
       context: .
       dockerfile: infra/docker/api.Dockerfile
     environment: &runtime
-      DATABASE_URL: postgresql://fieldshift:${POSTGRES_PASSWORD:-fieldshift_dev}@postgres:5432/fieldshift
+      DATABASE_URL: postgresql://${POSTGRES_USER:-agrogeo}:${POSTGRES_PASSWORD:-agrogeo_dev}@postgres:5432/${POSTGRES_DB:-agrogeo}
       REGION_ID: ${REGION_ID:-antioquia-reference}
       REGION_NAME: ${REGION_NAME:-Medellín · referencia técnica}
       REGION_LATITUDE: ${REGION_LATITUDE:-6.2442}
@@ -43,7 +45,7 @@ services:
       FARM_UPLOAD_DIRECTORY: /app/data/farms
       RESULTS_BACKEND: ${RESULTS_BACKEND:-mongodb}
       MONGODB_URI: ${MONGODB_URI:-mongodb://mongo:27017}
-      MONGODB_DATABASE: ${MONGODB_DATABASE:-fieldshift}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-agrogeo}
       DATASET_DIRECTORY: /app/data/datasets
       MODEL_DIRECTORY: /app/data/models
       TRAINING_DATA_DIRECTORY: /app/data/prepared
@@ -84,6 +86,9 @@ services:
   recommendation-worker:
     <<: *worker_service
     command: ["python", "-m", "scripts.worker", "--job", "recommendations"]
+  manual-update-worker:
+    <<: *worker_service
+    command: ["python", "-m", "scripts.worker", "--manual-only", "--poll-seconds", "5"]
   web:
     build:
       context: .
@@ -97,4 +102,6 @@ services:
     restart: unless-stopped
 volumes:
   postgres_data:
+    name: ${POSTGRES_VOLUME_NAME:-${COMPOSE_PROJECT_NAME:-agrogeo}_postgres_data}
   mongo_data:
+    name: ${MONGO_VOLUME_NAME:-${COMPOSE_PROJECT_NAME:-agrogeo}_mongo_data}

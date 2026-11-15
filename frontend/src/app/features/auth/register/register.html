@@ -110,5 +110,8 @@
     </button>
   </form>
 
-  <p>¿Ya tienes cuenta? <a routerLink="/acceso">Iniciar sesión</a></p>
+  <p>
+    ¿Ya tienes cuenta?
+    <a routerLink="/acceso" [queryParams]="{ volver: returnUrl }">Iniciar sesión</a>
+  </p>
 </app-auth-layout>

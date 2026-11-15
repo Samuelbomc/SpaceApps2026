@@ -49,7 +49,7 @@ Corrupción, duplicados o metadatos contradictorios hacen fallar el job y activa
 su reintento; no borran modelos anteriores.
 
 **Límite de integración:** este constructor consume datos ya procesados. La ingesta
-pública semanal de POWER/CMR no produce todavía todas estas tablas multisensor.
+pública diaria de POWER/CMR no produce todavía todas estas tablas multisensor.
 Automatizar esa extracción es DATA-01 en [capacidades y límites](capabilities.md).
 
 ## Muestras, fechas y calidad

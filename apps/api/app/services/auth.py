@@ -4,6 +4,7 @@ import hashlib
 import hmac
 import secrets
 import threading
+from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 
 from argon2 import PasswordHasher
@@ -19,7 +20,10 @@ def hash_password(value):
 
 
 DUMMY_HASH = hash_password(secrets.token_urlsafe(32))
-COOKIE_NAME = "fieldshift_session"
+COOKIE_NAME = "agrogeo_session"
+# Compatibilidad de sesiones emitidas antes de adoptar la identidad AgroGeo.
+LEGACY_COOKIE_NAME = "fieldshift_session"
+LEGACY_CSRF_CONTEXT = b"fieldshift-csrf-v1"
 SESSION_SECONDS = 7 * 86400
 
 
@@ -28,7 +32,19 @@ def token_hash(value):
 
 
 def csrf_token(value):
-    return hmac.new(value.encode(), b"fieldshift-csrf-v1", hashlib.sha256).hexdigest()
+    return hmac.new(value.encode(), b"agrogeo-csrf-v1", hashlib.sha256).hexdigest()
+
+
+def session_token(cookies: Mapping[str, str]) -> str:
+    # La cookie actual tiene precedencia, incluso si está vacía o es inválida.
+    return cookies.get(COOKIE_NAME, cookies.get(LEGACY_COOKIE_NAME, ""))
+
+
+def valid_csrf(value: str, provided: str) -> bool:
+    if not provided.isascii() or len(provided) != 64:
+        return False
+    legacy = hmac.new(value.encode(), LEGACY_CSRF_CONTEXT, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(provided, csrf_token(value)) or hmac.compare_digest(provided, legacy)
 
 
 def verify_password(value, encoded):

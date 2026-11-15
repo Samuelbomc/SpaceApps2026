@@ -11,7 +11,7 @@ from packages.contracts import DataQuery, DateRange, GeoPoint
 from packages.contracts.observations import power_location_id
 from pipelines.ingestion.flows.power import PowerIngestionFlow
 from pipelines.ingestion.http import IngestionError
-from pipelines.ingestion.storage.power import PowerParquetRepository
+from pipelines.ingestion.storage.power import LEGACY_SCHEMA_KEY, PowerParquetRepository
 from pipelines.processing.cleaning.power_point import process_power_point
 
 POINT = GeoPoint(6.2442, -75.5812)
@@ -163,6 +163,27 @@ class PowerParquetFlowTests(unittest.TestCase):
         self.assertEqual(result["inserted"], 2)
         self.assertEqual(self.client.calls[-1][0], DateRange.parse("2024-01-04", "2024-01-05"))
         self.assertEqual(len(self.repository.read(POINT, query(end="2024-01-05").period)), 5)
+
+    def test_historical_partitions_remain_readable_and_new_writes_use_agrogeo_metadata(self):
+        import pyarrow.parquet as pq
+
+        self.run_flow()
+        path = next(self.repository.root.rglob("*.parquet"))
+        table = pq.ParquetFile(path).read()
+        self.assertEqual(table.schema.metadata, {b"agrogeo_schema": b"power_observation_v1"})
+        expected = self.repository.read(POINT, query().period)
+        pq.write_table(
+            table.replace_schema_metadata({LEGACY_SCHEMA_KEY: b"power_observation_v1"}), path
+        )
+        self.assertEqual(self.repository.read(POINT, query().period), expected)
+        extended = query(end="2024-01-05")
+        self.run_flow(extended)
+        self.assertEqual(len(self.repository.read(POINT, extended.period)), 5)
+        self.assertEqual(self.repository.read(POINT, query().period), expected)
+        self.assertEqual(
+            pq.ParquetFile(path).schema_arrow.metadata,
+            {b"agrogeo_schema": b"power_observation_v1"},
+        )
 
     def test_new_variable_backfills_instead_of_using_only_max_date(self):
         self.run_flow()

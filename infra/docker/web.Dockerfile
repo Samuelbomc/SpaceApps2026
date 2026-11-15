@@ -10,7 +10,7 @@ ENV NG_CLI_ANALYTICS=false
 ENV NG_BUILD_MAX_WORKERS=2
 RUN npm run build
 FROM nginx:alpine
-COPY --from=build /app/frontend/dist/frontend/browser /usr/share/nginx/html
+COPY --from=build /app/frontend/dist/agrogeo/browser /usr/share/nginx/html
 COPY infra/docker/frontend.conf /etc/nginx/conf.d/default.conf
 COPY infra/docker/frontend-api.conf /etc/nginx/frontend-api.conf
 EXPOSE 3000

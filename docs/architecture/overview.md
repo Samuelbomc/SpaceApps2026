@@ -1,6 +1,6 @@
 # Arquitectura del sistema
 
-Field Shift es un monorepo con aplicación Angular, API FastAPI y procesos Python
+AgroGeo es un monorepo con aplicación Angular, API FastAPI y procesos Python
 para ingesta, entrenamiento e inferencia. Los trabajos periódicos se ejecutan
 fuera de las peticiones del usuario. Las responsabilidades se separan por módulos
 y contratos; desplegar workers separados no convierte esos módulos en microservicios.
@@ -9,7 +9,7 @@ y contratos; desplegar workers separados no convierte esos módulos en microserv
 
 ```mermaid
 flowchart LR
-    FARMER[Agricultor] -->|Registro, finca y consulta| SYSTEM[Field Shift]
+    FARMER[Agricultor] -->|Registro, finca y consulta| SYSTEM[AgroGeo]
     ANALYST[Profesional o investigador] -->|Fuentes, resultados y trazabilidad| SYSTEM
     NASA[Servicios NASA y Earthdata] -->|Observaciones y catálogos| SYSTEM
     GEO[Cartografía y geocodificación] -->|Límites, mapa y nombres| SYSTEM
@@ -26,7 +26,11 @@ aplicación no conceden acceso a productos protegidos de Earthdata.
 flowchart TD
     BROWSER[Navegador: Angular y MapLibre] -->|HTTP, cookie y CSRF| WEB[Nginx o proxy de desarrollo]
     WEB -->|API HTTP| API[FastAPI]
-    API -->|Identidad, fincas y observaciones| PG[(PostgreSQL)]
+    API -->|Identidad, fincas, observaciones y cola manual| PG[(PostgreSQL)]
+    PG -->|Solicitudes manuales autenticadas| MANUAL[Consumidor de actualización manual]
+    MANUAL --> INGEST
+    MANUAL --> TRAIN
+    MANUAL --> RECOMMEND
     API -->|Lectura de resultados y registro ML| MONGO[(MongoDB)]
     API -->|CSV autorizados| PRIVATE[Archivos privados]
     NASA[Proveedores NASA] --> INGEST[Worker de ingesta]
@@ -66,7 +70,7 @@ requieren FastAPI para entrenar o inferir. Ubicación de clases y archivos en
 
 ## Tiempo, espacio y publicación
 
-Los jobs tienen calendarios y locks independientes. La ingesta semanal puede
+Los jobs tienen calendarios y locks independientes. La ingesta diaria puede
 actualizar datos sin producir suficientes etiquetas para entrenar o sin publicar
 un candidato. Los horizontes tienen modelos separados; los targets agregan
 `t+1..t+H` con entradas hasta `t-2`.

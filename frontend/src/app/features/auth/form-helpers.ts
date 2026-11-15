@@ -1,5 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { APIError } from '@field-shift/api-client';
+import { APIError } from '@agrogeo/api-client';
 import { AuthError } from '../../core/auth/auth.models';
 
 export const MIN_PASSWORD_LENGTH = 15;

@@ -11,7 +11,7 @@ import type {
   FarmDataset,
   DatasetUploadResult,
   FarmModelContext,
-} from '@field-shift/api-client';
+} from '@agrogeo/api-client';
 
 @Component({
   selector: 'app-farm-manage',
@@ -54,6 +54,13 @@ import type {
     }
     .farm-message {
       padding: 1rem;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .extra-fields {
+      margin-top: var(--sp-4);
     }
     fieldset {
       border: 0;

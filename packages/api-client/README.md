@@ -10,7 +10,7 @@ frontend ubicado en `frontend/`:
 
 ```json
 { "compilerOptions": { "paths": {
-  "@field-shift/api-client": ["../packages/api-client/src/index.ts"]
+  "@agrogeo/api-client": ["../packages/api-client/src/index.ts"]
 } } }
 ```
 
@@ -19,7 +19,7 @@ El alias es una alternativa al enlace de paquetes locales; no requiere copiar
 el código o agregar otra versión del contrato.
 
 ```typescript
-import { createAPIClient, type AuthSession } from '@field-shift/api-client';
+import { createAPIClient, type AuthSession } from '@agrogeo/api-client';
 
 // Proxy del mismo origen: /backend/* → FastAPI /api/v1/*.
 const client = createAPIClient({ baseURL: '/backend/' });

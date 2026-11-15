@@ -20,6 +20,9 @@ export interface ImageryProvider {
   limitation: string;
 }
 
+/** Camera limit for local views; zoom above the source level magnifies existing pixels. */
+export const LOCAL_MAP_MAX_ZOOM = 17;
+
 /** NASA GIBS — Blue Marble shaded relief & bathymetry. Globe / country scale. */
 export const NASA_BLUE_MARBLE: ImageryProvider = {
   id: 'nasa-gibs-blue-marble',

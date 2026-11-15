@@ -18,7 +18,7 @@ import {
  *
  * Holds the geographic selection (department → region → municipality) and the
  * farmer-drawn plot. Nothing is persisted, sent anywhere or analysed; a page
- * reload starts over (persistent storage arrives with the backend).
+ * reload starts over. Saving a private farm is an explicit authenticated action.
  */
 @Injectable({ providedIn: 'root' })
 export class AnalysisJourneyStore {
@@ -65,7 +65,7 @@ export class AnalysisJourneyStore {
   /** First step not yet completed — where "Continuar" should take the user. */
   readonly nextStep = computed<JourneyStepId>(() => {
     const done = this.completed();
-    const order: JourneyStepId[] = ['cuenta', 'explorar', 'lote', 'caracterizacion', 'analisis'];
+    const order: JourneyStepId[] = ['explorar', 'lote', 'analisis'];
     return order.find((id) => !done[id]) ?? 'analisis';
   });
 

@@ -1,18 +1,21 @@
-# AndesTerra — frontend Angular
+# AgroGeo — frontend Angular
 
-Frontend activo de Field Shift, integrado con FastAPI y el cliente compartido
+Frontend activo de AgroGeo, integrado con FastAPI y el cliente compartido
 `packages/api-client`.
 
 ```bash
 npm ci --prefix frontend
-python -m scripts.dev_stack --with-mongo
+python -m scripts.dev_stack --with-mongo --with-workers
 ```
 
 Desde esta carpeta, `npm start` escucha en 3000. El proxy de desarrollo reescribe
 `/backend/*` a `/api/v1/*` en `API_INTERNAL_URL` (por defecto 127.0.0.1:8000).
 
-Rutas: `/explorar`, `/acceso` (`/login` redirige), `/registro`, `/panel`, `/perfil`,
-`/fincas`, `/finca/lote`, `/finca/caracterizacion` y `/analisis`.
+Exploración (`/explorar`) reúne mapa, análisis actual y, con sesión, historial y
+nuevas consultas. Es el destino por defecto al entrar. Rutas privadas: `/perfil`,
+`/fincas` y `/finca/caracterizacion`. `/panel`, `/finca/lote` y `/analisis` mantienen
+compatibilidad mediante redirecciones al explorador. Cuenta opcional mediante
+`/acceso` (`/login` redirige) o `/registro`.
 Las sesiones son reales con cookie HttpOnly; los guards esperan su restauración.
 Los archivos de finca son privados. Recuperación de contraseña y modificación
 del nombre de cuenta todavía no tienen endpoint y se muestran como no disponibles.

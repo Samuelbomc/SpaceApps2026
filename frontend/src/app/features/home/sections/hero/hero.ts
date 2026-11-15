@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { APP_IDENTITY } from '../../../../core/config/app-identity';
-import { PILOT_TERRITORY } from '../../../../core/catalog/pilot-territory';
 
 interface LayerShape {
   label: string;
@@ -67,8 +65,6 @@ function slab(
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeHero {
-  protected readonly identity = APP_IDENTITY;
-  protected readonly territory = PILOT_TERRITORY;
   protected readonly auth = inject(AuthService);
 
   /** Drawn bottom-to-top so upper layers overlap lower ones. */
@@ -78,7 +74,4 @@ export class HomeHero {
     slab(166, 'Clima y agua', '#9fbfae', '#6f9a83'),
     slab(111, 'Observación satelital', '#3d7d99', '#2c6680'),
   ];
-
-  /** Legend order matches the visual stack (top to bottom). */
-  protected readonly legend = [...this.layers].reverse();
 }

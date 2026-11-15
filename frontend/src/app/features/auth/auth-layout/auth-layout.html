@@ -2,15 +2,10 @@
   <div class="container auth__grid">
     <aside class="auth__brand" aria-label="Sobre la plataforma">
       <span class="eyebrow">{{ identity.name }}</span>
-      <p class="auth__tagline">{{ identity.tagline }}</p>
-      <ol class="auth__steps">
-        <li><b>1</b> Ubica tu finca y dibuja tu lote sobre imagen satelital.</li>
-        <li><b>2</b> Cuéntanos sobre el suelo, el agua y tus cultivos.</li>
-        <li><b>3</b> Consulta una propuesta de rotación explicada, con sus fuentes y límites.</li>
-      </ol>
-      <p class="auth__region">Región piloto: {{ region }}, Antioquia.</p>
+      <p class="auth__tagline">Tu finca, en un solo lugar.</p>
+      <p>Guarda su ubicación, cultivos y mediciones.</p>
+      <p class="auth__region">{{ region }} · Antioquia</p>
     </aside>
-
     <div class="auth__card card">
       <h1>{{ heading() }}</h1>
       @if (lead()) {

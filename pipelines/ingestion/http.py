@@ -83,9 +83,7 @@ class JsonHTTPClient:
                     return stored["payload"]
             except (ValueError, KeyError, TypeError):
                 pass  # Una entrada dañada se reemplaza con una respuesta real.
-        request = Request(
-            url, headers={"User-Agent": "SpaceApps2026/0.1", "Accept": "application/json"}
-        )
+        request = Request(url, headers={"User-Agent": "AgroGeo/0.1", "Accept": "application/json"})
         for attempt in range(self.attempts):
             try:
                 with self.opener(request, timeout=self.timeout) as response:

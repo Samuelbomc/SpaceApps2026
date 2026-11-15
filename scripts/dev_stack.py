@@ -1,4 +1,4 @@
-"""Stack local persistente sin Docker. No instala servicios ni activa el worker."""
+"""Stack local persistente sin Docker, con actualizaciones manuales y workers periódicos opcionales."""
 
 import argparse
 import json
@@ -73,6 +73,11 @@ def main(argv=None):
         "--api-only",
         action="store_true",
         help="Iniciar backend y bases sin depender de ningún frontend",
+    )
+    parser.add_argument(
+        "--with-workers",
+        action="store_true",
+        help="Activar ingesta y entrenamiento diarios y recomendaciones periódicas",
     )
     parser.add_argument(
         "--web-directory",
@@ -173,6 +178,31 @@ def main(argv=None):
                     start_new_session=True,
                 )
             )
+            processes.append(
+                subprocess.Popen(
+                    [
+                        sys.executable,
+                        "-m",
+                        "scripts.worker",
+                        "--manual-only",
+                        "--poll-seconds",
+                        "5",
+                    ],
+                    env=environment,
+                    start_new_session=True,
+                )
+            )
+            if args.with_workers:
+                from scripts.runtime import JOB_NAMES
+
+                for name in JOB_NAMES:
+                    processes.append(
+                        subprocess.Popen(
+                            [sys.executable, "-m", "scripts.worker", "--job", name],
+                            env=environment,
+                            start_new_session=True,
+                        )
+                    )
             if not args.api_only:
                 processes.append(
                     subprocess.Popen(
@@ -188,7 +218,12 @@ def main(argv=None):
                 else f"http://localhost:{args.web_port}"
             )
             print(
-                f"Field Shift: {address} · PostgreSQL persistente · resultados {environment['RESULTS_BACKEND']} · worker no activado.",
+                f"AgroGeo: {address} · PostgreSQL persistente · resultados {environment['RESULTS_BACKEND']} · "
+                + (
+                    "jobs periódicos y actualizaciones manuales habilitados."
+                    if args.with_workers
+                    else "actualizaciones manuales habilitadas."
+                ),
                 flush=True,
             )
             while not stop.wait(1):

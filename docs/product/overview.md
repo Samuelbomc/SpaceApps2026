@@ -1,6 +1,6 @@
 # Producto y alcance
 
-Field Shift es una plataforma de análisis agroclimático y apoyo a la selección de
+AgroGeo es una plataforma de análisis agroclimático y apoyo a la selección de
 cultivos y rotaciones para NASA Space Apps Challenge. Combina observación terrestre,
 modelos XGBoost, requisitos agronómicos y conocimiento del agricultor.
 

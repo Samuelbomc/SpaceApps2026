@@ -17,9 +17,11 @@ from apps.api.app.repositories.operational import OperationalRepository
 from apps.api.app.repositories.runtime import runtime_stores
 from apps.api.app.routers.crop_catalog import router as crop_catalog_router
 from apps.api.app.routers.farmers import farmer_router
+from apps.api.app.routers.manual_updates import manual_update_router
 from apps.api.app.routers.map_places import map_places_router
 from apps.api.app.services.analysis import AnalysisService
 from apps.api.app.services.map_places import MapPlaceService
+from apps.api.app.services.session_access import session_access
 from ml.inference.expanded import ExpandedModelBundle
 from packages.contracts.api import (
     AnalysisRequest,
@@ -61,7 +63,7 @@ def create_app(
         )
         model_registry = model_registry if model_registry is not None else default_registry
     app = FastAPI(
-        title="Field Shift API",
+        title="AgroGeo API",
         version="1.0.0",
         description="Ingesta NASA y contratos de análisis agrícola",
     )
@@ -73,11 +75,10 @@ def create_app(
         allow_credentials=True,
     )
     app.add_middleware(PrivateRequestLimits)
-    app.include_router(
-        farmer_router(
-            getattr(repository, "database", None) or Database(settings.database_url), settings
-        )
-    )
+    database = getattr(repository, "database", None) or Database(settings.database_url)
+    access = session_access(database, settings)
+    app.include_router(farmer_router(database, settings, access=access))
+    app.include_router(manual_update_router(database, access))
     app.include_router(
         map_places_router(
             place_service if place_service is not None else MapPlaceService(settings.geocoder_url)

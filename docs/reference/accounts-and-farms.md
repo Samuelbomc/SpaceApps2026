@@ -1,6 +1,6 @@
 # Cuentas, fincas y datasets privados
 
-Field Shift permite crear una cuenta, iniciar/cerrar sesión, registrar varias
+AgroGeo permite crear una cuenta, iniciar/cerrar sesión, registrar varias
 fincas, editar su información y cargar mediciones históricas CSV. Cada recurso
 se consulta y modifica con el propietario de la sesión; conocer el UUID de otra
 finca o dataset no concede acceso. El mapa y las observaciones públicas de NASA
@@ -16,7 +16,7 @@ los archivos y sus relaciones. Las bases nativas y de Compose son independientes
 
 ## Registro e inicio de sesión
 
-Son cuentas propias de Field Shift, no cuentas NASA Earthdata. No desbloquean
+Son cuentas propias de AgroGeo, no cuentas NASA Earthdata. No desbloquean
 las descargas científicas protegidas ni solicitan credenciales Earthdata.
 
 Las contraseñas se almacenan con **Argon2id**, con sal aleatoria y parámetros de
@@ -25,6 +25,12 @@ usan tokens aleatorios de 256 bits; PostgreSQL conserva únicamente su hash. La
 cookie es HttpOnly, SameSite=Lax y host-only; caduca a los siete días y se revoca
 al cerrar sesión. No se guardan credenciales ni tokens de acceso en localStorage.
 Los cambios de sesión se notifican entre pestañas sin transmitir los tokens.
+
+La cookie se llama `agrogeo_session`. Se acepta la cookie previa durante la
+transición: `/api/v1/auth/me` conserva la sesión y su vencimiento, emite la cookie
+actual y elimina la anterior. Los tokens CSRF previos siguen ligados a la misma
+sesión; al salir se revoca esa sesión y se eliminan ambas cookies. Si están
+presentes las dos, la cookie actual tiene precedencia, incluso si es inválida.
 
 Las escrituras privadas requieren un token CSRF ligado a la sesión. También se
 comprueba el origen y se restringe CORS a los orígenes configurados. Los intentos

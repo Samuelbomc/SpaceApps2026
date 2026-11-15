@@ -6,13 +6,21 @@ criterios están en [entrenamiento](model-training.md).
 
 | Job | Cadencia de revisión | Responsabilidad |
 | --- | --- | --- |
-| nasa-weekly | 604800 s | Ingesta incremental y estados por fuente |
+| nasa-weekly | 86400 s (1 día) | Ingesta incremental y estados por fuente |
 | model-training | 86400 s | Captura procesados, construye datasets, ajusta/evalúa candidatos y publica cuando procede |
 | crop-recommendations | 3600 s | Usa versiones activas y snapshots recientes; guarda inferencias y evaluación de rotación |
 
 Una ingesta completada adelanta los jobs ML. Una publicación adelanta las
 recomendaciones. La llegada de observaciones no garantiza etiquetas nuevas,
 y una revisión programada no implica una publicación.
+
+`nasa-weekly` conserva su identificador histórico; su frecuencia efectiva es
+diaria. La migración de calendarios adelanta el siguiente ciclo según el último
+éxito sin aplazar ciclos vencidos, borrar fuentes pendientes ni cancelar reintentos.
+La ingesta busca observaciones nuevas e incrementa el histórico; el entrenamiento
+evalúa el histórico procesado completo de la receta, no únicamente el último día.
+La frecuencia de consulta no aumenta la resolución ni la frecuencia de publicación
+de los productos NASA. Sin entradas nuevas suficientes se conserva el modelo vigente.
 
 La señal de datos nuevos o de publicación cancela la espera de reintento previa
 del job dependiente. Su siguiente ejecución revisa todas las tareas con las
@@ -26,7 +34,10 @@ python -m scripts.worker --job recommendations --once
 ```
 
 Sin --once los procesos deben permanecer activos. Compose los ejecuta como
-servicios separados; scripts.dev_stack conserva las bases pero no activa workers.
+servicios separados. En el stack nativo, `scripts.dev_stack --with-workers`
+activa los tres consumidores con las mismas conexiones y directorios del backend;
+sin esa opción solo se incluye el consumidor manual. También se pueden arrancar
+desde la CLI con `python -m scripts.worker --job all`, configurando las conexiones.
 No se dispara NASA ni XGBoost al abrir Angular o consultar FastAPI.
 
 El worker construye únicamente el job seleccionado y sus dependencias. En modo

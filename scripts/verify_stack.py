@@ -35,7 +35,7 @@ def main():
         raise SystemExit("Falta la muestra histórica real POWER descrita en docs/validation.md.")
     processes = []
     with tempfile.TemporaryDirectory(
-        prefix="fs-stack-", dir="/private/tmp" if Path("/private/tmp").exists() else None
+        prefix="agrogeo-stack-", dir="/private/tmp" if Path("/private/tmp").exists() else None
     ) as folder:
         with embedded_postgres.get_server(Path(folder) / "pg", cleanup_mode="delete") as pg:
             database = Database(pg.get_uri())
@@ -110,7 +110,7 @@ def main():
                         analysis = json.load(response)
                     assert len(observations["items"]) == len(rows)
                     assert analysis["status"] == "pending_model" and analysis["climate"] is None
-                    assert status["schedule"]["interval_seconds"] == 604800
+                    assert status["schedule"]["interval_seconds"] == 86400
                     report = {
                         "status": "ok",
                         "database": "real temporary PostgreSQL",

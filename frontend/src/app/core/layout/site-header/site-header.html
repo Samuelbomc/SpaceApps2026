@@ -1,10 +1,14 @@
 <header class="header" [class.header--open]="menuOpen()">
   <div class="container header__bar">
-    <a class="brand" [routerLink]="auth.isAuthenticated() ? '/panel' : '/'" (click)="closeMenu()">
+    <a
+      class="brand"
+      [routerLink]="auth.isAuthenticated() ? '/explorar' : '/'"
+      (click)="closeMenu()"
+    >
       <app-brand-mark />
       <span class="brand__text">
         <span class="brand__name">{{ identity.name }}</span>
-        <span class="brand__tag">Prototipo · Oriente Antioqueño</span>
+        <span class="brand__tag">NASA Space Apps · Colombia</span>
       </span>
     </a>
 
@@ -29,6 +33,7 @@
               <a
                 class="nav__link"
                 [routerLink]="item.path"
+                [fragment]="item.fragment"
                 routerLinkActive="nav__link--active"
                 [routerLinkActiveOptions]="activeOptions"
                 ariaCurrentWhenActive="page"

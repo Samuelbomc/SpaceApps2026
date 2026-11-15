@@ -42,16 +42,19 @@ describe('Analysis journey', () => {
     await TestBed.inject(AuthService).login({ email: 'ana@correo.co', password: '12345678' });
   });
 
-  it('has five steps, with municipality and plot merged into one', () => {
-    expect(JOURNEY.map((s) => s.id)).toEqual([
-      'cuenta',
-      'explorar',
-      'lote',
-      'caracterizacion',
-      'analisis',
-    ]);
-    expect(JOURNEY[2].label).toBe('Municipio y lote');
-    expect(JOURNEY.some((s) => (s.id as string) === 'municipio')).toBe(false);
+  it('keeps account and characterization outside the public workspace stages', () => {
+    expect(JOURNEY.map((step) => step.id)).toEqual(['explorar', 'lote', 'analisis']);
+    expect(JOURNEY.every((step) => step.path === '/explorar')).toBe(true);
+  });
+
+  it('a visitor can select and confirm a plot without registration or characterization', async () => {
+    await TestBed.inject(AuthService).logout();
+    TestBed.tick();
+    store.selectMunicipality({ code: '05400', name: 'La Unión' });
+    store.setPlot(plotIn('05400'));
+    expect(store.confirmPlot()).toBe(true);
+    expect(store.nextStep()).toBe('analisis');
+    expect(store.questionnaireComplete()).toBe(false);
   });
 
   it('pilot region holds exactly the 23 verified Oriente municipalities, with a cited source', () => {
@@ -87,7 +90,7 @@ describe('Analysis journey', () => {
 
     store.setPlot(plotIn('05400'));
     expect(store.confirmPlot()).toBe(true);
-    expect(store.nextStep()).toBe('caracterizacion');
+    expect(store.nextStep()).toBe('analisis');
   });
 
   it('editing or changing municipality un-confirms the plot', () => {
@@ -103,18 +106,17 @@ describe('Analysis journey', () => {
     expect(store.plot()).toBeNull();
   });
 
-  it('stepper shows five steps and marks current and completed ones accessibly', async () => {
+  it('stepper shows public stages and marks current and completed ones accessibly', async () => {
     store.selectMunicipality({ code: '05400', name: 'La Unión' });
     const fixture = TestBed.createComponent(JourneySteps);
     fixture.componentRef.setInput('current', 'lote');
     await fixture.whenStable();
     const items = (fixture.nativeElement as HTMLElement).querySelectorAll('li');
 
-    expect(items.length).toBe(5);
+    expect(items.length).toBe(3);
     expect(items[0].classList).toContain('step--done');
-    expect(items[1].classList).toContain('step--done');
-    expect(items[2].querySelector('a')?.getAttribute('aria-current')).toBe('step');
-    expect(items[2].textContent).toContain('Municipio y lote');
-    expect(items[3].classList).toContain('step--upcoming');
+    expect(items[1].querySelector('a')?.getAttribute('aria-current')).toBe('step');
+    expect(items[1].textContent).toContain('Terreno opcional');
+    expect(items[2].classList).toContain('step--upcoming');
   });
 });

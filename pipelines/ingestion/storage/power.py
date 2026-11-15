@@ -11,6 +11,9 @@ from packages.contracts import DateRange, GeoPoint
 from packages.contracts.observations import PowerObservation, power_location_id
 from pipelines.ingestion.http import IngestionError
 
+# Solo lectura de particiones históricas; las nuevas usan agrogeo_schema.
+LEGACY_SCHEMA_KEY = b"field_shift_schema"
+
 
 def arrow_modules():
     try:
@@ -59,7 +62,7 @@ def observation_schema():
             )
             for name in names
         ],
-        metadata={b"field_shift_schema": b"power_observation_v1"},
+        metadata={b"agrogeo_schema": b"power_observation_v1"},
     )
 
 
@@ -88,10 +91,9 @@ class PowerParquetRepository:
         _, pq = arrow_modules()
         # ParquetFile evita inferir columnas de partición desde carpetas padre.
         table = pq.ParquetFile(path).read()
-        if (
-            table.schema.metadata is None
-            or table.schema.metadata.get(b"field_shift_schema") != b"power_observation_v1"
-        ):
+        metadata = table.schema.metadata or {}
+        version = metadata.get(b"agrogeo_schema", metadata.get(LEGACY_SCHEMA_KEY))
+        if version != b"power_observation_v1":
             raise IngestionError(f"Versión de esquema Parquet desconocida en {path}.")
         rows = table.to_pylist()
         for row in rows:

@@ -20,7 +20,7 @@ def main():
         raise SystemExit(
             "Instala mongod o ejecuta la suite con TEST_DATABASE_URL y TEST_MONGODB_URI de pruebas."
         )
-    with tempfile.TemporaryDirectory(prefix="fs-automation-") as folder:
+    with tempfile.TemporaryDirectory(prefix="agrogeo-automation-") as folder:
         with socket.socket() as reservation:
             reservation.bind(("127.0.0.1", 0))
             port = reservation.getsockname()[1]

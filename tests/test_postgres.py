@@ -26,7 +26,7 @@ class PostgreSQLTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.url = os.environ["TEST_DATABASE_URL"]
-        cls.schema = "fieldshift_test_" + uuid.uuid4().hex
+        cls.schema = "agrogeo_test_" + uuid.uuid4().hex
         with psycopg.connect(cls.url, autocommit=True) as conn:
             conn.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(cls.schema)))
         cls.db = Database(make_conninfo(cls.url, options=f"-c search_path={cls.schema}"))
@@ -49,9 +49,92 @@ class PostgreSQLTests(unittest.TestCase):
         migrate(self.db)
         with self.db.connect() as conn:
             self.assertEqual(
-                conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 5
+                conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 7
             )
         self.assertEqual(len(self.repo.regions()), 1)
+
+    def test_daily_migration_preserves_retry_progress_and_is_not_reapplied(self):
+        schema = "daily_migration_" + uuid.uuid4().hex
+        with psycopg.connect(self.url, autocommit=True) as conn:
+            conn.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
+        try:
+            database = Database(make_conninfo(self.url, options=f"-c search_path={schema}"))
+            migrate(database)
+            repository = OperationalRepository(database)
+            previous_recommendations = repository.schedule("crop-recommendations")
+            with database.connect() as conn:
+                conn.execute(
+                    """UPDATE job_schedules SET interval_seconds=604800,
+                    last_success_at=now()-interval '2 days',
+                    next_run_at=now()+interval '5 days', retry_at=now()+interval '1 hour',
+                    consecutive_failures=2,last_error='fixture failure',
+                    pending_sources='["smap"]'::jsonb,last_result='{"fixture":"retained"}'::jsonb
+                    WHERE job_key IN ('nasa-weekly','model-training')"""
+                )
+                conn.execute(
+                    "DELETE FROM schema_migrations WHERE version='007_daily_data_and_training.sql'"
+                )
+            before = {key: repository.schedule(key) for key in ("nasa-weekly", "model-training")}
+            migrate(database)
+            after = {key: repository.schedule(key) for key in before}
+            for key, previous in before.items():
+                self.assertEqual(after[key]["interval_seconds"], 86400)
+                self.assertEqual(
+                    after[key]["next_run_at"], previous["last_success_at"] + timedelta(days=1)
+                )
+                for field in (
+                    "last_success_at",
+                    "retry_at",
+                    "consecutive_failures",
+                    "last_error",
+                    "pending_sources",
+                    "last_result",
+                ):
+                    self.assertEqual(after[key][field], previous[field])
+            migrate(database)
+            self.assertEqual(after, {key: repository.schedule(key) for key in before})
+            self.assertEqual(repository.schedule("crop-recommendations"), previous_recommendations)
+        finally:
+            with psycopg.connect(self.url, autocommit=True) as conn:
+                conn.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
+
+    def test_data_and_training_jobs_run_once_per_day_and_keep_schedule_after_restart(self):
+        from pipelines.scheduling.runner import poll_background
+
+        due = datetime(2026, 1, 1, tzinfo=UTC)
+        for key, module in (
+            ("nasa-weekly", "scripts.worker"),
+            ("model-training", "pipelines.scheduling.runner"),
+        ):
+            with self.subTest(job=key):
+                with self.db.connect() as conn:
+                    conn.execute(
+                        "UPDATE job_schedules SET next_run_at=%s WHERE job_key=%s", (due, key)
+                    )
+                self.assertEqual(self.repo.schedule(key)["interval_seconds"], 86400)
+                job = Mock()
+                job.run.return_value = {"status": "ok", "published": 0}
+
+                def poll(at):
+                    if key == "nasa-weekly":
+                        return poll_once(self.db, job, now=at)
+                    return poll_background(self.db, key, job, now=at)
+
+                with patch(f"{module}.datetime") as clock:
+                    clock.now.return_value = due + timedelta(seconds=10)
+                    self.assertEqual(poll(due), "completed")
+                    self.assertEqual(
+                        self.repo.schedule(key)["next_run_at"], due + timedelta(days=1)
+                    )
+                    migrate(self.db)
+                    self.assertEqual(poll(due + timedelta(hours=23)), "not_due")
+                    job.run.assert_called_once()
+                    clock.now.return_value = due + timedelta(days=1, seconds=10)
+                    self.assertEqual(poll(due + timedelta(days=1)), "completed")
+                    self.assertEqual(job.run.call_count, 2)
+                    self.assertEqual(
+                        self.repo.schedule(key)["next_run_at"], due + timedelta(days=2)
+                    )
 
     def test_independent_ml_jobs_keep_retry_and_schedule_after_restart(self):
         from pipelines.scheduling.runner import LOCKS, poll_background
@@ -255,7 +338,7 @@ class PostgreSQLTests(unittest.TestCase):
     def test_api_status_serializes_database_timestamps(self):
         response = TestClient(create_app(self.repo)).get("/api/v1/status")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["schedule"]["interval_seconds"], 604800)
+        self.assertEqual(response.json()["schedule"]["interval_seconds"], 86400)
 
     def test_analysis_request_reads_existing_result_by_exact_context(self):
         from packages.contracts.api import AnalysisRequest, AnalysisResult, Forecast, ForecastValue
@@ -419,7 +502,7 @@ class PostgreSQLTests(unittest.TestCase):
         self.assertEqual(result["summary"]["failed_sources"], ["smap"])
         self.assertEqual(result["summary"]["landsat"]["status"], "empty")
 
-    def test_new_weekly_cycle_refreshes_healthy_sources_despite_pending_failure(self):
+    def test_new_daily_cycle_refreshes_healthy_sources_despite_pending_failure(self):
         job = Mock()
         job.run.return_value = {"status": "partial", "summary": {"failed_sources": ["smap"]}}
         self.assertEqual(poll_once(self.db, job), "retry_scheduled")

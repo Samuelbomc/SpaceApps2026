@@ -1,94 +1,24 @@
 <section id="fuentes" class="section section--sunken" aria-labelledby="sources-title">
   <div class="container">
-    <header class="section-head">
-      <span class="eyebrow">Fuentes y metodología</span>
-      <h2 id="sources-title">Datos con procedencia visible</h2>
-      <p>
-        Fuentes previstas para el piloto. Cada una indica su tipo, resolución y principal
-        limitación. Ninguna está integrada todavía: el estado se actualizará cuando los datos fluyan
-        de extremo a extremo.
-      </p>
-    </header>
-
-    <div class="toolbar">
-      <div class="segmented" role="group" aria-label="Filtrar fuentes">
-        @for (f of filters; track f.id) {
-          <button
-            type="button"
-            class="segmented__btn"
-            [attr.aria-pressed]="filter() === f.id"
-            (click)="setFilter(f.id)"
-          >
-            {{ f.label }}
-          </button>
-        }
-      </div>
-      <p class="toolbar__count" aria-live="polite">{{ visibleSources().length }} fuentes</p>
-    </div>
-
-    <ul class="sources">
-      @for (s of visibleSources(); track s.id) {
-        <li class="source">
-          <div class="source__head">
-            <app-data-nature-badge [nature]="s.nature" />
-            <app-status-badge [status]="s.status" />
-          </div>
-          <h3>{{ s.name }}</h3>
-          <p class="source__provider">{{ s.provider }}</p>
-          <p class="source__contribution">{{ s.contribution }}</p>
-          <dl class="spec-list">
-            <dt>Variables</dt>
-            <dd>{{ s.variables.join(' · ') }}</dd>
-            <dt>Espacial</dt>
-            <dd>{{ s.spatialResolution }}</dd>
-            <dt>Temporal</dt>
-            <dd>{{ s.temporalResolution }}</dd>
-          </dl>
-          <p class="source__caveat"><strong>Limitación:</strong> {{ s.caveat }}</p>
-          <a class="source__link" [href]="s.url" target="_blank" rel="noopener noreferrer">
-            Sitio oficial<span class="sr-only"> de {{ s.name }} (abre en una pestaña nueva)</span>
-          </a>
-        </li>
-      }
-    </ul>
-    <p class="footnote">
-      Resoluciones nominales según la documentación de cada proveedor; se verificarán contra la
-      versión exacta del producto al integrarlo.
+    <h2 id="sources-title">Nuestras fuentes</h2>
+    <p>
+      Observación terrestre de NASA y cartografía del DANE. La disponibilidad se indica en cada
+      análisis.
     </p>
-
-    <div class="method">
-      <div>
-        <h3>Cómo etiquetamos la información</h3>
-        <ul class="natures">
-          @for (n of natures; track n.id) {
-            <li>
-              <app-data-nature-badge [nature]="n.id" />
-              <p>{{ n.description }}</p>
-            </li>
-          }
-        </ul>
-      </div>
-
-      <div>
-        <h3>Nivel de respaldo de cada resultado</h3>
-        <ul class="evidence">
-          @for (e of evidenceLevels; track e.id) {
-            <li [class]="'evidence--' + e.id">
-              <span class="evidence__bars" aria-hidden="true"><i></i><i></i><i></i></span>
-              <div>
-                <strong>{{ e.label }}</strong>
-                <p>{{ e.text }}</p>
-              </div>
-            </li>
-          }
-        </ul>
-        <p class="notice notice--caution" role="note">
-          <span>
-            Las reglas explícitas para asignar cada nivel se están documentando y se publicarán
-            junto con la metodología.
-          </span>
-        </p>
-      </div>
-    </div>
+    <details class="source-details">
+      <summary>Ver fuentes y resolución</summary>
+      <ul class="sources">
+        @for (source of sources; track source.id) {
+          <li class="source">
+            <h3>{{ source.name }}</h3>
+            <p>{{ source.provider }} · {{ source.spatialResolution }}</p>
+            <p>{{ source.caveat }}</p>
+            <a [href]="source.url" target="_blank" rel="noopener noreferrer"
+              >Fuente oficial<span class="sr-only"> de {{ source.name }}</span></a
+            >
+          </li>
+        }
+      </ul>
+    </details>
   </div>
 </section>

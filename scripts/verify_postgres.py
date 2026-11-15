@@ -14,7 +14,7 @@ def main():
             "Instala embedded-postgres para esta verificación opcional, o usa TEST_DATABASE_URL."
         )
     with tempfile.TemporaryDirectory(
-        prefix="fs-pg-", dir="/private/tmp" if Path("/private/tmp").exists() else None
+        prefix="agrogeo-pg-", dir="/private/tmp" if Path("/private/tmp").exists() else None
     ) as folder:
         with embedded_postgres.get_server(Path(folder) / "pg", cleanup_mode="delete") as postgres:
             os.environ["TEST_DATABASE_URL"] = postgres.get_uri()

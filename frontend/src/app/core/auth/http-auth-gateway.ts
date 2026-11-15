@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { createAPIClient, APIError, type AuthSession } from '@field-shift/api-client';
+import { createAPIClient, APIError, type AuthSession } from '@agrogeo/api-client';
 import { AuthGateway } from './auth-gateway';
 import { LoginRequest, RegisterRequest, UserSession } from './auth.models';
 @Injectable()

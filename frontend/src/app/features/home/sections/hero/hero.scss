@@ -49,17 +49,6 @@ h1 {
   list-style: none;
   font-size: var(--fs-sm);
   color: var(--c-sage-300);
-
-  li::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    margin-right: var(--sp-2);
-    border-radius: 50%;
-    background: var(--c-sage-300);
-    vertical-align: middle;
-  }
 }
 
 .hero__figure {
@@ -74,35 +63,8 @@ h1 {
   height: auto;
 }
 
-figcaption {
-  margin-top: var(--sp-3);
-}
-
-.hero__legend {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-2) var(--sp-4);
-  list-style: none;
-  font-size: var(--fs-sm);
-  color: var(--c-ink-inverse);
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-2);
+@media (max-width: 760px) {
+  .hero__figure {
+    display: none;
   }
-}
-
-.swatch {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 3px;
-  flex: none;
-}
-
-.hero__note {
-  display: block;
-  margin-top: var(--sp-2);
-  font-size: var(--fs-xs);
-  color: var(--c-ink-inverse-muted);
 }

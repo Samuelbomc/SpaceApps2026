@@ -1,6 +1,6 @@
-# Field Shift — NASA Space Apps 2026
+# AgroGeo — NASA Space Apps 2026
 
-Plataforma de análisis agroclimático para el Oriente antioqueño. Integra datos
+AgroGeo es una plataforma de análisis agroclimático para el Oriente antioqueño. Integra datos
 NASA, modelos XGBoost por horizonte y evaluación de cultivos y rotaciones.
 El frontend activo es Angular en `frontend/`; FastAPI expone resultados guardados.
 
@@ -20,11 +20,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install '.[api,storage,geospatial,local,mongo,ml,test,dev]'
 npm ci --prefix frontend
-python -m scripts.dev_stack --seed-reference --with-mongo
+python -m scripts.dev_stack --seed-reference --with-mongo --with-workers
 ```
 
 Se requiere `mongod` instalado para ese modo local. En macOS XGBoost necesita
-el runtime OpenMP. El comando conserva las bases locales y no inicia workers.
+el runtime OpenMP. El comando conserva las bases e inicia el consumidor de
+actualizaciones manuales; no ejecuta jobs periódicos sin activarlos explícitamente.
 Frontend: http://localhost:3000. API: http://localhost:8000/docs.
 La CLI Python recibe variables del entorno; no carga `.env` automáticamente.
 
@@ -35,7 +36,7 @@ sobrescribir una configuración existente y ejecutar:
 docker compose up --build -d
 ```
 
-Compose levanta las bases, API, web y tres workers. El motor Docker debe estar
+Compose levanta las bases, API, web, tres workers periódicos y un consumidor manual. El motor Docker debe estar
 activo. Ver [desarrollo y operación](docs/guides/development.md).
 
 ## Flujo y organización

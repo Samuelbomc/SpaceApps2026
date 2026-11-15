@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "frontend": {
+    "agrogeo": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -67,10 +67,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "frontend:build:production"
+              "buildTarget": "agrogeo:build:production"
             },
             "development": {
-              "buildTarget": "frontend:build:development"
+              "buildTarget": "agrogeo:build:development"
             }
           },
           "defaultConfiguration": "development",

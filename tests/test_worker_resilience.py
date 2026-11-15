@@ -16,6 +16,21 @@ from scripts.worker import main
 
 
 class JobConstructionTests(unittest.TestCase):
+    def test_manual_worker_is_idle_without_requests_and_does_not_start_periodic_jobs(self):
+        with (
+            patch("scripts.worker.Database", return_value=MagicMock()),
+            patch("scripts.worker.migrate"),
+            patch("scripts.worker.build_job") as build,
+            patch("scripts.worker.poll_manual_updates", return_value="not_due") as manual,
+            patch("scripts.worker.poll_once") as ingestion,
+            patch("scripts.worker.poll_background") as background,
+        ):
+            self.assertEqual(main(["--manual-only", "--once"]), 0)
+        manual.assert_called_once()
+        build.assert_not_called()
+        ingestion.assert_not_called()
+        background.assert_not_called()
+
     def test_ingestion_does_not_load_ml_configuration_or_results_backend(self):
         settings = Settings(
             training_config_path=Path("fixture-missing-training.json"),

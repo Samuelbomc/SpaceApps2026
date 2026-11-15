@@ -1,4 +1,4 @@
-# Documentación de Field Shift
+# Documentación de AgroGeo
 
 Referencia del producto, su implementación y sus límites de uso. Cada tema tiene
 una guía principal; los README de los módulos enlazan esa guía. El historial de

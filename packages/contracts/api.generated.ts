@@ -25,6 +25,7 @@ export interface components {
     "IngestionRun": { "run_id": string; "region_id": string; "started_at": string; "finished_at"?: (string | null); "status": "running" | "ok" | "partial" | "failed"; "summary"?: Record<string, unknown>; };
     "LocalVariable": { "variable": string; "label": string; "unit": string; "aggregation": string; "minimum"?: (number | null); "maximum"?: (number | null); };
     "LoginRequest": { "email": string; "password": string; };
+    "ManualUpdate": { "request_id": string; "status": "queued" | "running" | "retry_scheduled" | "completed" | "completed_with_limitations" | "failed"; "created_at": string; "updated_at": string; "finished_at"?: (string | null); "retry_at"?: (string | null); "phase": "ingestion" | "training" | "recommendations"; "message": string; "stages": Array<components['schemas']["UpdateStage"]>; };
     "MapPlace": { "latitude": number; "longitude": number; "label"?: (string | null); "source"?: "Photon/OpenStreetMap"; };
     "ModelCatalog": { "models": Array<components['schemas']["ModelInfo"]>; "recipe_version"?: string; "supported_horizons": Array<number>; "limitations": Array<string>; };
     "ModelInfo": { "model_id": string; "model_kind": "climate" | "soil"; "version": string; "horizon_days"?: number; "validation_status"?: "experimental"; "unit": string; "features": Array<string>; "formula": string; "evaluation_mae": number; "baseline_mae": number; "evaluation_note"?: string; };
@@ -45,6 +46,7 @@ export interface components {
     "Schedule": { "job_key": string; "interval_seconds": number; "next_run_at": string; "last_success_at"?: (string | null); "last_error"?: (string | null); "retry_at"?: (string | null); "consecutive_failures"?: number; "pending_sources"?: Array<string>; "last_result"?: Record<string, unknown>; };
     "StatusResponse": { "database"?: "postgresql"; "climate_model": "not_configured" | "configured"; "soil_model": "not_configured" | "configured"; "recommendations": "not_configured" | "configured"; "schedule": (components['schemas']["Schedule"] | null); "recent_runs": Array<components['schemas']["IngestionRun"]>; };
     "TrainingOutcome": { "slot": string; "status": "published" | "rejected" | "unchanged" | "insufficient_labels" | "pending_configuration" | "pending_review"; "message": string; "dataset_id"?: (string | null); "version"?: (string | null); };
+    "UpdateStage": { "phase": "ingestion" | "training" | "recommendations"; "status": "pending" | "running" | "completed" | "retry_scheduled" | "failed"; "message": string; "counts"?: Record<string, number>; "limitations"?: Array<string>; };
     "ValidationError": { "loc": Array<(string | number)>; "msg": string; "type": string; "input"?: unknown; "ctx"?: Record<string, unknown>; };
   };
 }

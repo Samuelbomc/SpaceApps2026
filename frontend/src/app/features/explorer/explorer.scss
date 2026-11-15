@@ -1,118 +1,132 @@
 .portal {
-  padding-block: var(--sp-6) var(--sp-8);
+  padding-block: var(--sp-5);
 }
-
 .portal__head {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--sp-4) var(--sp-6);
-  margin-bottom: var(--sp-5);
-
-  h1 {
-    font-size: var(--fs-2xl);
-    margin-block: var(--sp-2);
-  }
-
-  p {
-    max-width: 44rem;
-    color: var(--c-ink-muted);
-  }
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
 }
-
-.portal__steps {
-  margin-bottom: var(--sp-5);
+.portal__head h1 {
+  font-size: var(--fs-2xl);
 }
-
+.portal__head p {
+  color: var(--c-ink-muted);
+  margin-block: var(--sp-2);
+}
 .portal__search {
-  flex: 1 1 22rem;
-  max-width: 34rem;
+  min-width: 0;
 }
-
-.next {
-  display: grid;
-  gap: var(--sp-3);
-  border-top: 4px solid var(--c-green-600);
-
-  h2 {
-    font-size: var(--fs-md);
-  }
-  p {
-    font-size: var(--fs-sm);
-  }
-}
-
-.next__hint {
-  font-size: var(--fs-xs) !important;
-  color: var(--c-ink-subtle);
-}
-
-// Wider than the standard container so the map can use horizontal space.
-.portal__body {
-  --container-max: 1440px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
-  gap: var(--sp-5);
-  align-items: start;
-}
-
-.portal__map {
-  position: sticky;
-  top: calc(var(--header-h) + var(--sp-4));
-  height: calc(100vh - var(--header-h) - var(--sp-7));
-  min-height: 520px;
-}
-
-.portal__panel {
+.workspace-controls {
+  grid-area: controls;
   display: grid;
   gap: var(--sp-4);
+  min-width: 0;
 }
 
 .picker {
+  padding: var(--sp-3);
   display: grid;
   gap: var(--sp-2);
-
-  label {
-    font-weight: 700;
-  }
-
-  select {
-    width: 100%;
-    min-height: 2.75rem;
-    padding: 0 var(--sp-3);
-    border: 1px solid var(--c-border-strong);
-    border-radius: var(--radius-md);
-    background: var(--c-surface);
-    color: var(--c-ink);
-    font: inherit;
-  }
 }
-
-.picker__hint {
-  font-size: var(--fs-xs);
-  color: var(--c-ink-subtle) !important;
+.picker label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
 }
-
-.link-btn {
-  border: 0;
-  background: none;
-  color: var(--c-forest-700);
+.picker select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--sp-2);
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
   font: inherit;
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
+  color: var(--c-ink);
+}
+.picker__hint {
+  font-size: var(--fs-sm);
+}
+#municipio-hint {
+  display: none;
+}
+.guest-note {
+  color: var(--c-ink-subtle);
+  font-size: var(--fs-sm);
+}
+.portal__body {
+  --container-max: 1440px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-areas: 'map controls' 'results results';
+  gap: var(--sp-5);
+  align-items: start;
+}
+.workspace-map,
+.workspace-results {
+  min-width: 0;
+}
+.workspace-map {
+  grid-area: map;
+  scroll-margin-top: calc(var(--header-h) + var(--sp-3));
+}
+.portal__map {
+  height: clamp(500px, calc(100dvh - 240px), 720px);
+}
+.workspace-results {
+  grid-area: results;
+  scroll-margin-top: calc(var(--header-h) + var(--sp-3));
 }
 
+.plot-readout {
+  padding: var(--sp-3);
+  font-size: var(--fs-sm);
+}
+.plot-readout p {
+  margin-top: var(--sp-2);
+}
+.map-details {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding-block: var(--sp-2);
+}
+.save-option {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
+}
 @media (max-width: 1000px) {
   .portal__body {
     grid-template-columns: 1fr;
+    grid-template-areas: 'controls' 'map' 'results';
   }
-
   .portal__map {
-    position: relative;
-    top: 0;
-    height: 62vh;
-    min-height: 380px;
+    height: 500px;
   }
+}
+@media (max-width: 600px) {
+  .portal__map {
+    height: 480px;
+  }
+  .portal__head h1 {
+    font-size: var(--fs-xl);
+  }
+  .workspace-controls {
+    gap: var(--sp-2);
+  }
+}
+
+.workspace-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+.workspace-actions .btn {
+  min-height: 2.5rem;
+  padding-block: var(--sp-2);
 }

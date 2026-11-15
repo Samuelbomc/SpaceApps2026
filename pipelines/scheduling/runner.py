@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 
 from psycopg.types.json import Jsonb
 
-LOG = logging.getLogger("fieldshift.automation")
+LOG = logging.getLogger("agrogeo.automation")
 LOCKS = {"model-training": 1546052066, "crop-recommendations": 1546052067}
 
 

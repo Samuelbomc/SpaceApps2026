@@ -1,52 +1,13 @@
 <footer class="footer">
-  <div class="container footer__grid">
-    <div class="footer__brand">
-      <div class="footer__identity">
-        <app-brand-mark />
-        <span class="footer__name">{{ identity.name }}</span>
-        @if (identity.isPlaceholderName) {
-          <span class="footer__placeholder">Nombre provisional</span>
-        }
-      </div>
-      <p>
-        {{ identity.tagline }}. Prototipo de plataforma de inteligencia agrícola para Colombia, con
-        región piloto en el Oriente Antioqueño.
-      </p>
-    </div>
-
+  <div class="container footer__bar">
+    <p>
+      <strong>{{ identity.name }}</strong> · NASA Space Apps · Colombia
+    </p>
     <nav aria-label="Navegación del pie de página">
-      <h2 class="footer__heading">Plataforma</h2>
-      <ul class="footer__links">
-        <li><a routerLink="/">Inicio</a></li>
-        <li><a routerLink="/explorar">Explorar el mapa</a></li>
-        <li><a routerLink="/" fragment="como-funciona">Cómo funciona</a></li>
-        <li><a routerLink="/" fragment="fuentes">Fuentes y métodos</a></li>
-        @if (auth.isAuthenticated()) {
-          <li><a routerLink="/panel">Mi panel</a></li>
-        } @else {
-          <li><a routerLink="/acceso">Iniciar sesión</a></li>
-        }
-      </ul>
+      <a routerLink="/explorar">Mapa</a><a routerLink="/" fragment="fuentes">Fuentes</a>
     </nav>
-
-    <div>
-      <h2 class="footer__heading">Proyecto</h2>
-      <ul class="footer__links">
-        <li>{{ identity.challenge }}</li>
-        <li lang="en">Reto: {{ identity.challengeTheme }}</li>
-        <li>Contexto institucional: {{ identity.institution }}</li>
-      </ul>
-    </div>
   </div>
-
-  <div class="container footer__legal">
-    <p>
-      Proyecto independiente desarrollado para el {{ identity.challenge }}. No está afiliado ni
-      respaldado por la NASA. Utiliza información pública de la NASA y de otras instituciones.
-    </p>
-    <p>
-      Esta herramienta apoya la toma de decisiones y no reemplaza la asesoría agronómica
-      profesional. Sus resultados requieren validación local.
-    </p>
-  </div>
+  <p class="container footer__note">
+    No está afiliado ni respaldado por la NASA. Los resultados requieren validación local.
+  </p>
 </footer>

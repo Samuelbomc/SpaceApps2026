@@ -9,6 +9,8 @@ de aceptación. Los estados pendientes forman parte del comportamiento del siste
 - Mapa MapLibre, selección de superficies y persistencia del polígono.
 - POWER procesado/Parquet; descubrimiento de productos de las demás fuentes.
 - Scheduler durable con bloqueos, reintentos y tres jobs independientes.
+- Actualización manual autenticada: cola PostgreSQL, coalescencia, progreso, recuperación
+  por etapa y uso de las mismas políticas de publicación; límites de extracción DATA-01 vigentes.
 - Constructor multiespacial de datasets procesados para clima y suelo en 7/15/30/60 días.
 - Entrenador XGBoost con parada temprana, humedad residual y evaluación temporal 60/20/20 con purga.
 - Políticas versionadas, artefactos inmutables, candidatos y publicación condicionada.

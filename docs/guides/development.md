@@ -11,7 +11,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install '.[api,storage,geospatial,local,mongo,ml,test,dev]'
 npm ci --prefix frontend
-python -m scripts.dev_stack --seed-reference --with-mongo
+python -m scripts.dev_stack --seed-reference --with-mongo --with-workers
 ```
 
 Abrir frontend en `http://localhost:3000` y API en `http://localhost:8000/docs`.
@@ -19,7 +19,11 @@ Abrir frontend en `http://localhost:3000` y API en `http://localhost:8000/docs`.
 región no tiene registros; no crea usuarios o fincas ficticias. Las bases locales
 se conservan en `data/local/` y los CSV privados en `data/farms/`.
 
-El stack local no inicia workers. `--api-only` inicia backend y bases; el frontend
+`--with-workers` inicia tres consumidores independientes: ingesta diaria,
+evaluación de entrenamiento diaria y recomendaciones cada hora. Comparten las
+conexiones y directorios del backend, y consumen los calendarios y reintentos
+persistidos. Sin esta opción, el stack inicia solo el consumidor manual y no
+descarga ni entrena sin solicitudes. `--api-only` inicia backend y bases; el frontend
 puede arrancarse con `npm start --prefix frontend`. El proxy `/backend/*` utiliza
 API_INTERNAL_URL para conectarse a `/api/v1/*`. No se detienen servicios ajenos
 si los puertos están ocupados.
@@ -39,7 +43,7 @@ docker compose config --quiet
 docker compose up --build -d
 ```
 
-Compose inicia bases, API, web y los tres workers. Usa sus propios volúmenes y
+Compose inicia bases, API, web, tres workers periódicos y el consumidor manual. Usa sus propios volúmenes y
 red; no comparte automáticamente el PostgreSQL del stack nativo. Ver
 [despliegue](../architecture/deployment.md) y [operación](../operations/runbook.md).
 
@@ -49,8 +53,11 @@ red; no comparte automáticamente el PostgreSQL del stack nativo. Ver
 2. Crear una cuenta en `/registro` e iniciar sesión en `/acceso`.
 3. Registrar una finca en `/fincas`, delimitando su ubicación y ficha.
 4. Opcionalmente cargar un CSV según el catálogo y unidades admitidas.
-5. Abrir `/analisis` y elegir región y 7/15/30/60 días. Los estados dependen de
+5. En `/explorar#resultados`, elegir ubicación y 7/15/30/60 días. Los estados dependen de
    resultados guardados y entradas disponibles; no se generan por abrir la página.
+
+Con sesión, el botón de actualización manual encola los jobs y muestra su progreso;
+no garantiza publicar modelos si faltan entradas o validación.
 
 La pantalla de análisis es regional. La personalización con la ficha requiere
 las condiciones de [contexto de finca](../architecture/farm-personalization.md).

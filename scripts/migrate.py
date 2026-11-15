@@ -44,7 +44,7 @@ def migrate(database: Database):
             (region.region_id, region.name, region.latitude, region.longitude),
         )
         conn.execute("""INSERT INTO job_schedules(job_key,interval_seconds)
-                     VALUES ('nasa-weekly',604800) ON CONFLICT(job_key) DO NOTHING""")
+                     VALUES ('nasa-weekly',86400) ON CONFLICT(job_key) DO NOTHING""")
 
 
 if __name__ == "__main__":

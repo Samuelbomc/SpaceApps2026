@@ -1,10 +1,12 @@
 """Integración de cuentas y archivos privados con PostgreSQL real y fixtures temporales."""
 
+import hashlib
+import hmac
 import os
 import tempfile
 import unittest
 import uuid
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import psycopg
@@ -17,7 +19,12 @@ from apps.api.app.db.postgres import Database
 from apps.api.app.main import create_app
 from apps.api.app.repositories.farmers import FarmerRepository
 from apps.api.app.repositories.operational import OperationalRepository
-from apps.api.app.services.auth import COOKIE_NAME, token_hash
+from apps.api.app.services.auth import (
+    COOKIE_NAME,
+    LEGACY_COOKIE_NAME,
+    LEGACY_CSRF_CONTEXT,
+    token_hash,
+)
 from apps.api.app.services.farm_datasets import MAX_FILE_BYTES, FarmDatasetService
 from scripts.migrate import migrate
 
@@ -115,6 +122,56 @@ class FarmerAccountTests(unittest.TestCase):
             "/api/v1/auth/login", json={"email": "farmer@example.com", "password": PASSWORD}
         )
         self.assertEqual(login.status_code, 200)
+
+    def test_legacy_session_migrates_without_extending_expiry_or_losing_farms(self):
+        session, _ = self.register()
+        farm = self.farm(session)
+        token = self.client.cookies[COOKIE_NAME]
+        legacy_csrf = hmac.new(token.encode(), LEGACY_CSRF_CONTEXT, hashlib.sha256).hexdigest()
+        self.client.cookies.clear()
+        self.client.cookies.set(LEGACY_COOKIE_NAME, token, domain="testserver.local", path="/")
+        # Una pestaña abierta antes del cambio puede seguir escribiendo con su CSRF.
+        self.farm({"csrf_token": legacy_csrf})
+        refreshed = self.client.get("/api/v1/auth/me")
+        self.assertEqual(refreshed.status_code, 200, refreshed.text)
+        self.assertEqual(
+            datetime.fromisoformat(refreshed.json()["expires_at"]),
+            datetime.fromisoformat(session["expires_at"]),
+        )
+        self.assertEqual(refreshed.json()["user"], session["user"])
+        self.assertEqual(self.client.cookies[COOKIE_NAME], token)
+        self.assertNotIn(LEGACY_COOKIE_NAME, self.client.cookies)
+        self.assertNotEqual(refreshed.json()["csrf_token"], legacy_csrf)
+        self.assertEqual(self.client.get(f"/api/v1/farms/{farm['farm_id']}").status_code, 200)
+        # El CSRF previo sigue siendo válido durante el despliegue gradual.
+        self.assertEqual(
+            self.client.post(
+                "/api/v1/auth/logout", headers={"X-CSRF-Token": legacy_csrf}
+            ).status_code,
+            204,
+        )
+        self.assertNotIn(COOKIE_NAME, self.client.cookies)
+        self.client.cookies.set(LEGACY_COOKIE_NAME, token)
+        self.assertEqual(self.client.get("/api/v1/auth/me").status_code, 401)
+
+    def test_current_cookie_has_precedence_over_legacy_and_legacy_logout_revokes(self):
+        _, _ = self.register()
+        token = self.client.cookies[COOKIE_NAME]
+        legacy_csrf = hmac.new(token.encode(), LEGACY_CSRF_CONTEXT, hashlib.sha256).hexdigest()
+        self.client.cookies.clear()
+        self.client.cookies.set(LEGACY_COOKIE_NAME, token, domain="testserver.local", path="/")
+        self.client.cookies.set(COOKIE_NAME, "invalid", domain="testserver.local", path="/")
+        self.assertEqual(self.client.get("/api/v1/auth/me").status_code, 401)
+        self.client.cookies.delete(COOKIE_NAME)
+        self.assertEqual(
+            self.client.post(
+                "/api/v1/auth/logout", headers={"X-CSRF-Token": legacy_csrf}
+            ).status_code,
+            204,
+        )
+        self.assertNotIn(LEGACY_COOKIE_NAME, self.client.cookies)
+        self.client.cookies.set(COOKIE_NAME, token)
+        self.assertEqual(self.client.get("/api/v1/auth/me").status_code, 401)
 
     def test_polygon_vertices_survive_private_create_reload_and_edit(self):
         session, _ = self.register()

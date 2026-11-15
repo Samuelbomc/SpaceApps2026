@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Field Shift DataQuery",
+  "title": "AgroGeo DataQuery",
   "description": "Consulta compartida. Las fuentes temporales requieren start/end; SRTM solo puede omitir ambas.",
   "type": "object",
   "additionalProperties": false,

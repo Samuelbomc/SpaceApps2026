@@ -1,11 +1,4 @@
-/**
- * The single user journey of the platform, in order.
- * Labels, routes and descriptions live here so the stepper, the home page
- * and the dashboard all describe the same flow.
- *
- * Municipality selection and plot delimitation are ONE step ('lote'): choosing a
- * supported municipality opens the satellite map directly.
- */
+/** Stages and compatibility identifiers for the public workspace and optional private actions. */
 export type JourneyStepId = 'cuenta' | 'explorar' | 'lote' | 'caracterizacion' | 'analisis';
 
 export interface JourneyStep {
@@ -15,38 +8,22 @@ export interface JourneyStep {
   summary: string;
 }
 
-export const PLOT_STEP_PATH = '/finca/lote';
+export const PLOT_STEP_PATH = '/explorar';
 
+/** Public workspace stages. Account and farm characterization are optional private actions. */
 export const JOURNEY: readonly JourneyStep[] = [
-  {
-    id: 'cuenta',
-    label: 'Cuenta',
-    path: '/acceso',
-    summary: 'Inicia sesión para guardar tus fincas y volver a tus análisis.',
-  },
-  {
-    id: 'explorar',
-    label: 'Explorar',
-    path: '/explorar',
-    summary: 'Recorre el globo hasta Colombia, Antioquia y el Oriente Antioqueño.',
-  },
+  { id: 'explorar', label: 'Ubicación', path: '/explorar', summary: 'Selecciona el municipio.' },
   {
     id: 'lote',
-    label: 'Municipio y lote',
-    path: PLOT_STEP_PATH,
-    summary: 'Selecciona el municipio de tu finca y delimita el terreno que deseas analizar.',
-  },
-  {
-    id: 'caracterizacion',
-    label: 'Caracterización',
-    path: '/finca/caracterizacion',
-    summary: 'Cuéntanos sobre el suelo, el agua, el clima local y los cultivos del lote.',
+    label: 'Terreno opcional',
+    path: '/explorar',
+    summary: 'Delimita el terreno en el mismo mapa si lo deseas.',
   },
   {
     id: 'analisis',
-    label: 'Análisis',
-    path: '/finca/analisis',
-    summary: 'Consulta la rotación de cultivos propuesta, series ambientales y recomendaciones.',
+    label: 'Resultados',
+    path: '/explorar',
+    summary: 'Consulta los resultados disponibles sin crear una cuenta.',
   },
 ];
 

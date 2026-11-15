@@ -10,11 +10,12 @@ from psycopg.types.json import Jsonb
 
 from apps.api.app.config import Settings
 from apps.api.app.db.postgres import Database
+from pipelines.scheduling.manual import poll_manual_updates
 from pipelines.scheduling.runner import next_slot, poll_background
 from scripts.migrate import migrate
 from scripts.runtime import JOB_NAMES, build_job
 
-LOG = logging.getLogger("fieldshift.worker")
+LOG = logging.getLogger("agrogeo.worker")
 JOB_KEY = "nasa-weekly"
 LOCK_ID = 1546052065
 
@@ -38,9 +39,9 @@ def poll_once(database: Database, job, *, force=False, now=None):
             # Solo el worker dueño del bloqueo puede cerrar ejecuciones abandonadas.
             conn.execute("""UPDATE ingestion_runs SET status='failed',finished_at=now(),
                          summary='{"error":"Worker anterior interrumpido"}'::jsonb WHERE status='running'""")
-            weekly_due = schedule["next_run_at"] <= now
-            # Al llegar otro ciclo semanal se actualizan también las fuentes sanas.
-            pending = schedule["pending_sources"] if not (force or weekly_due) else []
+            cycle_due = schedule["next_run_at"] <= now
+            # Al llegar otro ciclo diario se actualizan también las fuentes sanas.
+            pending = schedule["pending_sources"] if not (force or cycle_due) else []
             result = None
             try:
                 result = job.run(sources=tuple(pending)) if pending else job.run()
@@ -69,7 +70,7 @@ def poll_once(database: Database, job, *, force=False, now=None):
                 finished = datetime.now(UTC)
                 following = (
                     next_slot(schedule["next_run_at"], finished, schedule["interval_seconds"])
-                    if weekly_due
+                    if cycle_due
                     else schedule["next_run_at"]
                 )
                 conn.execute(
@@ -110,6 +111,11 @@ def main(argv=None):
     parser.add_argument(
         "--once", action="store_true", help="Ejecutar una vez ahora bajo el mismo bloqueo"
     )
+    parser.add_argument(
+        "--manual-only",
+        action="store_true",
+        help="Consumir únicamente actualizaciones solicitadas desde la API",
+    )
     parser.add_argument("--poll-seconds", type=int, default=60)
     parser.add_argument(
         "--job", choices=("all", "ingestion", "training", "recommendations"), default="all"
@@ -124,7 +130,25 @@ def main(argv=None):
     jobs = {}
     selected = JOB_NAMES if args.job == "all" else (args.job,)
 
+    def get_job(name):
+        if name not in jobs:
+            jobs[name] = build_job(name, database, settings)
+        return jobs[name]
+
     def execute():
+        if args.manual_only:
+            try:
+                return [
+                    poll_manual_updates(
+                        database,
+                        get_job,
+                        ingestion_runner=poll_once,
+                        background_runner=poll_background,
+                    )
+                ]
+            except Exception as exc:
+                LOG.error("Actualización manual pendiente (%s)", type(exc).__name__)
+                return ["failed"]
         states = []
         for name in selected:
             try:
@@ -147,7 +171,14 @@ def main(argv=None):
         return states
 
     if args.once:
-        return 0 if all(status == "completed" for status in execute()) else 1
+        return (
+            0
+            if all(
+                status in (("completed", "not_due") if args.manual_only else ("completed",))
+                for status in execute()
+            )
+            else 1
+        )
     stop = threading.Event()
     for sig in (signal.SIGINT, signal.SIGTERM):
         signal.signal(sig, lambda *_: stop.set())

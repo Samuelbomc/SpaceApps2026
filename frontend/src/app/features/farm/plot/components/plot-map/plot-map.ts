@@ -4,7 +4,7 @@ import {
   squareSideMetres,
   convertSquareSize,
   type AreaSizeUnit,
-} from '@field-shift/api-client/area';
+} from '@agrogeo/api-client/area';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,7 +26,7 @@ import {
   WebGLUnavailableError,
   loadMapLibre,
 } from '../../../../../shared/map/maplibre-loader';
-import { SENTINEL2_CLOUDLESS } from '../../../../../shared/map/imagery';
+import { LOCAL_MAP_MAX_ZOOM, SENTINEL2_CLOUDLESS } from '../../../../../shared/map/imagery';
 import { LngLat } from '../../../../../shared/geo/geodesy';
 import { BBox, BoundaryGeometry } from '../../../../explorer/models/geo.models';
 import { geometryBBox } from '../../../../explorer/utils/geo-utils';
@@ -48,7 +48,6 @@ export interface PlotShape {
 
 const SRC = { imagery: SENTINEL2_CLOUDLESS.id, boundary: 'municipality-boundary' } as const;
 const IMAGERY_TIMEOUT_MS = 12000;
-const MAX_ZOOM = 17;
 
 /**
  * Satellite map of one municipality where the farmer draws their plot.
@@ -127,7 +126,7 @@ export class PlotMap {
             [area.west, area.south],
             [area.east, area.north],
           ],
-          { maxZoom: 17, padding: 40, duration: 0 },
+          { maxZoom: LOCAL_MAP_MAX_ZOOM, padding: 40, duration: 0 },
         );
     } catch (error) {
       this.squareError.set(error instanceof Error ? error.message : 'Superficie inválida.');
@@ -199,7 +198,7 @@ export class PlotMap {
           [bbox[2], bbox[3]],
         ],
         fitBoundsOptions: { padding: 24 },
-        maxZoom: MAX_ZOOM,
+        maxZoom: LOCAL_MAP_MAX_ZOOM,
         minZoom: 7,
         locale: MAP_LOCALE,
         attributionControl: {

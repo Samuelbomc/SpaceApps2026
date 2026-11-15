@@ -78,7 +78,7 @@ def query(layer: int, where: str, out_fields: str, tolerance: float, precision: 
         "f": "json",
     }
     url = f"{SERVICE}/{layer}/query?{urllib.parse.urlencode(params)}"
-    req = urllib.request.Request(url, headers={"User-Agent": "field-shift-pipeline/0.1"})
+    req = urllib.request.Request(url, headers={"User-Agent": "agrogeo-pipeline/0.1"})
     with urllib.request.urlopen(req, timeout=180) as resp:
         data = json.load(resp)
     if "error" in data:

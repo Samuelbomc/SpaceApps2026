@@ -13,7 +13,7 @@ sequenceDiagram
     participant API as FastAPI
     participant PG as PostgreSQL
     participant Results as Backend de resultados
-    User->>Web: Seleccionar región y horizonte
+    User->>Web: Abrir mapa público, seleccionar ubicación y horizonte
     Web->>API: GET observaciones (páginas)
     API->>PG: Leer histórico operativo
     PG-->>API: Filas y última actualización
@@ -24,6 +24,18 @@ sequenceDiagram
     API-->>Web: Inferencias/evaluación o estado pendiente
     Web-->>User: Vista simple o técnica con alcance y fechas
 ```
+
+El explorador muestra mapa, delimitación opcional y resultados en la misma página.
+Es también el destino predeterminado tras autenticarse. Las direcciones de panel
+y análisis redirigen a este espacio. Con sesión se pueden consultar hasta veinte
+resultados regionales recientes de la ubicación elegida y abrirlos con su fecha,
+plazo, estado y trazabilidad originales. Una consulta nueva limpia la selección
+temporal; la generación de resultados continúa en los workers.
+La consulta no exige cuenta ni ficha de finca. Las ubicaciones de referencia se
+filtran por el área seleccionada y los resultados mantienen su ámbito regional;
+si no hay coincidencia se informa la ausencia. Otras ubicaciones solo se consultan
+mediante selección explícita. Guardar una finca o subir mediciones sí requiere
+sesión; la API mantiene autorización por propietario y CSRF.
 
 Los periodos operativos comienzan el día de consulta en `America/Bogota`. El corte
 de entradas conserva la fecha real del snapshot. La consulta no descarga NASA,
@@ -46,6 +58,17 @@ el entrenamiento utiliza el histórico procesado elegible en Parquet.
 Registrar la ficha aporta contexto local para personalización. Su uso completo
 con el análisis y las reglas requiere la asociación privada descrita más abajo.
 La aceptación del CSV no certifica mediciones ni una mejora del modelo.
+
+## Actualización manual
+
+Exploración permite encolar una actualización a usuarios autenticados. FastAPI
+comprueba sesión/CSRF y conserva la solicitud en PostgreSQL; responde sin ejecutar
+los jobs. Un consumidor independiente recorre ingesta, entrenamiento condicionado
+y recomendaciones, con los locks de cada job. La pantalla consulta el estado y
+relee datos cuando hay progreso. Clics concurrentes comparten ejecución y los
+reintentos respetan el backoff; una interrupción permite retomar la etapa pendiente.
+La ruta manual utiliza la misma receta, revisión y política de publicación que la
+automática. Consultar el mapa sigue siendo público y no inicia estos procesos.
 
 ## Procesos autónomos
 
@@ -71,8 +94,9 @@ flowchart TD
     STORE --> QUERY[Consulta HTTP]
 ```
 
-La ingesta se revisa cada siete días; entrenamiento y recomendaciones tienen
-calendarios independientes. Las tablas procesadas alimentan ocho tareas:
+La ingesta y el entrenamiento se revisan diariamente en calendarios independientes;
+las recomendaciones se revisan cada hora y al recibir nuevas entradas o modelos.
+Las tablas procesadas alimentan ocho tareas:
 clima/suelo por horizontes 7/15/30/60, con veinte regresores. Una ingesta nueva no
 obliga a publicar otra versión. Un campeón vigente puede seguir siendo la versión
 utilizada si un candidato falla o no hay etiquetas suficientes.

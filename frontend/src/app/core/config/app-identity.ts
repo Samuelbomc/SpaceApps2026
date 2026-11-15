@@ -1,16 +1,8 @@
-/**
- * Application identity.
- *
- * The final product name has NOT been decided by the team (see CLAUDE.md,
- * "Project Decision Update"). Everything below is a neutral placeholder;
- * renaming the product only requires editing this file (and index.html <title>).
- */
+/** Identidad compartida de AgroGeo para navegación, títulos y contenido. */
 export const APP_IDENTITY = {
-  name: 'Inteligencia Agroterritorial',
-  isPlaceholderName: true,
+  name: 'AgroGeo',
   tagline: 'Inteligencia territorial para una agricultura más resiliente',
   challenge: 'NASA Space Apps Challenge 2026',
-  challengeTheme: 'Field Shift: Adapting Farms with NASA Data',
   institution: 'Universidad de Antioquia',
 } as const;
 

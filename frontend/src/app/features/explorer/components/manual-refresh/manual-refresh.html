@@ -1,0 +1,41 @@
+<section class="card manual-refresh" aria-label="Actualizar datos y modelos">
+  <button
+    type="button"
+    class="btn btn--secondary"
+    [disabled]="sending() || running()"
+    (click)="requestUpdate()"
+  >
+    {{
+      sending()
+        ? 'Enviando solicitud…'
+        : running()
+          ? 'Actualización en curso…'
+          : 'Actualizar datos y modelos'
+    }}
+  </button>
+  <p>Actualiza los datos y evalúa los modelos de las ubicaciones configuradas.</p>
+  @if (error()) {
+    <p role="alert" class="form-alert">{{ error() }}</p>
+    <button type="button" class="link-btn" (click)="checkStatus()">Consultar estado</button>
+  }
+  @if (update(); as update) {
+    <p role="status">{{ update.message }}</p>
+    @if (update.retry_at) {
+      <p>Próximo intento: {{ update.retry_at | date: 'medium' : 'America/Bogota' }}.</p>
+    }
+    <details [open]="update.status === 'completed_with_limitations' || update.status === 'failed'">
+      <summary>Detalle de la actualización</summary>
+      <ol>
+        @for (stage of update.stages; track stage.phase) {
+          <li>
+            <strong>{{ phases[stage.phase] }} · {{ statuses[stage.status] }}</strong>
+            <p>{{ stage.message }}</p>
+            @for (note of stage.limitations; track note) {
+              <p>{{ note }}</p>
+            }
+          </li>
+        }
+      </ol>
+    </details>
+  }
+</section>

@@ -1,29 +1,25 @@
 <section class="hero section--dark" aria-labelledby="hero-title">
   <div class="container hero__grid">
     <div class="hero__copy">
-      <p class="eyebrow">{{ identity.challenge }} · Field Shift</p>
-      <h1 id="hero-title">{{ identity.tagline }}</h1>
+      <p class="eyebrow">Datos NASA · Colombia</p>
+      <h1 id="hero-title">Tu territorio, más claro.</h1>
       <p class="hero__lead">
-        Ubica tu finca, delimita tu lote y cuéntanos cómo lo trabajas. Combinamos observaciones de
-        la Tierra de la NASA con información agrícola de Colombia para ayudarte a entender sus
-        condiciones y orientar la rotación de cultivos y el manejo del suelo.
+        Selecciona tu terreno y consulta clima, suelo y cultivos sin crear una cuenta.
       </p>
-
       <div class="hero__actions">
+        <a class="btn btn--light" routerLink="/explorar">Explorar el mapa</a>
         @if (auth.isAuthenticated()) {
-          <a class="btn btn--light" routerLink="/panel">Ir a mi panel</a>
-          <a class="btn btn--outline-light" routerLink="/explorar">Analizar un lote nuevo</a>
+          <a class="btn btn--outline-light" routerLink="/fincas">Mis fincas</a>
         } @else {
-          <a class="btn btn--light" routerLink="/registro">Crear cuenta</a>
-          <a class="btn btn--outline-light" routerLink="/explorar">Explorar el mapa</a>
+          <a
+            class="btn btn--outline-light"
+            routerLink="/registro"
+            [queryParams]="{ volver: '/fincas' }"
+            >Guardar mi finca</a
+          >
         }
       </div>
-
-      <ul class="hero__meta">
-        <li>Región piloto: {{ territory.pilotRegion.name }}, {{ territory.department }}</li>
-        <li>Prototipo en desarrollo</li>
-        <li>Apoyo a la decisión, no reemplazo de la asesoría técnica</li>
-      </ul>
+      <p class="hero__meta">Oriente Antioqueño · Datos con su fuente y fecha</p>
     </div>
 
     <figure class="hero__figure">
@@ -69,17 +65,7 @@
         }
       </svg>
 
-      <figcaption>
-        <ol class="hero__legend">
-          @for (layer of legend; track layer.label) {
-            <li>
-              <span class="swatch" [style.background]="layer.topFill" aria-hidden="true"></span>
-              {{ layer.label }}
-            </li>
-          }
-        </ol>
-        <span class="hero__note">Diagrama conceptual, no representa datos.</span>
-      </figcaption>
+      <figcaption class="sr-only">Información de satélite, clima, suelo y finca.</figcaption>
     </figure>
   </div>
 </section>
