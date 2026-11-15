@@ -1,38 +1,96 @@
-# Modelos XGBoost de AgroGeo
+# Daily forecast models
 
-Los veinte modelos canónicos se encuentran en `artifacts/forecasts/<horizonte>d/<modelo>/`.
-Los horizontes son 7, 15, 30 y 60 días; los nombres son `temperature_mean`,
-`temperature_min`, `temperature_max`, `precipitation` y `moisture`.
+Five canonical model names are temperature_mean, temperature_min, temperature_max, precipitation and moisture. Each model predicts an individual future day at lead_days 1-60. Models live in `ml/artifacts/forecasts/<output>/`; models.json indexes the defaults.
 
-La selección utiliza cuatro ventanas temporales expansivas anteriores al test,
-con purga de etiquetas por horizonte. La humedad predice una corrección que se
-suma una sola vez a `smap_mean_7d`; las otras salidas son agregados absolutos.
-`evaluation_model.json` conserva el ajuste anterior al test. `model.json` está
-reajustado con todas las filas y no tiene una evaluación independiente posterior.
-Estos artefactos son experimentales; el registro operativo aplica sus políticas
-de validación y publicación.
+For inference from a fresh checkout, install `python -m pip install '.[ml]'` and run `python -m ml.sample_forecasts --example`. The repository includes the five production weights, runtime metadata, small evaluation reports and a 221 KB input snapshot. Raw downloads, prepared training tables, evaluation-only boosters and holdout prediction arrays stay local. The snapshot is issued November 15, 2026; it is not refreshed automatically.
 
-## Uso y contratos
+## Leads and daily outputs
 
-- [Entrenamiento, datasets y publicación](../docs/reference/model-training.md).
-- [Entradas e inferencia](../docs/reference/model-inference.md).
-- [Resultados rolling-origin](../docs/reference/ml/rolling-origin-results.md).
-- [Evaluación por horizonte](../docs/reference/ml/horizon-results.md).
-- [Arquitectura y flujo completo](../docs/architecture/flows.md).
+A **lead** is the number of days after the forecast's issue date: `target_date = issue_date + lead_days`. Lead 1 predicts tomorrow; lead 7 predicts the seventh future day. `--days 14` selects every lead from 1 through 14. `--leads 1 7 15 30 60` selects only those five dates. All models support integer leads 1-60.
 
-## Reproducción científica
+| Model | Output on the selected target date |
+|---|---|
+| temperature_mean | Daily mean air temperature, C |
+| temperature_min | Daily minimum air temperature, C |
+| temperature_max | Daily maximum air temperature, C |
+| precipitation | Rainfall amount for that day, mm (reported as mm/day in evaluation tables) |
+| moisture | Mean accepted AM/PM soil moisture for that day, m3/m3 |
 
-Desde la raíz, con las dependencias científicas y las fuentes verificadas:
+All five beat persistence on pooled holdout MAE. Moisture is worse than persistence at leads 1-3, and rainfall R2 is about 0.01. See the [results and limitations](../docs/reference/ml/seven-day-results.md) before interpreting predictions.
+
+## Prepare, train and validate
+
+Run from the repository root:
+
+Inference needs the `.[ml]` dependencies (XGBoost, NumPy and pandas). The current training run used XGBoost 3.4.1. Source preparation also needs `rasterio` and `h5py`, the local source downloads and adequate memory for the approximately 15.3 million moisture pairs. The commands below reproduce the full local workflow; a fresh inference-only checkout can run the bundled sample without those local files.
 
 ```bash
-python -m ml.scripts.prepare_expanded_datasets --horizons 7 15 30 60
+python -m ml.scripts.prepare_daily_datasets --issue-date 2026-11-15
+python -m ml.scripts.validate_daily_datasets
 python -m ml.scripts.train_rolling_origin
 python -m ml.scripts.validate_rolling_origin
 python -m ml.scripts.summarize_rolling_origin
 python -m ml.sample_forecasts
 ```
 
-Las fuentes y etiquetas no se reconstruyen a partir de predicciones. Los scripts
-científicos no se ejecutan al importar FastAPI. Las consultas HTTP leen resultados
-almacenados; el worker diario evalúa nuevas versiones cuando existen entradas
-procesadas y etiquetas disponibles.
+Omit --issue-date to prepare the current America/Bogota date. Later dates require sufficiently recent downloads. Training uses the daily normalized datasets, four purged expanding-window folds, three configurations and a chronological holdout. It fits five shared-lead models, not 60 independent models per output. --models can select outputs for retraining; --output can stage a separate collection. The train/validate/summarize rolling-origin commands remain the canonical entry points and delegate to the daily implementations.
+
+The prepared example issue is November 15, 2026, with targets November 16 through January 14, 2027. Preparation and validation do not fit models.
+
+The sample command defaults to a readable table for the next seven days, showing mean/minimum/maximum temperature, daily rainfall and moisture. It prints the actual prepared issue date and the selected climate/SMAP coordinates. Use `--days 14` for two weeks, `--leads 1 7 15 30 60` for selected leads, `--format json` for machine-readable output, or `--sample-index 1` to select another local location. It uses local inference files when present and falls back to the bundled one-location-per-output snapshot; `--example` explicitly selects that snapshot. Climate and moisture locations use different native grids. The script does not refresh observations or move their issue date automatically.
+
+The complete local prediction export is `ml/artifacts/forecasts/current_predictions.csv`, generated by the report command and excluded from Git. Verified pooled and per-lead test results are in [../docs/reference/ml/seven-day-results.md](../docs/reference/ml/seven-day-results.md).
+
+## Inference
+
+```python
+import pandas as pd
+from ml.inference.forecast import ForecastPredictor
+
+frame = pd.read_csv("ml/examples/inputs/temperature_mean.csv")
+prediction = ForecastPredictor("temperature_mean").predict(frame)
+# frame has lead_days, so this predicts every row's individual target day.
+
+# Existing constructor calls remain valid:
+model = ForecastPredictor("temperature_mean", horizon_days=30)
+base = frame[frame.lead_days == 30].drop(
+    columns=["lead_days", "target_day_of_year_sin", "target_day_of_year_cos", "target_week_of_year"]
+)
+day_30_prediction = model.predict(base)
+```
+
+The horizon_days argument supplies a lead when the frame has no lead_days field. Supplied per-row leads take precedence, enabling one call for a complete 60-day trajectory. Target calendar fields are derived from issue_date plus lead. Lead 30 now means the conditions on day 30, not the average or total of days 1-30. All predictors must be finite.
+
+Default inference loads model.json, refitted on all observed pairs. Use evaluation=True to reproduce holdout predictions from the local-only evaluation_model.json. Evaluation validation and retraining require the excluded prepared datasets and evaluation files. Moisture reconstruction adds its observed baseline automatically; do not interpret the raw moisture booster as absolute moisture.
+
+For freshly prepared local inputs, read `data/prepared/daily/<output>/inference.csv` instead of the example. Changing a date in an old feature row does not refresh its weather or moisture measurements. The November 15 snapshot uses weather/rain/SMAP measurement cutoffs of November 13 and radiation through November 8, with bounded input filling. Predictions for later issue dates need a new preparation run from recent observations.
+
+The ordered input contract is in each tracked `<output>/training.json` under `features`. This is available even without the local dataset manifest. Climate models require 53 predictors and moisture requires 75, including the lead and target calendar fields. The loader can derive those calendar fields when issue_date is provided. Other predictors must be supplied as finite numeric values.
+
+## Folders and results
+
+- data/prepared/daily: normalized historical features, observed daily labels, lead indexes and current inference inputs.
+- ml/datasets: bounded-batch access to joined training pairs.
+- ml/scripts: source preparation, rolling-origin fitting, validation and reporting.
+- ml/artifacts/forecasts: only the five current output-named models, test predictions, per-lead metrics and provenance.
+- ml/inference: default model loading and prediction contracts.
+- ml/configs: supported leads, names, units and application catalogs.
+- ml/examples: committed one-location-per-output input snapshot for inference without training data.
+- ml/training, ml/evaluation: shared application lifecycle support and numerical metrics.
+- docs/reference/ml: [daily fields and dates](../docs/reference/ml/daily-datasets.md), [training protocol](../docs/reference/ml/rolling-origin-results.md), [results and limitations](../docs/reference/ml/seven-day-results.md), [architecture](../docs/architecture/overview.md).
+
+Raw downloads remain in data/. Training local artifacts does not automatically publish models into the application's separate registry.
+
+## Verification
+
+The trained collection passed source-hash, purged-split, saved-holdout and all-60-lead inference checks. The bundled sample was also tested in an inference-only checkout. To repeat that smoke check, run `python -m ml.sample_forecasts --example --format json`.
+
+Run the application lifecycle checks with `python -m unittest tests.test_model_lifecycle -v`. This tests lifecycle behaviour, not forecast accuracy. These dependencies are not required by the standalone inference example.
+
+## Application contracts
+
+- [Training and publication](../docs/reference/model-training.md).
+- [Inputs and inference](../docs/reference/model-inference.md).
+- [Runtime flows](../docs/architecture/flows.md).
+
+HTTP reads stored results; source acquisition and model evaluation run in workers. These artifacts remain experimental and do not publish themselves into the operational registry.

@@ -32,7 +32,7 @@ Only the selected target day must be observed. The missing November 8 GPM file e
 
 ## Input fields
 
-Each output's exact ordered predictor list is in `data/prepared/daily/manifest.json` under models/output/features. There are 53 predictors per climate output and 75 for moisture.
+Each output's exact ordered predictor list is in the tracked `ml/artifacts/forecasts/<output>/training.json` under `features`, and also in the local `data/prepared/daily/manifest.json` under models/output/features. There are 53 predictors per climate output and 75 for moisture. The tracked metadata is the input contract for inference-only installations.
 
 The historical block retains 7/14/30-day POWER temperature, minimum/maximum temperature, RH2M, QV2M and WS2M means; latest T2M; lagged seven-day radiation; GPM 1/3/7/14/30-day sums, seven-day daily maximum and rainy-day count; elevation; and issue-date seasonal calendar fields. These historical aggregates are predictors, not targets.
 
@@ -41,6 +41,8 @@ New daily predictors include each POWER variable's latest daily value and observ
 Moisture adds recent seven-day SMAP mean, last valid moisture, age, observed-day count, past non-recommended-retrieval count, SRTM slope and SoilGrids 0-5 cm mean/uncertainty for sand, silt, clay, SOC, bulk density, wv0010, wv0033 and wv1500. Future retrieval/quality counts live only beside labels and are excluded from predictors.
 
 Every joined training row and prediction row adds known future fields: `lead_days` (1..60), `target_day_of_year_sin`, `target_day_of_year_cos`, and `target_week_of_year`. `target_date = issue_date + lead_days`. Dates, coordinates and IDs remain metadata unless explicitly included in the predictor list.
+
+A lead counts days after issue_date. `--days 14` requests consecutive leads 1-14; `--leads 1 7 15 30 60` requests only those individual days. Forecasts use observation cutoffs in the past and do not require the future label to exist. Historical training pairs require an observed target on their selected target date.
 
 The relaxed source policy remains: attempted, finite SMAP retrievals in 0.02-0.50 are retained even when non-recommended; missing uncertainty does not reject observations. Causal input carry-forward limits are seven days for POWER, three for rainfall, and fourteen for SMAP. Missing static fields use the nearest available sampled location and are flagged. Many SMAP labels are non-recommended and may be noisy. POWER uses LST calendar days; GPM/SMAP use UTC days. Same-date covariates are not identical 24-hour intervals. No publication-time archive or new fine-resolution weather is claimed.
 
@@ -54,6 +56,8 @@ Each directory in `data/prepared/daily/<output>/` contains:
 | labels.csv | Actual daily observations with label_id, point_id, target_date, target and optional quality metadata |
 | pairs/lead_01.npz through lead_60.npz | Integer feature_id/label_id pairs for each lead |
 | inference.csv | Label-free November 15 predictor rows for all 60 leads, including target calendar fields |
+
+These full datasets are local. For a fresh checkout, `ml/examples/manifest.json` and `ml/examples/inputs/<output>.csv` contain the compatible fixed snapshot, with 60 rows at one point per output. `python -m ml.sample_forecasts --example` uses those files. The historical features table has no lead field by itself: the batch loader adds lead_days and the target calendar fields while joining a pair index.
 
 Pair indexes avoid copying the large feature tables sixty times. The normalized representation is about 585 MB. Use the supplied loader to obtain ordinary complete training batches:
 
@@ -76,6 +80,8 @@ The loader also returns target_start and target_end, both equal to target_date, 
 ```
 
 Omit --issue-date to use the current America/Bogota date. Available input freshness still constrains how far the existing downloads support a later issue date.
+
+Preparing an issue date does not download observations or retrain models. To issue a later forecast, refresh source measurements first, prepare new inference rows, and check observation ages and fill counts. Training can remain at its existing observation end while the trained models consume newer features. Extending labels by pretending future measurements exist is not part of this workflow.
 
 Validation reconstructs every daily label from raw source observations, checks every lead's pair indexes, checks inference field/calendar alignment and tests invariance to post-cutoff weather changes. Results are written to `data/prepared/daily/validation.json`.
 
