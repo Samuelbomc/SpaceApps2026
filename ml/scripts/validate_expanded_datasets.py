@@ -1,5 +1,6 @@
 """Validate finite features, time windows, split purging and sampled raw labels."""
 import json
+import argparse
 from pathlib import Path
 
 import numpy as np
@@ -10,24 +11,29 @@ from ml.scripts.prepare_expanded_datasets import load_power, load_moisture
 
 
 def main():
-    root = Path("data/prepared/expanded")
+    parser = argparse.ArgumentParser(__doc__)
+    parser.add_argument("--dataset-root",type=Path,default=Path("data/prepared/expanded"))
+    parser.add_argument("--artifact-root",type=Path,default=Path("ml/artifacts/environmental_conditions"))
+    args = parser.parse_args()
+    root = args.dataset_root
     manifest = json.loads((root/"manifest.json").read_text())
-    report = json.loads(Path("ml/artifacts/expanded_xgboost_experiment/report.json").read_text())
+    report = json.loads((args.artifact_root/"report.json").read_text())
     pp,powers,_ = load_power()
     sp,moisture,_,_,_ = load_moisture()
     checks = {}
     for name,spec in manifest.items():
         frame = pd.read_csv(spec["path"])
+        horizon = spec.get("horizon_days",7)
         assert len(frame)==spec["rows"]
         assert np.isfinite(frame[spec["features"]+["target"]].to_numpy(float)).all()
         assert not frame.duplicated(["point_id","issue_date"]).any()
         issue,cutoff = pd.to_datetime(frame.issue_date),pd.to_datetime(frame.observation_cutoff)
         assert ((issue-cutoff).dt.days==2).all()
         assert ((pd.to_datetime(frame.target_start)-issue).dt.days==1).all()
-        assert ((pd.to_datetime(frame.target_end)-issue).dt.days==7).all()
+        assert ((pd.to_datetime(frame.target_end)-issue).dt.days==horizon).all()
         if name=="moisture":
             assert frame.smap_age_days.between(0,6).all()
-            assert frame.target_observed_days.between(1,7).all()
+            assert frame.target_observed_days.between(1,horizon).all()
             assert (pd.to_datetime(frame.smap_latest_observation_date)<=cutoff).all()
         verified = 0
         for row in frame.iloc[[0,len(frame)//2,len(frame)-1]].itertuples():
@@ -50,7 +56,7 @@ def main():
                 assert s.count()==row.target_observed_days
             assert np.isclose(expected,row.target), (name,expected,row.target)
             verified+=1
-        folder = Path("ml/artifacts/expanded_xgboost_experiment")/name
+        folder = args.artifact_root/name
         partitions = pd.read_csv(folder/"partitions.csv")
         for earlier,later in (("train","validation"),("validation","test")):
             left,right = partitions[partitions.partition==earlier],partitions[partitions.partition==later]
@@ -58,7 +64,17 @@ def main():
         predictions = pd.read_csv(folder/"test_predictions.csv")
         assert np.isfinite(predictions.prediction).all()
         assert np.isclose(np.abs(predictions.prediction-predictions.target).mean(),report["models"][name]["test_xgboost"]["mae"])
-        checks[name] = {"status":"PASS","rows":len(frame),"raw_labels_recomputed":verified,"finite_values":True,"aligned_times":True,"purged_temporal_partitions":True,"saved_metrics_verified":True}
+        import xgboost as xgb
+        test = frame.merge(predictions[["point_id","issue_date"]],on=["point_id","issue_date"],validate="one_to_one")
+        booster = xgb.Booster()
+        booster.load_model(folder/"evaluation_model.json")
+        reconstructed = booster.predict(xgb.DMatrix(test[spec["features"]].to_numpy(float),feature_names=spec["features"]))
+        metadata = report["models"][name]
+        if metadata.get("prediction_mode")=="baseline_plus_change":
+            reconstructed += test[metadata["baseline_feature"]].to_numpy(float)
+        paired = test[["point_id","issue_date"]].assign(reconstructed=reconstructed).merge(predictions,on=["point_id","issue_date"],validate="one_to_one")
+        np.testing.assert_allclose(paired.reconstructed,paired.prediction,rtol=1e-6,atol=1e-7)
+        checks[name] = {"status":"PASS","horizon_days":horizon,"rows":len(frame),"raw_labels_recomputed":verified,"finite_values":True,"aligned_times":True,"purged_temporal_partitions":True,"saved_metrics_verified":True,"saved_inference_verified":True}
         print(name,checks[name],flush=True)
     (root/"validation.json").write_text(json.dumps(checks,indent=2),encoding="utf-8")
 

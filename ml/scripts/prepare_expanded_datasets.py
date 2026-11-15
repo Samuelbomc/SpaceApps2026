@@ -5,6 +5,7 @@ requiring SMAP. Moisture uses native SMAP cell centres and recommended AM/PM
 retrievals. Last-observation features are bounded to six days and carry age.
 """
 from io import StringIO
+import argparse
 import json
 from pathlib import Path
 import re
@@ -14,8 +15,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from ml.scripts.dataset_sources import select_static, smap_dates
-from ml.scripts.prepare_temperature_datasets import samples
+from ml.scripts.dataset_sources import select_static, smap_dates, samples
 
 
 ROOT = Path("data")
@@ -164,13 +164,10 @@ def climate_features(power,rain,elevation):
     return f
 
 
-def main():
-    OUT.mkdir(parents=True,exist_ok=True)
-    pp,powers,power_files = load_power()
-    sp,sm,sm_counts,sm_error,sm_files = load_moisture()
+def prepare(horizon, output, loaded):
+    output.mkdir(parents=True,exist_ok=True)
+    (pp,powers,power_files), (sp,sm,sm_counts,sm_error,sm_files), rain, gpm_files, terrain, static_files = loaded
     all_points = pp+sp
-    rain,gpm_files = load_rain(all_points)
-    terrain,static_files = static(all_points)
     manifest, tables, rejected = {},{name:[] for name in ("temperature_mean","temperature_min","temperature_max","precipitation","moisture")},{}
     features = {}
     target_map = {"temperature_mean":"T2M","temperature_min":"T2M_MIN","temperature_max":"T2M_MAX"}
@@ -180,14 +177,14 @@ def main():
         frame = f.copy()
         frame["target"] = label
         valid = np.isfinite(frame.to_numpy(float)).all(axis=1)
-        valid &= INDEX<=INDEX.max()-pd.Timedelta(days=7)
+        valid &= INDEX<=INDEX.max()-pd.Timedelta(days=horizon)
         rejected[name] = rejected.get(name,0)+int((~valid).sum())
         frame = frame.loc[valid].copy()
         frame["point_id"] = f"{name}_{point}"
         lon,lat = all_points[point]
         frame["longitude"],frame["latitude"] = lon,lat
         frame["issue_date"] = frame.index.strftime("%Y-%m-%d")
-        for field,days in (("observation_cutoff",-2),("target_start",1),("target_end",7)):
+        for field,days in (("observation_cutoff",-2),("target_start",1),("target_end",horizon)):
             frame[field] = (frame.index+pd.Timedelta(days=days)).strftime("%Y-%m-%d")
         if extra is not None:
             for col,series in extra.items():
@@ -196,8 +193,8 @@ def main():
     for i,power in enumerate(powers):
         f = climate_features(power,rain[i],terrain["elevation_m"][i])
         for name,col in target_map.items():
-            add(name,f,power[col].rolling(7,min_periods=7).mean().shift(-7),i)
-        add("precipitation",f,rain[i].rolling(7,min_periods=7).sum().shift(-7),i)
+            add(name,f,power[col].rolling(horizon,min_periods=horizon).mean().shift(-horizon),i)
+        add("precipitation",f,rain[i].rolling(horizon,min_periods=horizon).sum().shift(-horizon),i)
     for j,point in enumerate(sp):
         i = len(pp)+j
         nearest = int(np.argmin(np.sum((np.array(pp)-point)**2,axis=1)))
@@ -212,28 +209,47 @@ def main():
         f["smap_observed_days_7d"] = s.rolling(7,min_periods=1).count().shift(2)
         for key,values in terrain.items():
             f[key] = values[i]
-        label = s.rolling(7,min_periods=1).mean().shift(-7)
-        target_count = s.rolling(7,min_periods=1).count().shift(-7)
+        label = s.rolling(horizon,min_periods=1).mean().shift(-horizon)
+        target_count = s.rolling(horizon,min_periods=1).count().shift(-horizon)
         extra = {"target_observed_days":target_count,
-                 "target_retrieval_count":sm_counts[j].rolling(7,min_periods=1).sum().shift(-7),
-                 "target_uncertainty_available_count":sm_error[j].rolling(7,min_periods=1).sum().shift(-7),
+                 "target_retrieval_count":sm_counts[j].rolling(horizon,min_periods=1).sum().shift(-horizon),
+                 "target_uncertainty_available_count":sm_error[j].rolling(horizon,min_periods=1).sum().shift(-horizon),
                  "smap_latest_observation_date":last_date.dt.strftime("%Y-%m-%d")}
         add("moisture",f,label,i,extra)
     for name,parts in tables.items():
         frame = pd.concat(parts,ignore_index=True).sort_values(["issue_date","point_id"])
         if frame.empty:
             raise ValueError(f"No complete examples: {name}")
-        frame.to_csv(OUT/f"{name}.csv",index=False)
+        frame.to_csv(output/f"{name}.csv",index=False)
         dates = pd.to_datetime(frame.issue_date)
         # Reject duplicate target records at same cell/date, retain genuine
         # overlapping forecast horizons but record that they are correlated.
         assert not frame.duplicated(["point_id","issue_date"]).any()
         assert np.isfinite(frame[features[name]+["target"]].to_numpy(float)).all()
-        manifest[name] = {"path":str(OUT/f"{name}.csv"),"features":features[name],"target":"target","rows":len(frame),"locations":int(frame.point_id.nunique()),"distinct_issue_dates":int(dates.nunique()),"first_issue":str(dates.min().date()),"last_issue":str(dates.max().date()),"excluded":rejected[name]}
-        print(name,manifest[name]["rows"],"rows",manifest[name]["locations"],"locations",flush=True)
-    (OUT/"manifest.json").write_text(json.dumps(manifest,indent=2),encoding="utf-8")
+        manifest[name] = {"path":str(output/f"{name}.csv"),"horizon_days":horizon,"features":features[name],"target":"target","rows":len(frame),"locations":int(frame.point_id.nunique()),"distinct_issue_dates":int(dates.nunique()),"first_issue":str(dates.min().date()),"last_issue":str(dates.max().date()),"excluded":rejected[name]}
+        print(horizon,"days:",name,manifest[name]["rows"],"rows",manifest[name]["locations"],"locations",flush=True)
+    (output/"manifest.json").write_text(json.dumps(manifest,indent=2),encoding="utf-8")
     policy = {"power_files":power_files,"gpm_files":gpm_files,"smap_files":sm_files,"static_files":static_files,"rules":["Daily issue dates with inputs ending t-2 and targets t+1..t+7","No SMAP dependency in climate models","SMAP native cell centres inside original AOI; quality-screened AM/PM mean per day","Moisture meteorology from nearest downloaded POWER query location; no new climate resolution claimed","No linear interpolation, synthetic target labels or spatial upsampling","Latest SMAP feature carried forward at most six days with explicit observation age","Late Run rainfall targets; missing SMAP error recorded","Daily overlapping horizons and nearby cells are correlated; evaluate chronologically with purging","Strict complete finite predictor rows; no model-based imputation"]}
-    (OUT/"preparation.json").write_text(json.dumps(policy,indent=2),encoding="utf-8")
+    policy["horizon_days"] = horizon
+    policy["rules"][0] = f"Daily issue dates with inputs ending t-2 and targets t+1..t+{horizon}"
+    (output/"preparation.json").write_text(json.dumps(policy,indent=2),encoding="utf-8")
+
+
+def main():
+    parser = argparse.ArgumentParser(__doc__)
+    parser.add_argument("--horizons",type=int,nargs="+",default=[7])
+    parser.add_argument("--output-root",type=Path)
+    args = parser.parse_args()
+    if any(h<1 or h>60 for h in args.horizons):
+        parser.error("Horizons must be between 1 and 60 days")
+    power,moisture = load_power(),load_moisture()
+    points = power[0]+moisture[0]
+    rain,gpm_files = load_rain(points)
+    terrain,static_files = static(points)
+    loaded = power,moisture,rain,gpm_files,terrain,static_files
+    for horizon in dict.fromkeys(args.horizons):
+        output = (args.output_root/f"{horizon}d") if args.output_root else (OUT if horizon==7 else ROOT/f"prepared/horizons/{horizon}d")
+        prepare(horizon,output,loaded)
 
 
 if __name__=="__main__":

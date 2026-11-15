@@ -13,8 +13,8 @@ from ml.scripts.train_prepared_models import metrics
 
 
 def main():
-    previous = Path("ml/artifacts/expanded_xgboost_experiment/moisture")
-    output = Path("ml/artifacts/moisture_change_experiment")
+    previous = Path("ml/artifacts/environmental_conditions/moisture")
+    output = Path("ml/artifacts/soil_moisture")
     output.mkdir(parents=True, exist_ok=True)
     spec = json.loads((previous / "training.json").read_text())
     source = Path(spec["source_file"])

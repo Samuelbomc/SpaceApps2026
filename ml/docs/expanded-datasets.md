@@ -1,14 +1,14 @@
 # Expanded available-data recipes
 
-The exact ordered feature lists, target names, row counts, date ranges and spatial sample counts are in `data/prepared/expanded/manifest.json`. The `preparation.json` and `validation.json` files in that same dataset directory record sources, policies and completed checks. Raw downloads and previous prepared datasets remain intact.
+The exact ordered feature lists, target names, row counts, date ranges and spatial sample counts are in `data/prepared/expanded/manifest.json`. The `preparation.json` and `validation.json` files in that same dataset directory record sources, policies and completed checks. Raw downloads remain intact.
 
-| Model | Rows | Spatial samples | Previous rows |
-|---|---:|---:|---:|
-| Mean temperature | 48,105 | 9 POWER query locations | 94 |
-| Minimum temperature | 48,105 | 9 POWER query locations | 94 |
-| Maximum temperature | 48,105 | 9 POWER query locations | 94 |
-| Precipitation | 48,042 | 9 POWER query locations | 42 |
-| Soil moisture | 3,948 | 6 native SMAP cells with accepted rows | 86 |
+| Model | Rows | Spatial samples |
+|---|---:|---|
+| Mean temperature | 48,105 | 9 POWER query locations |
+| Minimum temperature | 48,105 | 9 POWER query locations |
+| Maximum temperature | 48,105 | 9 POWER query locations |
+| Precipitation | 48,042 | 9 POWER query locations |
+| Soil moisture | 3,948 | 6 native SMAP cells with accepted rows |
 
 All models issue daily predictions for days t+1 through t+7, using measurements no later than t-2. Climate models no longer require SMAP, allowing the full usable historical climate archive to contribute. They use historical POWER temperature, humidity, wind and radiation; historical GPM Late precipitation; elevation; and seasonal calendar features.
 
@@ -22,8 +22,8 @@ Reproduce from the repository root:
 
 ```powershell
 .\.venv-data\Scripts\python.exe -m ml.scripts.prepare_expanded_datasets
-.\.venv-data\Scripts\python.exe -m ml.scripts.train_prepared_models --manifest data/prepared/expanded/manifest.json --output ml/artifacts/expanded_xgboost_experiment --max-depth 3 --max-rounds 800
+.\.venv-data\Scripts\python.exe -m ml.scripts.train_prepared_models --manifest data/prepared/expanded/manifest.json --output ml/artifacts/environmental_conditions --max-depth 3 --max-rounds 800
 .\.venv-data\Scripts\python.exe -m ml.scripts.validate_expanded_datasets
 ```
 
-Dependencies: numpy, pandas, rasterio, h5py and xgboost. Model features changed and holdout dates differ from the earlier sparse experiment; compare each new model against its baseline on the same new test rows rather than treating old/new aggregate metrics as a controlled comparison.
+Dependencies: numpy, pandas, rasterio, h5py and xgboost. Test results and evaluation limitations are documented in `ml/docs/model-results.md`.
