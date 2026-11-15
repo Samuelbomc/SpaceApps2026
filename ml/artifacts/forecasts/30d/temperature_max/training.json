@@ -1,0 +1,89 @@
+{
+  "rows": 48105,
+  "train_rows": 28575,
+  "validation_rows": 9333,
+  "test_rows": 9621,
+  "purged_rows": 576,
+  "features": [
+    "t2m_mean_7d",
+    "t2m_mean_14d",
+    "t2m_mean_30d",
+    "t2m_min_mean_7d",
+    "t2m_min_mean_14d",
+    "t2m_min_mean_30d",
+    "t2m_max_mean_7d",
+    "t2m_max_mean_14d",
+    "t2m_max_mean_30d",
+    "rh2m_mean_7d",
+    "rh2m_mean_14d",
+    "rh2m_mean_30d",
+    "qv2m_mean_7d",
+    "qv2m_mean_14d",
+    "qv2m_mean_30d",
+    "ws2m_mean_7d",
+    "ws2m_mean_14d",
+    "ws2m_mean_30d",
+    "t2m_last",
+    "radiation_sum_7d",
+    "gpm_late_sum_1d_mm",
+    "gpm_late_sum_3d_mm",
+    "gpm_late_sum_7d_mm",
+    "gpm_late_sum_14d_mm",
+    "gpm_late_sum_30d_mm",
+    "gpm_late_max_daily_7d_mm",
+    "rainy_days_7d",
+    "elevation_m",
+    "week_of_year",
+    "day_of_year_sin",
+    "day_of_year_cos"
+  ],
+  "target": "target",
+  "units": "C",
+  "selected_rounds": 186,
+  "horizon_days": 30,
+  "prediction_mode": "absolute",
+  "baseline_feature": "t2m_max_mean_7d",
+  "baseline_scale": 1,
+  "constant_features_in_training": [],
+  "test_xgboost": {
+    "mae": 0.7668173648490729,
+    "rmse": 1.0276403815703405,
+    "bias": 0.007402107672008603,
+    "r2": 0.9091556898440502
+  },
+  "test_persistence": {
+    "mae": 0.9717061833984191,
+    "rmse": 1.3456057532536418,
+    "bias": -0.052376294910438916,
+    "r2": 0.8442417430105316
+  },
+  "test_training_mean": {
+    "mae": 2.7287122365109204,
+    "rmse": 3.4122589530659724,
+    "bias": -0.13687655546798017,
+    "r2": -0.0016116604296689818
+  },
+  "source_sha256": "885fcfc5522dd125ad92a45852094fbfbfcf509728551d899fb6d294bd468c58",
+  "source_file": "data\\prepared\\horizons\\30d\\temperature_max.csv",
+  "locations": 9,
+  "first_issue": "2011-12-16",
+  "last_issue": "2026-09-02",
+  "test_first_issue": "2023-09-30",
+  "test_last_issue": "2026-09-02",
+  "artifact_note": "evaluation_model.json has held-out metrics; model.json is refitted on all rows and has no independent evaluation after refitting",
+  "test_nonoverlapping_targets": {
+    "rows": 324,
+    "xgboost": {
+      "mae": 0.7414127341533394,
+      "rmse": 0.9849655151616291,
+      "bias": 0.026134097205267857,
+      "r2": 0.9162323229252827
+    },
+    "persistence": {
+      "mae": 1.0325999412110525,
+      "rmse": 1.389450599494611,
+      "bias": 0.02005202821869454,
+      "r2": 0.8333057412586881
+    }
+  }
+}

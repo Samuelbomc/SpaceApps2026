@@ -26,10 +26,11 @@ def metrics(actual, prediction):
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument("--manifest", type=Path, default=Path("data/prepared/available/manifest.json"))
-    parser.add_argument("--output", type=Path, default=Path("ml/artifacts/prepared_xgboost_experiment"))
-    parser.add_argument("--max-depth", type=int, default=2)
-    parser.add_argument("--max-rounds", type=int, default=500)
+    parser.add_argument("--manifest", type=Path, default=Path("data/prepared/expanded/manifest.json"))
+    parser.add_argument("--output", type=Path, default=Path("ml/artifacts/environmental_conditions"))
+    parser.add_argument("--max-depth", type=int, default=3)
+    parser.add_argument("--max-rounds", type=int, default=800)
+    parser.add_argument("--residual-moisture", action="store_true", help="Predict moisture change from the preceding observed seven-day baseline")
     args = parser.parse_args()
     manifest = json.loads(args.manifest.read_text())
     args.output.mkdir(parents=True, exist_ok=True)
@@ -44,6 +45,11 @@ def main():
         source = Path(spec["path"])
         frame = pd.read_csv(source).sort_values(["issue_date","point_id"]).reset_index(drop=True)
         features, target = spec["features"], spec["target"]
+        horizon = spec.get("horizon_days",7)
+        residual = args.residual_moisture and name=="moisture"
+        def baseline_values(part):
+            factor = horizon/7 if name=="precipitation" else 1
+            return part[BASELINES[name]].to_numpy(float)*factor
         assert np.isfinite(frame[features+[target]].to_numpy(float)).all()
         assert not frame.duplicated(["point_id","issue_date"]).any()
         dates = sorted(frame.issue_date.unique())
@@ -54,7 +60,10 @@ def main():
         if min(len(train),len(validation),len(test))<3:
             raise ValueError(f"Insufficient chronological partitions for {name}")
         def matrix(part):
-            return xgb.DMatrix(part[features].to_numpy(float),label=part[target].to_numpy(float),feature_names=features)
+            labels = part[target].to_numpy(float)
+            if residual:
+                labels = labels-baseline_values(part)
+            return xgb.DMatrix(part[features].to_numpy(float),label=labels,feature_names=features)
         dtrain,dval,dtest = matrix(train),matrix(validation),matrix(test)
         history = {}
         evaluated = xgb.train(params,dtrain,num_boost_round=args.max_rounds,evals=[(dtrain,"train"),(dval,"validation")],early_stopping_rounds=30,evals_result=history,verbose_eval=False)
@@ -63,7 +72,10 @@ def main():
         evaluated = evaluated[:rounds]
         evaluated.save_model(folder/"evaluation_model.json")
         prediction = evaluated.predict(dtest)
-        baseline = test[BASELINES[name]].to_numpy(float)
+        baseline = baseline_values(test)
+        predicted_change = prediction.copy() if residual else None
+        if residual:
+            prediction = baseline+prediction
         actual = test[target].to_numpy(float)
         constant = np.full(len(test),train[target].mean())
         split_map = {}
@@ -74,6 +86,8 @@ def main():
         split_frame.to_csv(folder/"partitions.csv",index=False)
         predictions = test[["point_id","issue_date","target_start","target_end",target]].copy()
         predictions["prediction"] = prediction
+        if residual:
+            predictions["predicted_change"] = predicted_change
         predictions["persistence_baseline"] = baseline
         predictions["training_mean_baseline"] = constant
         predictions.to_csv(folder/"test_predictions.csv",index=False)
@@ -86,6 +100,8 @@ def main():
         np.testing.assert_allclose(reload.predict(matrix(frame)),final.predict(matrix(frame)),rtol=1e-6)
         stats = {"rows":len(frame),"train_rows":len(train),"validation_rows":len(validation),"test_rows":len(test),"purged_rows":len(frame)-len(split_map),
                  "features":features,"target":target,"units":UNITS[name],"selected_rounds":rounds,
+                 "horizon_days":horizon,"prediction_mode":"baseline_plus_change" if residual else "absolute",
+                 "baseline_feature":BASELINES[name],"baseline_scale":horizon/7 if name=="precipitation" else 1,
                  "constant_features_in_training":[f for f in features if train[f].nunique()<=1],
                  "test_xgboost":metrics(actual,prediction), "test_persistence":metrics(actual,baseline),
                  "test_training_mean":metrics(actual,constant),"source_sha256":hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -93,10 +109,10 @@ def main():
                  "first_issue":frame.issue_date.min(),"last_issue":frame.issue_date.max(),
                  "test_first_issue":test.issue_date.min(),"test_last_issue":test.issue_date.max(),
                  "artifact_note":"evaluation_model.json has held-out metrics; model.json is refitted on all rows and has no independent evaluation after refitting"}
-        if args.manifest.parent.name == "expanded":
+        if args.manifest.parent.name == "expanded" or horizon!=7:
             # Secondary view: disjoint seven-day target windows, same frozen
             # evaluated model; no tuning or retraining on these test scores.
-            selected = ((pd.to_datetime(test.issue_date)-pd.to_datetime(test.issue_date).min()).dt.days % 7 == 0).to_numpy()
+            selected = ((pd.to_datetime(test.issue_date)-pd.to_datetime(test.issue_date).min()).dt.days % horizon == 0).to_numpy()
             if selected.sum()>1:
                 stats["test_nonoverlapping_targets"] = {"rows":int(selected.sum()),"xgboost":metrics(actual[selected],prediction[selected]),"persistence":metrics(actual[selected],baseline[selected])}
         (folder/"training.json").write_text(json.dumps(stats,indent=2),encoding="utf-8")
@@ -115,7 +131,12 @@ def main():
         "Experimental artifacts only; no production registry promotion or agronomic recommendation validation."]
     if args.manifest.parent.name == "expanded":
         report["limitations"][1] = "Daily seven-day targets overlap and nearby cells are correlated. Date-grouped partitioning and purging prevent cross-boundary label leakage, but effective sample size is lower than row count."
-        report["limitations"].extend(["Expanded feature recipes and holdout periods differ from the earlier experiment; old/new aggregate scores are not directly comparable.", "SMAP observations remain sparse and quality-selected, including variable AM/PM availability; missing targets are not interpolated.", "Moisture uses nearest downloaded POWER query values as coarse meteorological context, not parcel-scale weather."])
+        report["limitations"].extend(["SMAP observations remain sparse and quality-selected, including variable AM/PM availability; missing targets are not interpolated.", "Moisture uses nearest downloaded POWER query values as coarse meteorological context, not parcel-scale weather."])
+    if any(m["horizon_days"]!=7 for m in report["models"].values()):
+        report["limitations"][1] = "Forecasts aggregate days t+1..t+H, not a point forecast on day H. Daily target windows overlap and spatial cells are correlated."
+        report["limitations"][4] = "Moisture labels average available observations in the H-day window; they can have very low coverage and do not necessarily represent the whole window."
+        report["limitations"][5] = "Temperature min/max labels average daily extrema over H days; they do not predict absolute H-day extrema."
+        report["limitations"].extend(["Long-horizon variants are independently trained using only antecedent data, not recursively extending a seven-day forecast.","Rainfall persistence scales the preceding seven-day total by H/7; uncertainty intervals and independent spatial validation are absent."])
     (args.output/"report.json").write_text(json.dumps(report,indent=2),encoding="utf-8")
 
 

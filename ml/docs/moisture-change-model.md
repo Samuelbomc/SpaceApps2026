@@ -28,14 +28,14 @@ The existing test set had already been examined and motivated this experiment. T
 
 ## Artifacts and inference
 
-Artifacts are in `ml/artifacts/moisture_change_experiment/`. `evaluation_model.json` is the tested residual model. `model.json` is refitted on all prepared rows with the selected 10 rounds and has no independent post-refit score. Both JSON files predict a **change**, not absolute moisture. `training.json` records the required baseline, ordered feature list, source hash, split source, metrics and limitations. Per-partition predictions record the baseline, correction and absolute prediction.
+Artifacts are in `ml/artifacts/soil_moisture/`. `evaluation_model.json` is the tested residual model. `model.json` is refitted on all prepared rows with the selected 10 rounds and has no independent post-refit score. Both JSON files predict a **change**, not absolute moisture. `training.json` records the required baseline, ordered feature list, source hash, split source, metrics and limitations. Per-partition predictions record the baseline, correction and absolute prediction.
 
 Use the inference wrapper to reconstruct the absolute output correctly:
 
 ```python
 from ml.inference.moisture_change import MoistureChangePredictor
 
-predictor = MoistureChangePredictor("ml/artifacts/moisture_change_experiment")
+predictor = MoistureChangePredictor("ml/artifacts/soil_moisture")
 predicted_moisture = predictor.predict(feature_dataframe)
 ```
 

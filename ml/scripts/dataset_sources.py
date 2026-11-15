@@ -1,9 +1,27 @@
 """Explicit source selection and native NetCDF sampling for model preparation."""
-from pathlib import Path
 import re
 
 import h5py
 import numpy as np
+import rasterio
+from rasterio.warp import transform
+
+
+def samples(path, points):
+    """Sample containing native cells; reject out-of-coverage/NoData values."""
+    if path.suffix == ".nc4":
+        return netcdf_samples(path, points)
+    result = []
+    with rasterio.open(path) as ds:
+        xs, ys = transform("EPSG:4326", ds.crs, [p[0] for p in points], [p[1] for p in points])
+        for x, y in zip(xs, ys):
+            row, col = ds.index(x, y)
+            if not (0 <= row < ds.height and 0 <= col < ds.width):
+                result.append(np.nan)
+                continue
+            value = ds.read(1, window=((row, row + 1), (col, col + 1)), masked=True)[0, 0]
+            result.append(float(value) if not np.ma.is_masked(value) and np.isfinite(value) else np.nan)
+    return result
 
 
 def select_static(root):

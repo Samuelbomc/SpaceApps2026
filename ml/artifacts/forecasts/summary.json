@@ -1,0 +1,689 @@
+{
+  "target_definition": "Aggregate observations over t+1 through t+H; not an endpoint forecast",
+  "horizons": {
+    "15": {
+      "temperature_mean": {
+        "rows": 48105,
+        "train_rows": 28710,
+        "validation_rows": 9468,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 187,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.5206308811923774,
+          "rmse": 0.697668262837278,
+          "bias": -0.12068711838436257,
+          "r2": 0.9513043145247917
+        },
+        "test_persistence": {
+          "mae": 0.6152846402462867,
+          "rmse": 0.8325980849815041,
+          "bias": -0.01297768274756112,
+          "r2": 0.9306473014281542
+        },
+        "test_training_mean": {
+          "mae": 2.629390032014825,
+          "rmse": 3.185880130216033,
+          "bias": -0.39276561779206276,
+          "r2": -0.015433324067950505
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 648,
+          "xgboost": {
+            "mae": 0.5346494554668788,
+            "rmse": 0.7089228938661625,
+            "bias": -0.11842751961382329,
+            "r2": 0.9497815842891615
+          },
+          "persistence": {
+            "mae": 0.6178750734861845,
+            "rmse": 0.8123973628604819,
+            "bias": -0.02377483833039382,
+            "r2": 0.9340519415550569
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 15.383735081704819
+      },
+      "temperature_min": {
+        "rows": 48105,
+        "train_rows": 28710,
+        "validation_rows": 9468,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 225,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.39904335649204414,
+          "rmse": 0.506030701447608,
+          "bias": -0.21682915857056875,
+          "r2": 0.9730474799358754
+        },
+        "test_persistence": {
+          "mae": 0.4872378180666301,
+          "rmse": 0.6288783416441684,
+          "bias": -0.0012862537801733224,
+          "r2": 0.958372635048694
+        },
+        "test_training_mean": {
+          "mae": 2.5892064062884037,
+          "rmse": 3.1365830847918974,
+          "bias": -0.5809309563707988,
+          "r2": -0.03552177700785264
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 648,
+          "xgboost": {
+            "mae": 0.393466944325608,
+            "rmse": 0.4970292596087049,
+            "bias": -0.22036420477957397,
+            "r2": 0.9739909689289893
+          },
+          "persistence": {
+            "mae": 0.48725558495002924,
+            "rmse": 0.6164030941132649,
+            "bias": 0.0049781011169899485,
+            "r2": 0.9599972469044911
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 18.100906437136477
+      },
+      "temperature_max": {
+        "rows": 48105,
+        "train_rows": 28710,
+        "validation_rows": 9468,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 177,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.8225886157397003,
+          "rmse": 1.0958512175569646,
+          "bias": -0.0066153146164690535,
+          "r2": 0.8987223396472679
+        },
+        "test_persistence": {
+          "mae": 0.9703002162927326,
+          "rmse": 1.3165594816441921,
+          "bias": -0.027021099677788176,
+          "r2": 0.8538188273903674
+        },
+        "test_training_mean": {
+          "mae": 2.745222660145414,
+          "rmse": 3.445340123358618,
+          "bias": -0.11387262361581223,
+          "r2": -0.001093576388502937
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 648,
+          "xgboost": {
+            "mae": 0.846869288424896,
+            "rmse": 1.1290024853731349,
+            "bias": -0.013493054519465014,
+            "r2": 0.8932047483246639
+          },
+          "persistence": {
+            "mae": 0.9810527630805407,
+            "rmse": 1.2966651699494989,
+            "bias": -0.052750000000000165,
+            "r2": 0.8591302193989747
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 15.223288428956582
+      },
+      "precipitation": {
+        "rows": 47970,
+        "train_rows": 28629,
+        "validation_rows": 9441,
+        "test_rows": 9594,
+        "test_first_issue": "2023-10-03",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 82,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 62.50321643470241,
+          "rmse": 84.30145775798265,
+          "bias": -17.593813599200388,
+          "r2": 0.11495739475982314
+        },
+        "test_persistence": {
+          "mae": 89.23447366584537,
+          "rmse": 121.29068304541019,
+          "bias": 0.7329698873479858,
+          "r2": -0.8320988079753466
+        },
+        "test_training_mean": {
+          "mae": 68.71101527128944,
+          "rmse": 91.53095604665025,
+          "bias": -18.65723885330286,
+          "r2": -0.0433499650389122
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 648,
+          "xgboost": {
+            "mae": 63.85438163187153,
+            "rmse": 84.84257268225862,
+            "bias": -17.248501127443483,
+            "r2": 0.11398828654919435
+          },
+          "persistence": {
+            "mae": 88.65604411775281,
+            "rmse": 118.46915542412526,
+            "bias": 2.0638531524670714,
+            "r2": -0.727517238753888
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 29.9561998104488
+      },
+      "moisture": {
+        "rows": 4044,
+        "train_rows": 2322,
+        "validation_rows": 708,
+        "test_rows": 810,
+        "test_first_issue": "2021-08-10",
+        "test_last_issue": "2022-01-17",
+        "selected_rounds": 36,
+        "prediction_mode": "baseline_plus_change",
+        "test_xgboost": {
+          "mae": 0.032932806177550455,
+          "rmse": 0.04224709835088416,
+          "bias": -0.003608643987052201,
+          "r2": -0.5606151011608829
+        },
+        "test_persistence": {
+          "mae": 0.03706095839075407,
+          "rmse": 0.046048166406026596,
+          "bias": 0.004071515412268206,
+          "r2": -0.8540725191470682
+        },
+        "test_training_mean": {
+          "mae": 0.08794416640016064,
+          "rmse": 0.09372667367824207,
+          "bias": -0.08741296605147411,
+          "r2": -6.681188839808212
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 66,
+          "xgboost": {
+            "mae": 0.04414274347144289,
+            "rmse": 0.05863259791588803,
+            "bias": -0.014415311602695142,
+            "r2": -1.4161722568640758
+          },
+          "persistence": {
+            "mae": 0.047038075498572945,
+            "rmse": 0.058866015637555766,
+            "bias": -0.004397918534002468,
+            "r2": -1.4354482243972058
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 11.138816675160523,
+        "test_label_observed_days": {
+          "minimum": 1.0,
+          "median": 11.0,
+          "maximum": 12.0,
+          "horizon": 15
+        }
+      }
+    },
+    "30": {
+      "temperature_mean": {
+        "rows": 48105,
+        "train_rows": 28575,
+        "validation_rows": 9333,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 171,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.4725765309008839,
+          "rmse": 0.6447813666064497,
+          "bias": -0.1296532214647502,
+          "r2": 0.9579951164328346
+        },
+        "test_persistence": {
+          "mae": 0.5974138367955019,
+          "rmse": 0.8151844111174233,
+          "bias": -0.025555412020332468,
+          "r2": 0.9328591924602752
+        },
+        "test_training_mean": {
+          "mae": 2.6221822111935627,
+          "rmse": 3.1718781099592492,
+          "bias": -0.40412679563323733,
+          "r2": -0.016500994632774546
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 324,
+          "xgboost": {
+            "mae": 0.4730471417933335,
+            "rmse": 0.6341703569711225,
+            "bias": -0.11857246927959929,
+            "r2": 0.9592482416202468
+          },
+          "persistence": {
+            "mae": 0.6567472075249853,
+            "rmse": 0.855359367919778,
+            "bias": 0.016507348618459875,
+            "r2": 0.9258635631533376
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 20.89628632711942
+      },
+      "temperature_min": {
+        "rows": 48105,
+        "train_rows": 28575,
+        "validation_rows": 9333,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 192,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.35704208594660775,
+          "rmse": 0.4564350638359211,
+          "bias": -0.24369647009376097,
+          "r2": 0.9779356638676538
+        },
+        "test_persistence": {
+          "mae": 0.46509754950727816,
+          "rmse": 0.5906468911704507,
+          "bias": -0.0037275107527679928,
+          "r2": 0.9630521893011506
+        },
+        "test_training_mean": {
+          "mae": 2.585686065802943,
+          "rmse": 3.1276048377525827,
+          "bias": -0.5829612149167345,
+          "r2": -0.035992514494675554
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 324,
+          "xgboost": {
+            "mae": 0.3728144378897585,
+            "rmse": 0.473208729547173,
+            "bias": -0.2418769442318889,
+            "r2": 0.9762593481640381
+          },
+          "persistence": {
+            "mae": 0.5311710758377428,
+            "rmse": 0.6589489522856208,
+            "bias": 0.011629335684891292,
+            "r2": 0.9539647307909189
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 23.2328602193548
+      },
+      "temperature_max": {
+        "rows": 48105,
+        "train_rows": 28575,
+        "validation_rows": 9333,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 186,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.7668173648490729,
+          "rmse": 1.0276403815703405,
+          "bias": 0.007402107672008603,
+          "r2": 0.9091556898440502
+        },
+        "test_persistence": {
+          "mae": 0.9717061833984191,
+          "rmse": 1.3456057532536418,
+          "bias": -0.052376294910438916,
+          "r2": 0.8442417430105316
+        },
+        "test_training_mean": {
+          "mae": 2.7287122365109204,
+          "rmse": 3.4122589530659724,
+          "bias": -0.13687655546798017,
+          "r2": -0.0016116604296689818
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 324,
+          "xgboost": {
+            "mae": 0.7414127341533394,
+            "rmse": 0.9849655151616291,
+            "bias": 0.026134097205267857,
+            "r2": 0.9162323229252827
+          },
+          "persistence": {
+            "mae": 1.0325999412110525,
+            "rmse": 1.389450599494611,
+            "bias": 0.02005202821869454,
+            "r2": 0.8333057412586881
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 21.08547028411134
+      },
+      "precipitation": {
+        "rows": 47835,
+        "train_rows": 28413,
+        "validation_rows": 9279,
+        "test_rows": 9567,
+        "test_first_issue": "2023-10-06",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 59,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 102.81464577508956,
+          "rmse": 136.86223031544571,
+          "bias": -37.46031204625169,
+          "r2": 0.15646858526175578
+        },
+        "test_persistence": {
+          "mae": 172.66209602305491,
+          "rmse": 232.7140374696174,
+          "bias": 1.4358706358211375,
+          "r2": -1.4388169076684463
+        },
+        "test_training_mean": {
+          "mae": 116.95563480417691,
+          "rmse": 153.794608287217,
+          "bias": -38.039519107132115,
+          "r2": -0.06516345025436565
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 324,
+          "xgboost": {
+            "mae": 103.39741349501972,
+            "rmse": 137.2229939391741,
+            "bias": -35.27941719260366,
+            "r2": 0.14607876035131717
+          },
+          "persistence": {
+            "mae": 178.95345138334153,
+            "rmse": 238.2056553578774,
+            "bias": 0.04708891160492997,
+            "r2": -1.5731681723846207
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 40.45326209791805
+      },
+      "moisture": {
+        "rows": 4122,
+        "train_rows": 2280,
+        "validation_rows": 630,
+        "test_rows": 828,
+        "test_first_issue": "2021-08-20",
+        "test_last_issue": "2022-01-17",
+        "selected_rounds": 5,
+        "prediction_mode": "baseline_plus_change",
+        "test_xgboost": {
+          "mae": 0.03601699708726312,
+          "rmse": 0.04310275022394273,
+          "bias": 0.015604163062078926,
+          "r2": -0.09609275128942696
+        },
+        "test_persistence": {
+          "mae": 0.03519040057955142,
+          "rmse": 0.04326866291490645,
+          "bias": 0.012427728134436718,
+          "r2": -0.10454723272205158
+        },
+        "test_training_mean": {
+          "mae": 0.08054765918284233,
+          "rmse": 0.08672479677167914,
+          "bias": -0.07632966572461106,
+          "r2": -3.437352435434298
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 36,
+          "xgboost": {
+            "mae": 0.019167120187981446,
+            "rmse": 0.024337580406501445,
+            "bias": 0.013852894188144931,
+            "r2": 0.7702213508891698
+          },
+          "persistence": {
+            "mae": 0.01989821516154748,
+            "rmse": 0.02427483256231141,
+            "bias": 0.011887225809908798,
+            "r2": 0.7714046672283067
+          }
+        },
+        "mae_improvement_vs_persistence_percent": -2.348926110809968,
+        "test_label_observed_days": {
+          "minimum": 1.0,
+          "median": 20.0,
+          "maximum": 23.0,
+          "horizon": 30
+        }
+      }
+    },
+    "60": {
+      "temperature_mean": {
+        "rows": 48105,
+        "train_rows": 28305,
+        "validation_rows": 9063,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 172,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.47693154481706024,
+          "rmse": 0.6483129140699669,
+          "bias": -0.12216288842333169,
+          "r2": 0.9569059171382562
+        },
+        "test_persistence": {
+          "mae": 0.6311350171499843,
+          "rmse": 0.8805602529354962,
+          "bias": -0.03752544285565797,
+          "r2": 0.9205001235754625
+        },
+        "test_training_mean": {
+          "mae": 2.6163412999932936,
+          "rmse": 3.150137036964902,
+          "bias": -0.412384111994021,
+          "r2": -0.017436212237907256
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 162,
+          "xgboost": {
+            "mae": 0.4715579430223004,
+            "rmse": 0.6488686728027429,
+            "bias": -0.07324548873587403,
+            "r2": 0.9568449845173435
+          },
+          "persistence": {
+            "mae": 0.8161049382716049,
+            "rmse": 1.0503493981793144,
+            "bias": 0.16671898883010008,
+            "r2": 0.8869201445831214
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 24.432723291009985
+      },
+      "temperature_min": {
+        "rows": 48105,
+        "train_rows": 28305,
+        "validation_rows": 9063,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 213,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.3733256761721199,
+          "rmse": 0.4636438608005637,
+          "bias": -0.29251139946606386,
+          "r2": 0.9770829254942436
+        },
+        "test_persistence": {
+          "mae": 0.47707608109245153,
+          "rmse": 0.6038118410483335,
+          "bias": -0.009322649858197125,
+          "r2": 0.961131892024528
+        },
+        "test_training_mean": {
+          "mae": 2.581162383974612,
+          "rmse": 3.1183305325725543,
+          "bias": -0.5863734818679343,
+          "r2": -0.0366554700172701
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 162,
+          "xgboost": {
+            "mae": 0.3998577648994854,
+            "rmse": 0.49256762356404893,
+            "bias": -0.2781659032405649,
+            "r2": 0.9741187323930222
+          },
+          "persistence": {
+            "mae": 0.5989235743680188,
+            "rmse": 0.7095272733976341,
+            "bias": 0.07859582598471501,
+            "r2": 0.9462978088019546
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 21.74714034766837
+      },
+      "temperature_max": {
+        "rows": 48105,
+        "train_rows": 28305,
+        "validation_rows": 9063,
+        "test_rows": 9621,
+        "test_first_issue": "2023-09-30",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 160,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 0.7959315263455885,
+          "rmse": 1.0615676282393451,
+          "bias": 0.06922326158825493,
+          "r2": 0.8993649499358416
+        },
+        "test_persistence": {
+          "mae": 1.0820643557495757,
+          "rmse": 1.5178199468892952,
+          "bias": -0.07436415133561997,
+          "r2": 0.794271506549552
+        },
+        "test_training_mean": {
+          "mae": 2.708930576198214,
+          "rmse": 3.34986040833406,
+          "bias": -0.1530368769473811,
+          "r2": -0.002091443432378437
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 162,
+          "xgboost": {
+            "mae": 0.7628298472651728,
+            "rmse": 1.0251191920941096,
+            "bias": 0.17218900675832502,
+            "r2": 0.9058625915312548
+          },
+          "persistence": {
+            "mae": 1.336157260435038,
+            "rmse": 1.7722063901391452,
+            "bias": 0.21195679012345695,
+            "r2": 0.7186531183491467
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 26.44323582822161
+      },
+      "precipitation": {
+        "rows": 47565,
+        "train_rows": 27981,
+        "validation_rows": 8955,
+        "test_rows": 9513,
+        "test_first_issue": "2023-10-12",
+        "test_last_issue": "2026-09-02",
+        "selected_rounds": 98,
+        "prediction_mode": "absolute",
+        "test_xgboost": {
+          "mae": 176.05374115712235,
+          "rmse": 230.36591998224472,
+          "bias": -86.22797983920731,
+          "r2": 0.1467397300070028
+        },
+        "test_persistence": {
+          "mae": 338.78133327337133,
+          "rmse": 451.3495710833056,
+          "bias": -2.179073889760807,
+          "r2": -2.275451183897802
+        },
+        "test_training_mean": {
+          "mae": 202.82797060920643,
+          "rmse": 261.9384951831687,
+          "bias": -80.1052551925655,
+          "r2": -0.10317324250762039
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 162,
+          "xgboost": {
+            "mae": 178.11964982355957,
+            "rmse": 229.05825814500082,
+            "bias": -78.93563516662215,
+            "r2": 0.14691189088513223
+          },
+          "persistence": {
+            "mae": 302.8622192310964,
+            "rmse": 401.0120587734123,
+            "bias": 63.24450345083286,
+            "r2": -1.6146697697169836
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 48.03322265248302
+      },
+      "moisture": {
+        "rows": 4122,
+        "train_rows": 2100,
+        "validation_rows": 474,
+        "test_rows": 828,
+        "test_first_issue": "2021-08-20",
+        "test_last_issue": "2022-01-17",
+        "selected_rounds": 1,
+        "prediction_mode": "baseline_plus_change",
+        "test_xgboost": {
+          "mae": 0.032324290033602564,
+          "rmse": 0.04085491065462735,
+          "bias": 0.009150809721535902,
+          "r2": 0.059066173502970054
+        },
+        "test_persistence": {
+          "mae": 0.03477416679214545,
+          "rmse": 0.043389326312992756,
+          "bias": 0.01611865486493528,
+          "r2": -0.061295604808441206
+        },
+        "test_training_mean": {
+          "mae": 0.08176267217888165,
+          "rmse": 0.08899069531893015,
+          "bias": -0.07839287319412258,
+          "r2": -3.4643655862430096
+        },
+        "test_nonoverlapping_targets": {
+          "rows": 18,
+          "xgboost": {
+            "mae": 0.019486452065498587,
+            "rmse": 0.023098141795602878,
+            "bias": 0.015587847286023557,
+            "r2": 0.725433545839569
+          },
+          "persistence": {
+            "mae": 0.02430577258029675,
+            "rmse": 0.02859243191482079,
+            "bias": 0.02229936909283982,
+            "r2": 0.579277653287958
+          }
+        },
+        "mae_improvement_vs_persistence_percent": 7.045105561224396,
+        "test_label_observed_days": {
+          "minimum": 1.0,
+          "median": 34.0,
+          "maximum": 46.0,
+          "horizon": 60
+        }
+      }
+    }
+  }
+}
