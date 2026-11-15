@@ -2,7 +2,7 @@
 Diagnostico del lote: semaforo (verde / amarillo / rojo) con consejos, a partir de las
 respuestas del agricultor. No necesita clima ni otros datos.
 
-Areas:  erosion  ·  cansancio del suelo  ·  plagas y enfermedades  ·  agua
+Areas:  erosion  ·  rotacion y suelo  ·  agua
 
 Uso:
   python diagnostico.py                       # con las respuestas de ejemplo
@@ -34,10 +34,12 @@ def diagnosticar(resp):
     """resp = dict de respuestas (o ruta a JSON). Devuelve lista de areas con color, motivos y consejos."""
     if not isinstance(resp, dict):
         resp = json.loads(Path(resp).read_text(encoding="utf-8"))
+    from motor_rotacion import normalizar
+    resp = normalizar(resp)
     lote, suelo = resp.get("lote", {}), resp.get("suelo", {})
     hist = resp.get("historial", {}).get("ultimos_cultivos", [])
-    plagas = [p for p in resp.get("plagas_recurrentes", []) if p]
-    fumig = resp.get("plagas_fumigaciones") or 0
+    LIMPIOS = {"papa", "papa_criolla", "tomate", "zanahoria", "brocoli", "repollo", "lechuga", "coliflor",
+               "cebolla", "cebolla_junca", "maiz", "yuca", "arracacha"}
     areas = []
 
     # 1. EROSION ---------------------------------------------------------
@@ -48,9 +50,11 @@ def diagnosticar(resp):
         pts += 1; por.append("se ara con tractor en loma")
     if suelo.get("se_lava") == "mucho": pts += 2; por.append("la lluvia se lleva la tierra")
     elif suelo.get("se_lava") == "a_veces": pts += 1; por.append("a veces se lava la tierra")
+    if hist and hist[0] in LIMPIOS and lote.get("pendiente") in ("alta", "media"):
+        pts += 1; por.append(f"{hist[0].replace('_', ' ')} deja la tierra suelta y destapada en loma")
     if lote.get("descanso") == "desnudo": pts += 1; por.append("descansa con la tierra pelada")
     if suelo.get("coberturas") is False: pts += 1; por.append("no deja coberturas")
-    c = _color(pts, 2, 4)
+    c = _color(pts, 2, 3)
     consejos = {0: ["Siga protegiendo la tierra: no la deje pelada en las temporadas de lluvia."],
                 1: ["Siembre en curvas de nivel (atravesado a la pendiente).",
                     "Deje rastrojo o maleza baja entre cosechas para tapar la tierra."],
@@ -63,7 +67,9 @@ def diagnosticar(resp):
     # 2. CANSANCIO DEL SUELO ---------------------------------------------
     pts, por = 0, []
     fam = [FAMILIA.get(h) for h in hist[:3] if FAMILIA.get(h)]
-    if len(fam) >= 2 and len(set(fam[:2])) == 1:
+    if len(hist) >= 2 and hist[0] == hist[1]:
+        pts += 3; por.append(f"repite {hist[0].replace('_', ' ')} en el mismo lote")
+    elif len(fam) >= 2 and len(set(fam[:2])) == 1:
         pts += 2; por.append(f"se repite la misma familia de planta ({fam[0]})")
     if suelo.get("produccion") == "mucho_menos": pts += 2; por.append("produce mucho menos que antes")
     elif suelo.get("produccion") == "menos": pts += 1; por.append("produce un poco menos que antes")
@@ -73,44 +79,34 @@ def diagnosticar(resp):
     if not any(f == "leguminosa" for f in fam) and hist:
         pts += 1; por.append("no ha sembrado leguminosas (fríjol, arveja)")
     c = _color(pts, 2, 4)
-    consejos = {0: ["Siga rotando y metiendo fríjol de vez en cuando."],
+    consejos = {0: ["Va bien: siga cambiando de cultivo y meta fríjol de vez en cuando."],
                 1: ["Meta una leguminosa (fríjol) en la próxima siembra: devuelve nitrógeno a la tierra.",
                     "Agregue abono orgánico (gallinaza o compost) al menos una vez al año."],
                 2: ["Cambie de familia de planta ya: no repita lo mismo en la próxima siembra.",
                     "Siembre fríjol en la próxima temporada para devolverle nitrógeno a la tierra.",
+                    "Repetir cultivo acumula plagas y enfermedades en el lote: rotar las corta.",
                     "Agregue abono orgánico y haga un análisis de suelo (pregunte en la UMATA)."]}[c]
-    areas.append({"area": "Cansancio del suelo", "color": COLOR[c], "puntos": pts, "motivos": por, "consejos": consejos})
+    areas.append({"area": "Rotación y suelo", "color": COLOR[c], "puntos": pts, "motivos": por, "consejos": consejos})
 
-    # 3. PLAGAS Y ENFERMEDADES -------------------------------------------
+    # 3. AGUA Y AÑOS EXTREMOS -------------------------------------------
+    ce = resp.get("clima_extremo", {})
     pts, por = 0, []
-    if len(plagas) >= 3: pts += 2; por.append(f"{len(plagas)} plagas o enfermedades")
-    elif len(plagas) >= 1: pts += 1; por.append("tiene " + ", ".join(plagas))
-    if fumig > 6: pts += 2; por.append(f"fumiga {fumig:.0f} veces por cosecha")
-    elif fumig > 3: pts += 1; por.append(f"fumiga {fumig:.0f} veces por cosecha")
-    if len(hist) >= 2 and hist[0] == hist[1]: pts += 1; por.append(f"repite {hist[0].replace('_', ' ')}")
-    if lote.get("drenaje") == "encharca": pts += 1; por.append("el lote se encharca (favorece hongos)")
-    c = _color(pts, 2, 4)
-    consejos = {0: ["Siga revisando el cultivo cada semana."],
-                1: ["Cambie de cultivo para cortar el ciclo de la plaga.",
-                    "Revise el cultivo cada semana y fumigue solo cuando vea el daño."],
-                2: ["No repita el mismo cultivo: la plaga ya vive en ese lote.",
-                    "Pida a la UMATA o al ICA un plan de manejo integrado de plagas.",
-                    "Use semilla sana o certificada y saque las plantas enfermas del lote."]}[c]
-    areas.append({"area": "Plagas y enfermedades", "color": COLOR[c], "puntos": pts, "motivos": por, "consejos": consejos})
-
-    # 4. AGUA ------------------------------------------------------------
-    pts, por = 0, []
-    if lote.get("drenaje") == "encharca": pts += 2; por.append("se encharca")
-    if lote.get("drenaje") == "seca_rapido" and not lote.get("riego"): pts += 2; por.append("se seca rápido y no tiene riego")
-    elif not lote.get("riego"): pts += 1; por.append("no tiene riego")
-    c = _color(pts, 1, 2)
-    consejos = {0: ["El manejo del agua está bien."],
-                1: ["Sin riego, en diciembre-febrero siembre cultivos que aguanten poca agua o deje cobertura."],
-                2: (["Haga zanjas de drenaje o siembre en camas altas para que no se encharque."]
-                    if lote.get("drenaje") == "encharca" else
-                    ["Tape la tierra con rastrojo para que guarde humedad.",
-                     "Recoja agua lluvia (tanque o reservorio) para la temporada seca."])}[c]
-    areas.append({"area": "Agua", "color": COLOR[c], "puntos": pts, "motivos": por, "consejos": consejos})
+    if lote.get("drenaje") == "encharca": pts += 2; por.append("se encharca cuando llueve duro")
+    if ce.get("seco") == "pierde": pts += 2; por.append("ha perdido cosechas en años muy secos")
+    elif ce.get("seco") == "baja": pts += 1; por.append("la cosecha baja mucho en años muy secos")
+    if ce.get("lluvioso") == "pierde": pts += 2; por.append("ha perdido cosechas en años muy lluviosos")
+    elif ce.get("lluvioso") == "hongos": pts += 1; por.append("el cultivo se enferma en años muy lluviosos")
+    c = _color(pts, 2, 3)
+    cons = []
+    if lote.get("drenaje") == "encharca" or ce.get("lluvioso") in ("hongos", "pierde"):
+        cons += ["Haga zanjas de drenaje o siembre en camas altas antes de las lluvias.",
+                 "En años muy lluviosos prefiera los cultivos más resistentes a hongos de su rotación."]
+    if ce.get("seco") in ("baja", "pierde"):
+        cons += ["Tape la tierra con rastrojo para que guarde humedad en verano.",
+                 "Recoja agua lluvia (tanque o reservorio) para los años secos."]
+    if not cons:
+        cons = ["El lote maneja bien el agua; siga así."]
+    areas.append({"area": "Agua y años extremos", "color": COLOR[c], "puntos": pts, "motivos": por, "consejos": cons})
 
     peor = max(areas, key=lambda a: (["verde", "amarillo", "rojo"].index(a["color"]), a["puntos"]))
     return {"areas": areas, "prioridad": peor["area"] if peor["color"] != "verde" else None}

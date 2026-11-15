@@ -29,7 +29,12 @@ def resumen_texto(resp, diag, rec):
     """Resumen corto, en lenguaje sencillo, para WhatsApp o para imprimir."""
     from motor_rotacion import texto_rotacion
     f, l = resp.get("finca", {}), resp.get("lote", {})
-    lin = [f"*{f.get('nombre', 'Finca')} – {l.get('nombre', 'lote')}* ({f.get('municipio', '')})",
+    TEN = {"propia": "tierra propia", "arrendada": "tierra arrendada", "compania": "en compañía"}
+    TAM = {"menos_1": "menos de 1 ha", "1_5": "1 a 5 ha", "mas_5": "más de 5 ha"}
+    per = resp.get("perfil", {})
+    datos = ", ".join(x for x in (TAM.get(per.get("tamano")), TEN.get(per.get("tenencia"))) if x)
+    titulo = " – ".join(x for x in (f.get("nombre"), l.get("nombre")) if x) or "Su lote"
+    lin = [f"*{titulo}* ({f.get('municipio', '')}{', ' + datos if datos else ''})",
            datetime.now().strftime("%d/%m/%Y"), "", "*Cómo está el lote*"]
     for a in diag["areas"]:
         lin.append(f"{ICONO[a['color']]} {a['area']}")
@@ -83,7 +88,7 @@ def comparar_finca(finca):
         return []
     from motor_rotacion import texto_rotacion
     filas = []
-    print(f"Lotes de {finca}   (orden de los semáforos: Erosión · Suelo · Plagas · Agua)\n")
+    print(f"Lotes de {finca}   (orden de los semáforos: Erosión · Rotación y suelo · Agua)\n")
     for lote in sorted(l for l in carpeta.iterdir() if l.is_dir()):
         regs = _registros(lote)
         if not regs:
@@ -110,7 +115,7 @@ def historia_lote(finca, lote):
     if not regs:
         print("No hay entrevistas de ese lote.")
         return
-    print(f"Historia de {lote} ({finca})   Erosión · Suelo · Plagas · Agua\n")
+    print(f"Historia de {lote} ({finca})   Erosión · Rotación y suelo · Agua\n")
     for r in regs:
         print(f"{r['fecha'][:10]}  {_semaforos(r['diagnostico'])}   "
               f"último cultivo: {(r['respuestas'].get('historial', {}).get('ultimos_cultivos') or ['-'])[0]}")

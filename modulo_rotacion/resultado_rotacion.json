@@ -1,30 +1,39 @@
 {
   "municipio": "La Unión",
+  "perfil": {},
   "zona": "fria",
   "temperatura_supuesta_C": 15.0,
   "lluvias": "bimodal",
   "pesos": {
-    "ingreso": 0.42,
-    "riesgo": 0.12,
-    "suelo": 0.35,
-    "trabajo": 0.12
+    "ingreso": 0.19,
+    "riesgo": 0.19,
+    "suelo": 0.42,
+    "trabajo": 0.19
   },
-  "n_rotaciones_validas": 42,
+  "n_rotaciones_validas": 2,
   "rotaciones": [
     {
       "puesto": 1,
-      "puntaje": 0.619,
+      "puntaje": 0.559,
       "secuencia": [
         {
           "temporada": "Mar-May",
-          "cultivo": "frijol_voluble",
-          "nombre": "fríjol voluble",
-          "familia": "Fabaceae",
-          "tipo": "restaura",
-          "aptitud_ecocrop": 0.89
+          "cultivo": "cebolla_junca",
+          "nombre": "cebolla junca",
+          "familia": "Amaryllidaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
         },
         {
           "temporada": "Jun-Ago",
+          "cultivo": "cebolla_junca",
+          "nombre": "cebolla junca",
+          "familia": "Amaryllidaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
+        },
+        {
+          "temporada": "Sep-Nov",
           "cultivo": "frijol_voluble",
           "nombre": "fríjol voluble",
           "familia": "Fabaceae",
@@ -32,45 +41,39 @@
           "aptitud_ecocrop": 0.89
         },
         {
-          "temporada": "Sep-Nov",
-          "cultivo": "brocoli",
-          "nombre": "brócoli",
-          "familia": "Brassicaceae",
-          "tipo": "ingreso",
-          "aptitud_ecocrop": 1.0
-        },
-        {
           "temporada": "Dic-Feb",
-          "cultivo": "zanahoria",
-          "nombre": "zanahoria",
-          "familia": "Apiaceae",
-          "tipo": "ingreso",
-          "aptitud_ecocrop": 1.0
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
         }
       ],
       "componentes": {
-        "ingreso": 0.68,
-        "riesgo_clima": 0.16,
-        "suelo": 0.57,
-        "trabajo": 0.68,
+        "ingreso": 0.75,
+        "riesgo_clima": 0.2,
+        "suelo": 0.5,
+        "trabajo": 0.75,
         "aptitud_ecocrop": 0.94
       },
-      "explicacion": "Se recomienda porque le deja buena plata.",
+      "explicacion": "Se recomienda porque cuida la tierra.",
       "alertas": [
+        "Si le avisan que viene un año muy seco, de esta rotación el que mejor aguanta es el fríjol voluble; tape la tierra con rastrojo para guardar humedad.",
+        "Si le avisan que viene un año muy lluvioso, el más resistente a hongos de esta rotación es la cebolla junca; haga drenajes antes de las lluvias.",
         "El fríjol voluble crece más lento con esta temperatura (le va mejor desde 16 °C): use semilla adaptada a la zona."
       ]
     },
     {
       "puesto": 2,
-      "puntaje": 0.619,
+      "puntaje": 0.557,
       "secuencia": [
         {
           "temporada": "Mar-May",
-          "cultivo": "brocoli",
-          "nombre": "brócoli",
-          "familia": "Brassicaceae",
-          "tipo": "ingreso",
-          "aptitud_ecocrop": 1.0
+          "cultivo": "frijol_voluble",
+          "nombre": "fríjol voluble",
+          "familia": "Fabaceae",
+          "tipo": "restaura",
+          "aptitud_ecocrop": 0.89
         },
         {
           "temporada": "Jun-Ago",
@@ -82,79 +85,32 @@
         },
         {
           "temporada": "Sep-Nov",
-          "cultivo": "frijol_voluble",
-          "nombre": "fríjol voluble",
-          "familia": "Fabaceae",
-          "tipo": "restaura",
-          "aptitud_ecocrop": 0.89
+          "cultivo": "cebolla_junca",
+          "nombre": "cebolla junca",
+          "familia": "Amaryllidaceae",
+          "tipo": "ingreso",
+          "aptitud_ecocrop": 1.0
         },
         {
           "temporada": "Dic-Feb",
-          "cultivo": "zanahoria",
-          "nombre": "zanahoria",
-          "familia": "Apiaceae",
+          "cultivo": "cebolla_junca",
+          "nombre": "cebolla junca",
+          "familia": "Amaryllidaceae",
           "tipo": "ingreso",
           "aptitud_ecocrop": 1.0
         }
       ],
       "componentes": {
-        "ingreso": 0.68,
-        "riesgo_clima": 0.16,
-        "suelo": 0.57,
-        "trabajo": 0.68,
+        "ingreso": 0.75,
+        "riesgo_clima": 0.2,
+        "suelo": 0.5,
+        "trabajo": 0.75,
         "aptitud_ecocrop": 0.94
       },
-      "explicacion": "Se recomienda porque le deja buena plata.",
+      "explicacion": "Se recomienda porque cuida la tierra.",
       "alertas": [
-        "El fríjol voluble crece más lento con esta temperatura (le va mejor desde 16 °C): use semilla adaptada a la zona."
-      ]
-    },
-    {
-      "puesto": 3,
-      "puntaje": 0.618,
-      "secuencia": [
-        {
-          "temporada": "Mar-May",
-          "cultivo": "brocoli",
-          "nombre": "brócoli",
-          "familia": "Brassicaceae",
-          "tipo": "ingreso",
-          "aptitud_ecocrop": 1.0
-        },
-        {
-          "temporada": "Jun-Ago",
-          "cultivo": "zanahoria",
-          "nombre": "zanahoria",
-          "familia": "Apiaceae",
-          "tipo": "ingreso",
-          "aptitud_ecocrop": 1.0
-        },
-        {
-          "temporada": "Sep-Nov",
-          "cultivo": "frijol_voluble",
-          "nombre": "fríjol voluble",
-          "familia": "Fabaceae",
-          "tipo": "restaura",
-          "aptitud_ecocrop": 0.89
-        },
-        {
-          "temporada": "Dic-Feb",
-          "cultivo": "frijol_voluble",
-          "nombre": "fríjol voluble",
-          "familia": "Fabaceae",
-          "tipo": "restaura",
-          "aptitud_ecocrop": 0.89
-        }
-      ],
-      "componentes": {
-        "ingreso": 0.68,
-        "riesgo_clima": 0.17,
-        "suelo": 0.57,
-        "trabajo": 0.68,
-        "aptitud_ecocrop": 0.94
-      },
-      "explicacion": "Se recomienda porque le deja buena plata.",
-      "alertas": [
+        "Si le avisan que viene un año muy seco, de esta rotación el que mejor aguanta es el fríjol voluble; tape la tierra con rastrojo para guardar humedad.",
+        "Si le avisan que viene un año muy lluvioso, el más resistente a hongos de esta rotación es el fríjol voluble; haga drenajes antes de las lluvias.",
         "El fríjol voluble crece más lento con esta temperatura (le va mejor desde 16 °C): use semilla adaptada a la zona."
       ]
     }
@@ -166,13 +122,15 @@
     "yuca": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
     "name_criollo": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
     "name_espino": "poco apto en La Unión según UPRA (puntaje 0 de 100)",
+    "brocoli": "el agricultor no puede sembrarlo (semilla, precio o comprador)",
     "repollo": "el agricultor no puede sembrarlo (semilla, precio o comprador)",
+    "zanahoria": "el agricultor no puede sembrarlo (semilla, precio o comprador)",
+    "lechuga": "el agricultor no puede sembrarlo (semilla, precio o comprador)",
     "descanso_cubierto": "el agricultor no puede dejar una temporada sin vender"
   },
   "alertas_generales": [
-    "Tiene gusano blanco: no vuelva a sembrar papa en este lote hasta completar la rotación.",
-    "Tiene gota: no siembre papa ni tomate en la temporada de más lluvia y elimine las plantas de papa que salgan solas.",
-    "Este lote viene de papa repetido: lo más importante ahora es cambiar de familia de planta."
+    "Este lote viene de papa repetido: lo más importante ahora es cambiar de familia de planta.",
+    "No vuelva a sembrar papa en este lote hasta completar la rotación."
   ],
   "aviso": "Clima: zona dicha por el agricultor + rangos FAO ECOCROP. Aptitud del municipio: UPRA. Tolerancia a hongos, aporte al suelo, ingreso y trabajo son ESTIMADOS (datos/cultivos.csv)."
 }

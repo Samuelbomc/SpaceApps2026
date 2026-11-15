@@ -41,7 +41,14 @@ ZONAS = {
 LLUVIAS = {
     "bimodal":  {"Mar-May": 1.0, "Jun-Ago": 0.5, "Sep-Nov": 1.0, "Dic-Feb": 0.0},
     "unimodal": {"Mar-May": 0.5, "Jun-Ago": 1.0, "Sep-Nov": 1.0, "Dic-Feb": 0.0},
+    "continua": {"Mar-May": 1.0, "Jun-Ago": 1.0, "Sep-Nov": 1.0, "Dic-Feb": 0.5},
 }
+
+# Opciones del menu de cultivos que agrupan varios cultivos del motor
+GRUPOS = {"name": ["name_criollo", "name_espino"], "hortalizas": ["brocoli", "repollo", "zanahoria", "lechuga"]}
+# Que tanto le afectan al agricultor los anios muy secos / muy lluviosos (preguntas q12 y q13)
+SENS_SECO = {"riego": 0.0, "poco": 0.3, "baja": 0.7, "pierde": 1.0}
+SENS_LLUVIA = {"poco": 0.0, "hongos": 0.6, "pierde": 1.0}
 
 USAR_UPRA = True          # poner False para no filtrar por aptitud UPRA del municipio
 APTITUD_MINIMA = 10       # puntaje UPRA minimo (0-100) para aceptar un cultivo
@@ -62,7 +69,8 @@ FAMILIAS_HISTORIAL = {"papa": "Solanaceae", "papa_criolla": "Solanaceae", "tomat
                       "tomate_de_arbol": "Solanaceae", "arveja": "Fabaceae", "haba": "Fabaceae",
                       "frijol": "Fabaceae", "avena": "Poaceae", "pasto": "Poaceae", "kikuyo": "Poaceae",
                       "aguacate": "Lauraceae", "cafe": "Rubiaceae", "platano": "Musaceae",
-                      "fresa": "Rosaceae", "mora": "Rosaceae"}
+                      "fresa": "Rosaceae", "mora": "Rosaceae",
+                      "name": "Dioscoreaceae", "hortalizas": "Brassicaceae"}
 
 NOMBRES = {"maiz": "maíz", "arroz": "arroz", "frijol_arbustivo": "fríjol arbustivo",
            "frijol_voluble": "fríjol voluble", "yuca": "yuca", "name_criollo": "ñame criollo",
@@ -71,12 +79,68 @@ NOMBRES = {"maiz": "maíz", "arroz": "arroz", "frijol_arbustivo": "fríjol arbus
            "descanso_cubierto": "descanso con cobertura"}
 
 
+FEMENINOS = {"yuca", "cebolla_junca", "zanahoria", "lechuga", "papa"}
+
+
+def el(c, mayus=False):
+    """'el maíz' / 'la cebolla junca'."""
+    a = "la" if c in FEMENINOS else "el"
+    return f"{a.capitalize() if mayus else a} {nombre(c)}"
+
+
 def nombre(c):
     return NOMBRES.get(c, c.replace("_", " "))
 
 
 def _norm(txt):
     return unicodedata.normalize("NFKD", str(txt)).encode("ascii", "ignore").decode().lower().strip()
+
+
+URABA = {"apartado", "arboletes", "carepa", "chigorodo", "murindo", "mutata", "necocli",
+         "san juan de uraba", "san pedro de uraba", "turbo", "vigia del fuerte"}
+
+
+def normalizar(resp):
+    """Convierte las respuestas de la entrevista corta en lo que usan el motor y el diagnostico.
+    La interfaz puede mandar solo las respuestas tal cual; esto se encarga del resto."""
+    if resp.get("_normalizado"):
+        return resp
+    for k in ("finca", "lote", "restricciones", "historial", "suelo", "clima_extremo", "mercado"):
+        resp.setdefault(k, {})
+    f, l, h, r, ce = resp["finca"], resp["lote"], resp["historial"], resp["restricciones"], resp["clima_extremo"]
+
+    # Historial: ultimo cultivo x numero de veces seguidas  (q6, q7)
+    if "ultimos_cultivos" not in h:
+        ult = h.get("ultimo_texto") if h.get("ultimo") == "otro" else h.get("ultimo")
+        ult = _norm(ult).replace(" ", "_") if ult else None
+        h["ultimos_cultivos"] = [ult] * int(h.get("veces") or 1) if ult else []
+
+    # Cultivos que no puede sembrar  (q9): los grupos se abren en sus cultivos
+    lista = []
+    for x in r.get("sin_semilla_o_comprador", []):
+        if x != "ninguno":
+            lista += GRUPOS.get(x, [x])
+    r["sin_semilla_o_comprador"] = lista
+
+    # Aguacero  (q11) -> encharcamiento y erosion
+    ag = l.get("aguacero")
+    if ag and "drenaje" not in l:
+        l["drenaje"] = "encharca" if ag in ("charcos", "ambas") else "normal"
+    if ag and "se_lava" not in resp["suelo"]:
+        resp["suelo"]["se_lava"] = "mucho" if ag in ("lava", "ambas") else "no"
+
+    # Anios muy secos / muy lluviosos  (q12, q13)
+    if "riego" not in l:
+        l["riego"] = ce.get("seco") == "riego"
+    ce["sens_seco"] = SENS_SECO.get(ce.get("seco"), 0.3)
+    ce["sens_lluvia"] = SENS_LLUVIA.get(ce.get("lluvioso"), 0.3)
+
+    # Por defecto se asume que el agricultor necesita vender todas las temporadas
+    r.setdefault("aguanta_temporada_sin_venta", False)
+    if f.get("lluvias") in (None, "no_se"):
+        f["lluvias"] = "unimodal" if _norm(f.get("municipio", "")) in URABA else "bimodal"
+    resp["_normalizado"] = True
+    return resp
 
 
 # ----------------------------------------------------------------- clima
@@ -130,7 +194,20 @@ def cargar_cultivos(resp, descartes):
 
     if resp.get("mercado", {}).get("tiene_ganado"):
         c.loc[c["CULTIVO"] == "maiz", "INGRESO_REL"] += 0.1
+    # Lo que el agricultor quiere sembrar sube de puntaje  [pregunta h4]
+    for cul in c["CULTIVO"]:
+        if quiere(cul, resp):
+            c.loc[c["CULTIVO"] == cul, "INGRESO_REL"] = min(1.0, c.loc[c["CULTIVO"] == cul, "INGRESO_REL"].iloc[0] + 0.15)
     return c.set_index("CULTIVO")
+
+
+def quiere(cul, resp):
+    """True si el cultivo coincide con algo de 'cultivos_interes' (ej. 'frijol' -> los dos frijoles)."""
+    for x in resp.get("cultivos_interes", []):
+        x = _norm(x).replace(" ", "_").replace("n~", "n")
+        if x and (x in cul or x in _norm(nombre(cul)).replace(" ", "_")):
+            return True
+    return False
 
 
 def cultivo_posible(cul, fila, temp, clima, resp):
@@ -186,7 +263,7 @@ def generar_rotaciones(cultivos, clima, resp, descartes):
             continue
         if familias.count("Solanaceae") > MAX_SOLANACEAS_POR_ANIO:
             continue
-        if not resp.get("restricciones", {}).get("aguanta_temporada_sin_venta", True):
+        if not resp.get("restricciones", {}).get("aguanta_temporada_sin_venta", False):
             if any(cultivos.loc[b, "INGRESO_REL"] == 0 for b in bloques):
                 continue
         validas.append([c for c, d in colocados for _ in range(d)])
@@ -195,7 +272,7 @@ def generar_rotaciones(cultivos, clima, resp, descartes):
         if c in usados or c in descartes:
             continue
         f = FALLOS.get(c, {})
-        if c == "descanso_cubierto" and not resp.get("restricciones", {}).get("aguanta_temporada_sin_venta", True):
+        if c == "descanso_cubierto" and not resp.get("restricciones", {}).get("aguanta_temporada_sin_venta", False):
             descartes[c] = "el agricultor no puede dejar una temporada sin vender"
         elif f and len(set(f.values())) == 1 and len(f) == len(ORDEN_TEMPORADAS):
             descartes[c] = next(iter(f.values()))
@@ -212,7 +289,7 @@ def pesos(resp, diag=None):
     # Si el diagnostico del lote sale en rojo en erosion o cansancio del suelo,
     # cuidar la tierra pesa mas (+0.15 por cada area en rojo)
     if diag:
-        rojos = sum(a["color"] == "rojo" for a in diag["areas"] if a["area"] in ("Erosión", "Cansancio del suelo"))
+        rojos = sum(a["color"] == "rojo" for a in diag["areas"] if a["area"] in ("Erosión", "Rotación y suelo"))
         w["suelo"] += 0.15 * rojos
         tot = sum(w.values())
         w = {k: v / tot for k, v in w.items()}
@@ -222,7 +299,9 @@ def pesos(resp, diag=None):
 def puntuar(seq, cultivos, clima, resp, w):
     lote = resp.get("lote", {})
     erosion = 1.0 + {"alta": 0.5, "media": 0.2}.get(lote.get("pendiente"), 0) + (0.3 if lote.get("labranza") == "tractor" else 0)
-    humedad = 1.2 if lote.get("drenaje") == "encharca" else 1.0
+    ce = resp.get("clima_extremo", {})
+    humedad = (1.2 if lote.get("drenaje") == "encharca" else 1.0) + 0.3 * ce.get("sens_lluvia", 0.3)
+    sens_seco = ce.get("sens_seco", 0.3)
 
     ingreso, riesgo, suelo, trabajo, apt = [], [], [], [], []
     for temp, cul in zip(ORDEN_TEMPORADAS, seq):
@@ -230,8 +309,9 @@ def puntuar(seq, cultivos, clima, resp, w):
         a = aptitud_temperatura(f, k["t_media"])
         r_hongos = k["lluvia"] * (1 - TOLERANCIA[f["TOLERANCIA_HONGOS"]]) * humedad
         r_erosion = k["lluvia"] * (1 - f["APORTE_SUELO"]) * erosion / 1.8
-        r_seco = 1.0 if (k["lluvia"] == 0 and not lote.get("riego") and f["P_OPT_MIN"] >= 800) else 0.0
-        riesgo.append(min(1.0, 0.45 * (1 - a) + 0.25 * r_hongos + 0.15 * r_erosion + 0.15 * r_seco))
+        sed = 1.0 if f["P_OPT_MIN"] >= 1000 else 0.5 if f["P_OPT_MIN"] >= 800 else 0.0   # que tanta agua pide (ECOCROP)
+        r_seco = 0.0 if lote.get("riego") else min(1.0, (1 - k["lluvia"]) * sed * (0.5 + sens_seco))
+        riesgo.append(min(1.0, 0.40 * (1 - a) + 0.25 * min(1.0, r_hongos) + 0.15 * r_erosion + 0.20 * r_seco))
         ingreso.append(f["INGRESO_REL"]); trabajo.append(f["TRABAJO_REL"]); apt.append(a)
         suelo.append(min(1.0, f["APORTE_SUELO"] + 0.2 * f["FIJA_NITROGENO"]))
 
@@ -256,24 +336,43 @@ def alertas(seq, riesgo, cultivos, clima, resp):
         if cul not in vistos and cul != "descanso_cubierto":
             vistos.add(cul)
             if k["t_media"] < f["T_OPT_MIN"]:
-                out.append(f"El {nombre(cul)} crece más lento con esta temperatura (le va mejor desde {f['T_OPT_MIN']:.0f} °C): use semilla adaptada a la zona.")
+                out.append(f"{el(cul, True)} crece más lento con esta temperatura (le va mejor desde {f['T_OPT_MIN']:.0f} °C): use semilla adaptada a la zona.")
             elif k["t_media"] > f["T_OPT_MAX"]:
-                out.append(f"El {nombre(cul)} sufre con el calor (le va mejor por debajo de {f['T_OPT_MAX']:.0f} °C).")
+                out.append(f"{el(cul, True)} sufre con el calor (le va mejor por debajo de {f['T_OPT_MAX']:.0f} °C).")
         if r >= 0.4 and k["lluvia"] == 1 and cul != "descanso_cubierto":
-            out.append(f"{temp}: temporada de lluvia; vigile hongos en el {nombre(cul)}.")
+            out.append(f"{temp}: temporada de lluvia; vigile hongos en {el(cul)}.")
     return out
 
 
 def alertas_generales(resp):
     out = []
-    plagas = [p.lower() for p in resp.get("plagas_recurrentes", [])]
     hist = resp.get("historial", {}).get("ultimos_cultivos", [])
-    if "gusano blanco" in plagas:
-        out.append("Tiene gusano blanco: no vuelva a sembrar papa en este lote hasta completar la rotación.")
-    if "gota" in plagas:
-        out.append("Tiene gota: no siembre papa ni tomate en la temporada de más lluvia y elimine las plantas de papa que salgan solas.")
     if len(hist) >= 2 and hist[0] == hist[1]:
         out.append(f"Este lote viene de {nombre(hist[0])} repetido: lo más importante ahora es cambiar de familia de planta.")
+    if hist and hist[0] in ("papa", "tomate"):
+        out.append(f"No vuelva a sembrar {nombre(hist[0])} en este lote hasta completar la rotación.")
+    return out
+
+
+def alertas_rotacion(seq, cultivos, resp):
+    out = []
+    if resp.get("perfil", {}).get("tenencia") in ("arrendada", "compania"):
+        largos = {c for c in seq if cultivos.loc[c, "TEMPORADAS_CICLO"] >= 3}
+        for c in largos:
+            out.append(f"{el(c, True)} ocupa el lote casi todo el año: tenga en cuenta el tiempo del arriendo o del acuerdo.")
+    ce = resp.get("clima_extremo", {})
+    cults = [c for c in dict.fromkeys(seq) if c != "descanso_cubierto"]
+    if cults and ce.get("sens_seco", 0) >= 0.7:
+        aguanta = min(cults, key=lambda c: cultivos.loc[c, "P_OPT_MIN"])
+        out.append(f"Si le avisan que viene un año muy seco, de esta rotación el que mejor aguanta es {el(aguanta)}; "
+                   "tape la tierra con rastrojo para guardar humedad.")
+    if cults and ce.get("sens_lluvia", 0) >= 0.6:
+        resiste = max(cults, key=lambda c: TOLERANCIA[cultivos.loc[c, "TOLERANCIA_HONGOS"]])
+        out.append(f"Si le avisan que viene un año muy lluvioso, el más resistente a hongos de esta rotación es {el(resiste)}; "
+                   "haga drenajes antes de las lluvias.")
+    pedidos = [nombre(c) for c in dict.fromkeys(seq) if quiere(c, resp)]
+    if pedidos:
+        out.append("Incluye lo que usted quiere sembrar: " + ", ".join(pedidos) + ".")
     return out
 
 
@@ -291,6 +390,7 @@ def recomendar(resp, diag=None):
     (opcional). Devuelve un dict listo para la interfaz."""
     if not isinstance(resp, dict):
         resp = json.loads(Path(resp).read_text(encoding="utf-8"))
+    resp = normalizar(resp)
     clima, zona, lluvias = clima_de_la_finca(resp)
     descartes = {}
     cultivos = cargar_cultivos(resp, descartes)
@@ -303,6 +403,7 @@ def recomendar(resp, diag=None):
 
     res = {
         "municipio": resp["finca"].get("municipio"),
+        "perfil": resp.get("perfil", {}),
         "zona": zona, "temperatura_supuesta_C": ZONAS[zona]["t_media"], "lluvias": lluvias,
         "pesos": {k: round(v, 2) for k, v in w.items()}, "n_rotaciones_validas": len(ev), "rotaciones": [],
         "cultivos_descartados": descartes,
@@ -318,7 +419,7 @@ def recomendar(resp, diag=None):
                            "aptitud_ecocrop": round(aptitud_temperatura(cultivos.loc[c], clima[t]["t_media"]), 2)}
                           for t, c in zip(ORDEN_TEMPORADAS, seq)],
             "componentes": comp, "explicacion": explicar(comp, w),
-            "alertas": alertas(seq, r, cultivos, clima, resp),
+            "alertas": alertas_rotacion(seq, cultivos, resp) + alertas(seq, r, cultivos, clima, resp),
         })
     return res
 

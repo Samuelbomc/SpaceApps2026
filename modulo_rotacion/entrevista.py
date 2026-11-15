@@ -1,14 +1,14 @@
 """
 Entrevista al agricultor (version por terminal; la interfaz hace lo mismo con botones).
 
-  python entrevista.py              # entrevista corta (22 preguntas, casi todas de escoger)
-  python entrevista.py --completa   # agrega las preguntas abiertas para el equipo
+  python entrevista.py              # entrevista corta (13 preguntas)
+  python entrevista.py --completa   # agrega preguntas opcionales
 
-Al final muestra el diagnostico del lote y la rotacion recomendada, guarda todo en
-datos/fincas/<finca>/<lote>/ y deja un resumen corto para WhatsApp.
+Al final muestra como esta el lote y que sembrar, y ofrece guardarlo
+(datos/fincas/<finca>/<lote>/) con un resumen corto para WhatsApp.
 
 Durante la entrevista:
-  - escriba el NUMERO de la opcion
+  - escriba el NUMERO de la opcion (si puede marcar varias: 1,3)
   - escriba ? para saber por que se hace la pregunta
   - presione Enter para saltarla
 """
@@ -19,19 +19,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from diagnostico import diagnosticar, texto_diagnostico
+from diagnostico import diagnosticar
 from lotes import guardar, resumen_texto
 from motor_rotacion import recomendar
 
 DATOS = Path(__file__).parent / "datos"
-
-DEFECTOS = {
-    "finca.nombre": "Mi finca", "lote.nombre": "Lote 1", "finca.zona": "templada", "finca.lluvias": "bimodal",
-    "lote.pendiente": "media", "lote.drenaje": "normal", "lote.riego": False, "lote.labranza": "manual",
-    "historial.ultimos_cultivos": [], "plagas_recurrentes": [], "restricciones.sin_semilla_o_comprador": [],
-    "restricciones.aguanta_temporada_sin_venta": True, "restricciones.mano_obra": "media",
-    "mercado.tiene_ganado": False, "prioridad_principal": "ingreso",
-}
+DEFECTOS = {"lote.nombre": "Lote 1", "finca.zona": "templada", "lote.pendiente": "media",
+            "mercado.tiene_ganado": False, "restricciones.sin_semilla_o_comprador": []}
 
 
 def _norm(t):
@@ -65,57 +59,63 @@ def poner(dic, ruta, valor):
     dic[partes[-1]] = valor
 
 
-def preguntar(p, lista_muni):
-    """Devuelve la respuesta ya convertida, o None si el agricultor la salta."""
+def opciones_de(p, banco):
+    """Las opciones pueden venir escritas o armarse con el menu de los 8 cultivos."""
+    o = p.get("opciones", [])
+    if isinstance(o, str) and o.startswith("cultivos_menu"):
+        o = banco["cultivos_menu"] + p.get("opciones_extra", [])
+    return o
+
+
+def preguntar(p, banco, lista_muni):
     t = p["tipo"]
+    ops = opciones_de(p, banco)
     while True:
-        if t == "opcion":
-            for i, o in enumerate(p["opciones"], 1):
+        if t in ("opcion", "multi_opcion"):
+            for i, o in enumerate(ops, 1):
                 print(f"   {i}. {o['texto']}")
+            if t == "multi_opcion":
+                print("   (puede marcar varios, separados por coma: 1,3)")
         elif t == "si_no":
             print("   1. Sí    2. No")
-        elif t.startswith("lista"):
-            print("   (si son varios, sepárelos con coma)")
         r = leer()
         if r == "?":
             print(f"   ℹ {p.get('ayuda', 'Nos ayuda a darle una mejor recomendación.')}")
             continue
         if not r:
-            return None
+            return None, None
         if t == "opcion":
-            if r.isdigit() and 1 <= int(r) <= len(p["opciones"]):
-                return p["opciones"][int(r) - 1]["valor"]
+            if r.isdigit() and 1 <= int(r) <= len(ops):
+                v = ops[int(r) - 1]["valor"]
+                extra = leer("   ¿Cuál? > ") if v == p.get("pide_texto_si") else None
+                return v, extra
             print("   Escriba el número de una opción.")
+        elif t == "multi_opcion":
+            nums = [x.strip() for x in r.split(",")]
+            if all(n.isdigit() and 1 <= int(n) <= len(ops) for n in nums):
+                return [ops[int(n) - 1]["valor"] for n in nums], None
+            print("   Escriba los números separados por coma, por ejemplo 1,3.")
         elif t == "si_no":
             if _norm(r) in ("1", "s", "si"):
-                return True
+                return True, None
             if _norm(r) in ("2", "n", "no"):
-                return False
+                return False, None
             print("   Escriba 1 (Sí) o 2 (No).")
-        elif t == "numero":
-            try:
-                return float(r.replace(",", "."))
-            except ValueError:
-                print("   Escriba solo el número.")
-        elif t.startswith("lista"):
-            items = [x.strip().lower() for x in r.split(",") if x.strip()]
-            return [_norm(x).replace(" ", "_") for x in items] if t == "lista_cultivos" else items
         elif t == "municipio":
-            encontrados = [m for m in lista_muni if _norm(m) == _norm(r)] or \
-                          [m for m in lista_muni if _norm(r) in _norm(m)]
-            if len(encontrados) == 1:
-                print(f"   ✓ {encontrados[0]}")
-                return encontrados[0]
-            if len(encontrados) > 1:
-                for i, m in enumerate(encontrados[:9], 1):
+            enc = [m for m in lista_muni if _norm(m) == _norm(r)] or [m for m in lista_muni if _norm(r) in _norm(m)]
+            if len(enc) == 1:
+                print(f"   ✓ {enc[0]}")
+                return enc[0], None
+            if len(enc) > 1:
+                for i, m in enumerate(enc[:9], 1):
                     print(f"   {i}. {m}")
                 e = leer("   ¿Cuál es? > ")
-                if e.isdigit() and 1 <= int(e) <= len(encontrados[:9]):
-                    return encontrados[int(e) - 1]
+                if e.isdigit() and 1 <= int(e) <= len(enc[:9]):
+                    return enc[int(e) - 1], None
             else:
                 print("   No encontramos ese municipio de Antioquia. Escríbalo de nuevo (o Enter para saltar).")
         else:
-            return r
+            return r, None
 
 
 def visible(p, resp):
@@ -127,24 +127,25 @@ def visible(p, resp):
 
 
 def entrevistar(completa=False):
-    banco = json.loads((DATOS / "preguntas_agricultor.json").read_text(encoding="utf-8"))["preguntas"]
-    banco = [p for p in banco if completa or p["nivel"] == "basico"]
+    banco = json.loads((DATOS / "preguntas_agricultor.json").read_text(encoding="utf-8"))
+    preguntas = [p for p in banco["preguntas"] if completa or p["nivel"] == "basico"]
     lista_muni = municipios()
     resp = {}
-    print("\nEscriba el número de la opción · ? = por qué preguntamos · Enter = saltar\n")
-    tema = None
-    hechas = 0
-    for p in banco:
+    print("\nEscriba el número de la opción · ? = por qué preguntamos · Enter = saltar")
+    tema, n = None, 0
+    for p in preguntas:
         if not visible(p, resp):
             continue
-        hechas += 1
+        n += 1
         if p["tema"] != tema:
             tema = p["tema"]
             print(f"\n── {tema} ──")
-        print(f"\n[{hechas}/{len(banco)}] {p['texto']}")
-        r = preguntar(p, lista_muni)
-        if r is not None:
-            poner(resp, p["campo"], r)
+        print(f"\n[{n}/{len(preguntas)}] {p['texto']}")
+        v, extra = preguntar(p, banco, lista_muni)
+        if v is not None:
+            poner(resp, p["campo"], v)
+            if extra:
+                poner(resp, p["campo"] + "_texto", extra)
     for ruta, valor in DEFECTOS.items():
         if obtener(resp, ruta) is None:
             poner(resp, ruta, valor)
@@ -153,20 +154,21 @@ def entrevistar(completa=False):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--completa", action="store_true", help="incluye las preguntas abiertas")
-    ap.add_argument("--no-guardar", action="store_true")
+    ap.add_argument("--completa", action="store_true", help="agrega las preguntas opcionales")
     a = ap.parse_args()
 
     resp = entrevistar(a.completa)
     diag = diagnosticar(resp)
     rec = recomendar(resp, diag)
 
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 55)
     print(resumen_texto(resp, diag, rec).replace("*", ""))
-    print("=" * 50)
-    if not a.no_guardar:
+    print("=" * 55)
+    finca = leer("\n¿Quiere guardar este lote? Escriba el nombre de la finca (Enter = no guardar): ")
+    if finca:
+        poner(resp, "finca.nombre", finca)
         fj, ft = guardar(resp, diag, rec)
-        print(f"\nGuardado en: {fj}")
+        print(f"Guardado en: {fj}")
         print(f"Resumen para WhatsApp: {ft}")
 
 
