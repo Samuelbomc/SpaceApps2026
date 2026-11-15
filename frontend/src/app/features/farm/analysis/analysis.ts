@@ -1,5 +1,5 @@
 import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Backend, errorMessage } from '../../../core/api/backend';
 import type {
@@ -8,6 +8,7 @@ import type {
   ObservationHistory,
   AgronomicCatalog,
   Forecast,
+  ModelCatalog,
 } from '@field-shift/api-client';
 import {
   summarizeObservations,
@@ -24,7 +25,7 @@ const today = () =>
   }).format(new Date());
 @Component({
   selector: 'app-analysis',
-  imports: [FormsModule, DatePipe, JsonPipe],
+  imports: [FormsModule, DatePipe, DecimalPipe, JsonPipe],
   templateUrl: './analysis.html',
   styles: `
     .analysis-layout {
@@ -75,6 +76,8 @@ export class Analysis {
   protected readonly history = signal<ObservationHistory | null>(null);
   protected readonly analysis = signal<AnalysisResult | null>(null);
   protected readonly crops = signal<AgronomicCatalog['crops']>([]);
+  protected readonly models = signal<ModelCatalog | null>(null);
+  protected readonly modelError = signal('');
   protected readonly page = signal(0);
   protected readonly addOne = (value: number) => value + 1;
   protected readonly previousPage = (value: number) => Math.max(0, value - 1);
@@ -96,6 +99,14 @@ export class Analysis {
   constructor() {
     const controller = new AbortController();
     this.destroyed.onDestroy(() => controller.abort());
+    void this.backend.client
+      .request<ModelCatalog>('models', { signal: controller.signal })
+      .then((catalog) => {
+        if (!controller.signal.aborted) this.models.set(catalog);
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) this.modelError.set(errorMessage(error));
+      });
     void Promise.all([
       this.backend.client.request<Region[]>('regions', { signal: controller.signal }),
       this.backend.client.request<AgronomicCatalog>('crops/catalog', { signal: controller.signal }),
@@ -143,13 +154,26 @@ export class Analysis {
     const status = this.analysis()?.status;
     return status
       ? {
-          pending_model: 'Los modelos aún no están conectados.',
+          pending_model: 'Todavía no hay modelos conectados para este plazo.',
           pending_run: 'El análisis todavía no se ha generado.',
           insufficient_data: 'No hay suficientes datos.',
           pending_recommendations: 'Predicciones disponibles; recomendaciones pendientes.',
           ready: 'Análisis disponible.',
         }[status]
       : 'No hay un análisis almacenado disponible.';
+  }
+  protected variableLabel(variable: string) {
+    return (
+      (
+        {
+          temperature_mean: 'Temperatura media',
+          temperature_min: 'Media de temperaturas mínimas',
+          temperature_max: 'Media de temperaturas máximas',
+          precipitation: 'Lluvia acumulada',
+          surface_soil_moisture: 'Humedad superficial del suelo',
+        } as Record<string, string>
+      )[variable] || variable
+    );
   }
   protected points(segment: Observation[], all: Observation[]) {
     const valid = all.filter(isUsable);

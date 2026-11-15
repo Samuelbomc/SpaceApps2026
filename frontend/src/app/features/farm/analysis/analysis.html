@@ -53,21 +53,48 @@
     <h2>Análisis para un periodo de los próximos {{ horizon() }} días</h2>
     <section class="card">
       <h3>Predicciones</h3>
-      <p>{{ analysisMessage() }}</p>
+      @if (models(); as catalog) {
+        @if (catalog.models.length) {
+          <p>
+            {{ catalog.models.length }} modelos XGBoost integrados · horizonte disponible:
+            {{ catalog.supported_horizons.join(', ') }} días.
+          </p>
+          <p>Versión experimental. Los plazos de 15, 30 y 60 días siguen pendientes.</p>
+        }
+      }
+      @if (modelError()) {
+        <p class="form-alert" role="alert">{{ modelError() }}</p>
+      }
+      @if (!analysis()?.messages?.length) {
+        <p>{{ analysisMessage() }}</p>
+      }
+      @for (message of analysis()?.messages || []; track message) {
+        <p>{{ message }}</p>
+      }
       @for (forecast of forecasts(); track forecast.model_kind) {
         <article>
           <h4>{{ forecast.model_kind === 'climate' ? 'Clima' : 'Suelo' }}</h4>
+          @if (forecast.validation_status === 'experimental') {
+            <p class="eyebrow">Predicción experimental</p>
+          }
           @for (value of forecast.values; track value.variable) {
             <p>
-              {{ value.variable }}: <strong>{{ value.value }} {{ value.unit }}</strong> ·
+              {{ variableLabel(value.variable) }}:
+              <strong
+                >{{ value.value | number: '1.1-3' }}
+                {{ value.unit === 'C' ? '°C' : value.unit }}</strong
+              >
+              ·
               {{ value.aggregation }}
             </p>
           }
           @if (technical()) {
             <p>Versión: {{ forecast.model_version }}</p>
           }
-          @for (note of forecast.limitations; track note) {
-            <p>{{ note }}</p>
+          @if (technical()) {
+            @for (note of forecast.limitations; track note) {
+              <p>{{ note }}</p>
+            }
           }
         </article>
       }
@@ -104,6 +131,36 @@
       }
     </section>
     @if (technical()) {
+      @if (models(); as catalog) {
+        <details class="card">
+          <summary>Modelos XGBoost y validación</summary>
+          @for (model of catalog.models; track model.model_id) {
+            <article>
+              <h3>
+                {{
+                  variableLabel(
+                    model.model_id === 'moisture' ? 'surface_soil_moisture' : model.model_id
+                  )
+                }}
+              </h3>
+              <p>{{ model.features.length }} variables · versión {{ model.version }}</p>
+              <p>
+                MAE de evaluación: {{ model.evaluation_mae | number: '1.1-4' }} {{ model.unit }};
+                baseline: {{ model.baseline_mae | number: '1.1-4' }} {{ model.unit }}.
+              </p>
+              <p>{{ model.evaluation_note }}</p>
+              <p>{{ model.formula }}</p>
+              <details>
+                <summary>Variables de entrada</summary>
+                <p>{{ model.features.join(', ') }}</p>
+              </details>
+            </article>
+          }
+          @for (note of catalog.limitations; track note) {
+            <p>{{ note }}</p>
+          }
+        </details>
+      }
       <section class="card">
         <h3>Series históricas y calidad</h3>
         <p>{{ summary().usable }} registros utilizables; {{ summary().missing }} sin valor.</p>

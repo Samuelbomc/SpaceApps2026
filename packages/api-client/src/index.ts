@@ -24,6 +24,7 @@ export type ObservationPage = components['schemas']['ObservationPage'];
 export type Status = components['schemas']['StatusResponse'];
 export type Forecast = components['schemas']['Forecast'];
 export type Analysis = components['schemas']['AnalysisResult'];
+export type ModelCatalog = components['schemas']['ModelCatalog'];
 
 export type ObservationHistory = Pick<
   ObservationPage,

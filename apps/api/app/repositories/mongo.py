@@ -97,6 +97,14 @@ class MongoResultsRepository:
             row = db.analyses.find_one({"request_key": self._request_key(request)}, sort=[("created_at", -1)])
             return row["body"] if row else None
 
+    def analysis_for_period(self, region_id, horizon, target_start):
+        with self._database() as db:
+            query = {'region_id': region_id, 'body.request.horizon_days': horizon,
+                     'body.request.forecast_start_date': target_start.isoformat()}
+            row = db.analyses.find_one({**query, 'body.climate': {'$ne': None}}, sort=[('created_at', -1)])
+            row = row or db.analyses.find_one(query, sort=[('created_at', -1)])
+            return row['body'] if row else None
+
     def analyses(self, region_id, limit=10):
         with self._database() as db:
             return [row["body"] for row in db.analyses.find({"region_id": region_id}).sort("created_at", -1).limit(limit)]

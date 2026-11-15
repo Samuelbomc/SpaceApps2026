@@ -55,9 +55,10 @@ de referencia con su estado de revisión, separado de recomendaciones publicadas
   cuestionario avanzado de los scripts `modulo_rotacion/`.
 - Seleccionar un municipio o guardar un polígono no crea una ingesta NASA ni un
   pronóstico para esa finca. El análisis identifica la región disponible consultada.
-- Los modelos experimentales recibidos desde main no se publican automáticamente
-  en el registro operativo. La UI conserva `pending_model`, `pending_run` y demás
-  estados reales, sin inventar resultados ni tres rotaciones.
+- Los modelos experimentales de main ahora tienen un adapter y job conectados
+  para siete días. No se publican automáticamente en el registro operativo.
+  La UI conserva estados reales y muestra variables faltantes. Ver
+  [integración XGBoost](xgboost-integration.md).
 - Guardar observaciones de una finca no constituye consentimiento de entrenamiento
   ni validación científica de esas mediciones.
 

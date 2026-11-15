@@ -19,13 +19,15 @@ export interface components {
     "FarmWrite": { "name": string; "municipality"?: string; "latitude": number; "longitude": number; "area_ha": number; "boundary"?: (components['schemas']["FarmBoundary"] | null); "geometry"?: (components['schemas']["FarmPolygon"] | null); "altitude_m"?: (number | null); "soil_texture"?: "unknown" | "sandy" | "clay" | "loam" | "silty"; "soil_ph"?: (number | null); "irrigation"?: "unknown" | "rainfed" | "drip" | "sprinkler" | "flood" | "other"; "current_crops"?: Array<string>; "notes"?: string; };
     "FarmerSession": { "user": components['schemas']["FarmerUser"]; "csrf_token": string; "expires_at": string; };
     "FarmerUser": { "user_id": string; "email": string; "display_name": string; "created_at": string; };
-    "Forecast": { "model_kind": "climate" | "soil"; "model_version": string; "region_id": string; "reference_date": string; "forecast_start_date"?: (string | null); "horizon_days": number; "values": Array<components['schemas']["ForecastValue"]>; "limitations"?: Array<string>; };
+    "Forecast": { "model_kind": "climate" | "soil"; "model_version": string; "validation_status"?: "experimental" | "validated" | "unspecified"; "region_id": string; "reference_date": string; "forecast_start_date"?: (string | null); "horizon_days": number; "values": Array<components['schemas']["ForecastValue"]>; "limitations"?: Array<string>; };
     "ForecastValue": { "variable": string; "value": number; "unit": string; "aggregation": string; };
     "HTTPValidationError": { "detail"?: Array<components['schemas']["ValidationError"]>; };
     "IngestionRun": { "run_id": string; "region_id": string; "started_at": string; "finished_at"?: (string | null); "status": "running" | "ok" | "partial" | "failed"; "summary"?: Record<string, unknown>; };
     "LocalVariable": { "variable": string; "label": string; "unit": string; "aggregation": string; "minimum"?: (number | null); "maximum"?: (number | null); };
     "LoginRequest": { "email": string; "password": string; };
     "MapPlace": { "latitude": number; "longitude": number; "label"?: (string | null); "source"?: "Photon/OpenStreetMap"; };
+    "ModelCatalog": { "models": Array<components['schemas']["ModelInfo"]>; "recipe_version"?: string; "supported_horizons": Array<number>; "limitations": Array<string>; };
+    "ModelInfo": { "model_id": string; "model_kind": "climate" | "soil"; "version": string; "horizon_days"?: number; "validation_status"?: "experimental"; "unit": string; "features": Array<string>; "formula": string; "evaluation_mae": number; "baseline_mae": number; "evaluation_note"?: string; };
     "ModelRelease": { "slot": string; "version": string; "model_kind": "climate" | "soil"; "region_id": string; "horizon_days": number; "dataset_id": string; "training_fingerprint": string; "recipe_version": string; "policy_version": string; "trained_through": string; "feature_names": Array<string>; "target_units": Record<string, string>; "artifact_sha256": Record<string, string>; "metrics": Record<string, unknown>; "created_at": string; };
     "NumericRange": { "minimum": number; "maximum": number; };
     "Observation": { "source": string; "date": string; "variable": string; "value": (number | null); "unit": string; "quality": string; "resolution": string; };

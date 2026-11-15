@@ -23,12 +23,15 @@ from apps.api.app.services.analysis import AnalysisService
 from packages.contracts.api import (AnalysisRequest, AnalysisResult, Observation, ObservationPage,
                                     Region, StatusResponse)
 from packages.contracts.training import AutomationStatus
+from packages.contracts.pretrained import ModelCatalog
+from ml.inference.expanded import ExpandedModelBundle
 
 
-def create_app(repository=None, analysis_service=None, settings=None, results_repository=None, model_registry=None, place_service=None):
+def create_app(repository=None, analysis_service=None, settings=None, results_repository=None, model_registry=None, place_service=None, pretrained_models=None):
     settings = settings or Settings.from_env()
     repository = repository if repository is not None else OperationalRepository(Database(settings.database_url))
     analysis_service = analysis_service or AnalysisService(repository)
+    pretrained_models = pretrained_models if pretrained_models is not None else ExpandedModelBundle(settings.pretrained_model_directory)
     if results_repository is None or model_registry is None:
         default_results, default_registry = runtime_stores(settings, repository)
         results_repository = results_repository if results_repository is not None else default_results
@@ -58,6 +61,17 @@ def create_app(repository=None, analysis_service=None, settings=None, results_re
         if repository.region(region_id) is None:
             raise HTTPException(404, "Región no encontrada")
 
+    def model_catalog():
+        try:
+            return pretrained_models.catalog()
+        except (OSError, ValueError, KeyError):
+            raise HTTPException(503, 'No se pudieron verificar los artefactos XGBoost integrados.') from None
+
+    @app.get('/api/v1/models', response_model=ModelCatalog)
+    def models():
+        # Solo metadatos JSON y hashes; HTTP no carga Boosters ni ejecuta inferencias.
+        return model_catalog()
+
     @app.get("/api/v1/health")
     def health():
         return {"status": "ok", "api_version": "1.0.0"}
@@ -68,8 +82,9 @@ def create_app(repository=None, analysis_service=None, settings=None, results_re
 
     @app.get("/api/v1/status", response_model=StatusResponse)
     def status():
-        return {"climate_model": "configured" if analysis_service.climate else "not_configured",
-                "soil_model": "configured" if analysis_service.soil else "not_configured",
+        available = {model.model_kind for model in model_catalog().models}
+        return {"climate_model": "configured" if analysis_service.climate or 'climate' in available else "not_configured",
+                "soil_model": "configured" if analysis_service.soil or 'soil' in available else "not_configured",
                 "recommendations": "configured" if analysis_service.recommendations else "not_configured",
                 "schedule": repository.schedule(), "recent_runs": repository.recent_runs()}
 
@@ -108,8 +123,12 @@ def create_app(repository=None, analysis_service=None, settings=None, results_re
         if stored is not None:
             return AnalysisResult.model_validate(stored)
         if analysis_service.climate is None or analysis_service.soil is None:
+            catalog = model_catalog()
+            if request.horizon_days in catalog.supported_horizons:
+                return AnalysisResult(status='pending_run', request=request,
+                    messages=['Modelos XGBoost integrados. El job debe generar el resultado con las variables procesadas de esta región y fecha.'])
             return AnalysisResult(status="pending_model", request=request,
-                                  messages=["Los modelos climático y de suelo aún no están configurados."])
+                                  messages=["Este plazo no tiene modelos conectados. Los artefactos actuales solo cubren 7 días." if catalog.models else "Los modelos climático y de suelo aún no están configurados."])
         return AnalysisResult(status="pending_run", request=request,
                               messages=["El resultado todavía no ha sido generado por el job de análisis."])
 
@@ -120,6 +139,15 @@ def create_app(repository=None, analysis_service=None, settings=None, results_re
         requested_on = as_of or today
         if requested_on > today:
             raise HTTPException(422, "as_of no puede ser posterior al día de la consulta")
+        # El corte de features del modelo puede ser anterior al último dato de otra fuente.
+        # Se busca primero el periodo exacto; nunca se devuelve un pronóstico viejo como actual.
+        stored = results_repository.analysis_for_period(region_id, horizon_days, requested_on)
+        if isinstance(stored, dict):
+            result = AnalysisResult.model_validate(stored)
+            if (result.request.region_id != region_id or result.request.horizon_days != horizon_days
+                    or result.request.forecast_start_date != requested_on):
+                raise HTTPException(503, 'El resultado almacenado no corresponde al periodo solicitado.')
+            return result
         reference = repository.latest_observation_date(region_id, requested_on)
         if reference is None:
             return None

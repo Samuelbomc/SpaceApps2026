@@ -1,20 +1,24 @@
-"""Usa versiones publicadas; no entrena ni ingiere dentro de la inferencia."""
+"""Usa campeones publicados o el bundle experimental explícito; no entrena ni ingiere."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from packages.contracts.api import AnalysisRequest
+from packages.contracts.api import AnalysisRequest, AnalysisResult
+from pipelines.training.snapshots import fingerprint
 from pipelines.recommendations.pipeline import CropRecommendationPipeline
 
 
 class CropRecommendationJob:
     def __init__(self, observations, results, registry, artifacts, *, predictor_factory=None,
-                 engine=None, horizons=(7, 15, 30, 60)):
+                 engine=None, horizons=(7, 15, 30, 60), bundled_models=None, feature_store=None):
         self.observations, self.results, self.registry, self.artifacts = observations, results, registry, artifacts
         self.predictor_factory, self.engine, self.horizons = predictor_factory, engine, horizons
+        self.bundled_models, self.feature_store = bundled_models, feature_store
 
-    def run(self):
-        today = datetime.now(ZoneInfo("America/Bogota")).date()
+    def run(self, *, as_of=None):
+        today = as_of or datetime.now(ZoneInfo("America/Bogota")).date()
+        if today > datetime.now(ZoneInfo('America/Bogota')).date():
+            raise ValueError('No se puede ejecutar para una fecha futura.')
         outcomes = []
         for region in self.observations.regions():
             region_id = region["region_id"]
@@ -22,6 +26,12 @@ class CropRecommendationJob:
             for horizon in self.horizons:
                 climate = self.registry.current(f"{region_id}:climate:{horizon}")
                 soil = self.registry.current(f"{region_id}:soil:{horizon}")
+                if climate is None and soil is None and self.bundled_models is not None and horizon == 7:
+                    result = self._bundled(region, today)
+                    if result is not None:
+                        outcomes.append({'region_id': region_id, 'horizon_days': horizon, 'status': result.status,
+                                         'analysis_id': result.analysis_id, 'messages': result.messages})
+                        continue
                 if reference is None or climate is None or soil is None:
                     outcomes.append({"region_id": region_id, "horizon_days": horizon, "status": "pending_model_or_data"})
                     continue
@@ -41,3 +51,20 @@ class CropRecommendationJob:
                 outcomes.append({"region_id": region_id, "horizon_days": horizon, "status": result.status,
                                  "analysis_id": result.analysis_id})
         return {"status": "ok", "outcomes": outcomes}
+
+    def _bundled(self, region, target_start):
+        if not self.bundled_models.catalog().models:
+            return None
+        snapshot = self.feature_store.load(region, target_start - timedelta(days=1))
+        if snapshot is not None:
+            result = self.bundled_models.predict(snapshot)
+        else:
+            request = AnalysisRequest(region_id=region['region_id'], reference_date=target_start-timedelta(days=3),
+                                      forecast_start_date=target_start, horizon_days=7)
+            result = AnalysisResult(status='insufficient_data', request=request,
+                analysis_id=fingerprint({'request': request.model_dump(mode='json'), 'missing': 'expanded-v1'}),
+                messages=['Los cinco modelos XGBoost están integrados. Faltan las variables procesadas expanded-v1 '
+                          'para esta región y fecha: POWER, GPM Late, elevación y, para suelo, SMAP y SoilGrids. '
+                          'No se usan filas de otras fechas o ubicaciones.'])
+        self.results.save_analysis(result)
+        return result

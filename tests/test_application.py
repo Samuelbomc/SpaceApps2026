@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from apps.api.app.db.postgres import DatabaseUnavailable
 from apps.api.app.main import create_app
+from packages.contracts.pretrained import ModelCatalog
 from apps.api.app.services.analysis import AnalysisService
 from packages.contracts.api import AnalysisRequest, Forecast, ForecastValue, Recommendations, Rotation
 from scripts.worker import next_slot
@@ -23,7 +24,9 @@ class ApplicationTests(unittest.TestCase):
         self.repo.observations.return_value = []
         self.repo.analyses.return_value = []
         self.repo.analysis_for.return_value = None
-        self.client = TestClient(create_app(self.repo))
+        self.pretrained = Mock()
+        self.pretrained.catalog.return_value = ModelCatalog(models=[], supported_horizons=[], limitations=[])
+        self.client = TestClient(create_app(self.repo, pretrained_models=self.pretrained))
         self.request = {"region_id": "test", "reference_date": "2024-01-01", "horizon_days": 7}
 
     def test_pending_models_are_explicit_and_never_persist_fake_predictions(self):
@@ -35,7 +38,7 @@ class ApplicationTests(unittest.TestCase):
 
     def test_read_request_does_not_run_configured_models(self):
         service = AnalysisService(self.repo, Mock(), Mock())
-        client = TestClient(create_app(self.repo, service))
+        client = TestClient(create_app(self.repo, service, pretrained_models=self.pretrained))
         response = client.post("/api/v1/analyses", json=self.request)
         self.assertEqual(response.json()["status"], "pending_run")
         service.climate.predict.assert_not_called()
@@ -136,7 +139,7 @@ class ApplicationTests(unittest.TestCase):
         self.repo.analysis_for.return_value = {'status': 'pending_recommendations', 'request': request,
                                              'analysis_id': 'fixture-context'}
         service = AnalysisService(self.repo, Mock(), Mock())
-        response = TestClient(create_app(self.repo, service)).get('/api/v1/regions/test/latest-analysis?as_of=2026-01-05')
+        response = TestClient(create_app(self.repo, service, pretrained_models=self.pretrained)).get('/api/v1/regions/test/latest-analysis?as_of=2026-01-05')
         self.assertEqual(response.json()['analysis_id'], 'fixture-context')
         service.climate.predict.assert_not_called()
         service.soil.predict.assert_not_called()

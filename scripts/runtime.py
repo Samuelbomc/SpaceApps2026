@@ -3,6 +3,8 @@
 from apps.api.app.repositories.operational import OperationalRepository
 from apps.api.app.repositories.runtime import runtime_stores
 from ml.training.artifacts import ModelArtifactStore
+from ml.inference.expanded import ExpandedModelBundle
+from ml.features.expanded import ExpandedFeatureStore
 from pipelines.ingestion.flows.weekly import WeeklyIngestionJob
 from pipelines.recommendations.job import CropRecommendationJob
 from pipelines.training.job import ModelTrainingJob
@@ -21,4 +23,6 @@ def build_jobs(database, settings, *, builder=None, trainer=None, policies=None,
     return {"ingestion": WeeklyIngestionJob(operational),
             "training": ModelTrainingJob(operational, training),
             "recommendations": CropRecommendationJob(operational, results, registry, artifacts,
-                                                      predictor_factory=predictor_factory, engine=engine)}
+                                                      predictor_factory=predictor_factory, engine=engine,
+                                                      bundled_models=ExpandedModelBundle(settings.pretrained_model_directory),
+                                                      feature_store=ExpandedFeatureStore(settings.feature_directory))}

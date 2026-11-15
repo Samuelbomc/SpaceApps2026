@@ -47,6 +47,7 @@ class ForecastValue(Contract):
 class Forecast(Contract):
     model_kind: Literal["climate", "soil"]
     model_version: str = Field(min_length=1)
+    validation_status: Literal['experimental', 'validated', 'unspecified'] = 'unspecified'
     region_id: str
     reference_date: date
     forecast_start_date: date | None = None

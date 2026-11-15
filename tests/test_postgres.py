@@ -44,7 +44,7 @@ class PostgreSQLTests(unittest.TestCase):
     def test_migrations_are_idempotent(self):
         migrate(self.db)
         with self.db.connect() as conn:
-            self.assertEqual(conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 4)
+            self.assertEqual(conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"], 5)
         self.assertEqual(len(self.repo.regions()), 1)
 
     def test_independent_ml_jobs_keep_retry_and_schedule_after_restart(self):
@@ -263,7 +263,25 @@ class PostgreSQLTests(unittest.TestCase):
         response = TestClient(create_app(self.repo)).get('/api/v1/regions/antioquia-reference/latest-analysis?as_of=2026-01-05')
         self.assertEqual(response.json()['request']['forecast_start_date'], '2026-01-05')
         self.assertEqual(response.json()['request']['reference_date'], '2024-01-01')
-        self.assertEqual(response.json()['status'], 'pending_model')
+        self.assertEqual(response.json()['status'], 'pending_run')
+
+    def test_pretrained_period_uses_feature_cutoff_and_never_prefers_later_missing_input_status(self):
+        from packages.contracts.api import AnalysisRequest, AnalysisResult, Forecast, ForecastValue
+        request = AnalysisRequest(region_id='antioquia-reference', reference_date=date(2022,1,6),
+                                  forecast_start_date=date(2022,1,9), horizon_days=7)
+        forecast = Forecast(model_kind='climate', model_version='test-only', region_id=request.region_id,
+            reference_date=request.reference_date, forecast_start_date=request.forecast_start_date, horizon_days=7,
+            values=[ForecastValue(variable='test-only',value=20,unit='C',aggregation='mean')])
+        self.repo.save_analysis(AnalysisResult(status='insufficient_data',request=request,climate=forecast,
+            analysis_id='test-only-real-partial-result'))
+        self.repo.save_analysis(AnalysisResult(status='insufficient_data',request=request,
+            analysis_id='test-only-missing-later'))
+        self.assertEqual(self.repo.analysis_for_period(request.region_id,7,date(2022,1,9))['analysis_id'],
+                         'test-only-real-partial-result')
+        self.assertIsNone(self.repo.analysis_for_period(request.region_id,30,date(2022,1,9)))
+        response=TestClient(create_app(self.repo)).get('/api/v1/regions/antioquia-reference/latest-analysis?as_of=2022-01-09')
+        self.assertEqual(response.json()['request']['reference_date'],'2022-01-06')
+        self.assertEqual(response.json()['analysis_id'],'test-only-real-partial-result')
 
     def test_weekly_ingestion_uses_completed_days_and_never_runs_inference(self):
         from pipelines.ingestion.sources.nasa.catalog import PRODUCTS

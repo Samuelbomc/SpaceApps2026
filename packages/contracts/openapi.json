@@ -753,6 +753,24 @@
         }
       }
     },
+    "/api/v1/models": {
+      "get": {
+        "summary": "Models",
+        "operationId": "models_api_v1_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCatalog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/health": {
       "get": {
         "summary": "Health",
@@ -2149,6 +2167,16 @@
             "minLength": 1,
             "title": "Model Version"
           },
+          "validation_status": {
+            "type": "string",
+            "enum": [
+              "experimental",
+              "validated",
+              "unspecified"
+            ],
+            "title": "Validation Status",
+            "default": "unspecified"
+          },
           "region_id": {
             "type": "string",
             "title": "Region Id"
@@ -2410,6 +2438,116 @@
           "longitude"
         ],
         "title": "MapPlace"
+      },
+      "ModelCatalog": {
+        "properties": {
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelInfo"
+            },
+            "type": "array",
+            "title": "Models"
+          },
+          "recipe_version": {
+            "type": "string",
+            "title": "Recipe Version",
+            "default": "expanded-v1"
+          },
+          "supported_horizons": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Supported Horizons"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "models",
+          "supported_horizons",
+          "limitations"
+        ],
+        "title": "ModelCatalog"
+      },
+      "ModelInfo": {
+        "properties": {
+          "model_id": {
+            "type": "string",
+            "title": "Model Id"
+          },
+          "model_kind": {
+            "type": "string",
+            "enum": [
+              "climate",
+              "soil"
+            ],
+            "title": "Model Kind"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days",
+            "default": 7
+          },
+          "validation_status": {
+            "type": "string",
+            "const": "experimental",
+            "title": "Validation Status",
+            "default": "experimental"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Features"
+          },
+          "formula": {
+            "type": "string",
+            "title": "Formula"
+          },
+          "evaluation_mae": {
+            "type": "number",
+            "title": "Evaluation Mae"
+          },
+          "baseline_mae": {
+            "type": "number",
+            "title": "Baseline Mae"
+          },
+          "evaluation_note": {
+            "type": "string",
+            "title": "Evaluation Note",
+            "default": "Métricas de evaluation_model.json; model.json fue reajustado con todos los datos."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "model_id",
+          "model_kind",
+          "version",
+          "unit",
+          "features",
+          "formula",
+          "evaluation_mae",
+          "baseline_mae"
+        ],
+        "title": "ModelInfo"
       },
       "ModelRelease": {
         "properties": {

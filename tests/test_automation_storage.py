@@ -145,3 +145,14 @@ class MongoIntegrationTests(unittest.TestCase):
         self.assertEqual(len(self.store.analyses('test-only')),1)
         self.assertEqual(self.store.analysis_for(request)['analysis_id'],'test-id')
         self.assertIsNone(self.store.analysis_for(request.model_copy(update={'forecast_start_date':date(2024,1,4)})))
+
+    def test_period_lookup_keeps_real_forecast_and_never_relabels_old_day_or_horizon(self):
+        request=AnalysisRequest(region_id='test-only',reference_date=date(2024,1,1),forecast_start_date=date(2024,1,4))
+        forecast=Forecast(model_kind='climate',model_version='test-only',region_id='test-only',reference_date=request.reference_date,
+            forecast_start_date=request.forecast_start_date,horizon_days=7,
+            values=[ForecastValue(variable='test-only',value=20,unit='C',aggregation='mean')])
+        self.store.save_analysis(AnalysisResult(status='insufficient_data',request=request,climate=forecast,analysis_id='with-forecast'))
+        self.store.save_analysis(AnalysisResult(status='insufficient_data',request=request,analysis_id='without-forecast'))
+        self.assertEqual(self.store.analysis_for_period('test-only',7,date(2024,1,4))['analysis_id'],'with-forecast')
+        self.assertIsNone(self.store.analysis_for_period('test-only',30,date(2024,1,4)))
+        self.assertIsNone(self.store.analysis_for_period('test-only',7,date(2024,1,5)))

@@ -110,3 +110,11 @@ class OperationalRepository:
                                (request.region_id, request.reference_date, request.horizon_days,
                                 request.forecast_start_date.isoformat() if request.forecast_start_date else None)).fetchone()
             return row["body"] if row else None
+
+    def analysis_for_period(self, region_id, horizon, target_start):
+        with self.database.connect() as conn:
+            row = conn.execute("""SELECT body FROM analyses WHERE region_id=%s AND horizon_days=%s
+                AND body->'request'->>'forecast_start_date'=%s
+                ORDER BY (body->>'climate' IS NOT NULL) DESC, created_at DESC LIMIT 1""",
+                (region_id, horizon, target_start.isoformat())).fetchone()
+            return row['body'] if row else None

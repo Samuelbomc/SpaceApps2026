@@ -17,6 +17,8 @@ class Settings:
     dataset_directory: Path = Path("data/datasets")
     model_directory: Path = Path("data/models")
     geocoder_url: str = "https://photon.komoot.io/reverse"
+    pretrained_model_directory: Path = Path('ml/artifacts')
+    feature_directory: Path = Path('data/features/expanded-v1')
 
     @classmethod
     def from_env(cls):
@@ -29,4 +31,6 @@ class Settings:
                    mongodb_database=os.getenv("MONGODB_DATABASE", "fieldshift"),
                    dataset_directory=Path(os.getenv("DATASET_DIRECTORY", "data/datasets")),
                    model_directory=Path(os.getenv("MODEL_DIRECTORY", "data/models")),
-                   geocoder_url=os.getenv("GEOCODER_URL", "https://photon.komoot.io/reverse"))
+                   geocoder_url=os.getenv("GEOCODER_URL", "https://photon.komoot.io/reverse"),
+                   pretrained_model_directory=Path(os.getenv('PRETRAINED_MODEL_DIRECTORY', 'ml/artifacts')),
+                   feature_directory=Path(os.getenv('FEATURE_DIRECTORY', 'data/features/expanded-v1')))

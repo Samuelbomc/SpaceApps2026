@@ -1,5 +1,10 @@
 # Model workspace
 
+Los cinco modelos del equipo ya tienen [integración de inferencia](../docs/xgboost-integration.md):
+catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren siete
+días y conservan su estado experimental; los pronósticos actuales requieren
+entradas recientes completas de su receta.
+
 - `artifacts/`: saved XGBoost models, experiment reports, partitions and predictions.
 - `docs/`: dataset recipes, reproduction instructions, moisture-change design and limitations.
 - `scripts/`: dataset preparation, validation and experiment training entry points.

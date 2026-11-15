@@ -1,5 +1,10 @@
 # Field Shift — NASA Space Apps 2026
 
+Los cinco modelos del equipo ya tienen [integración de inferencia](docs/xgboost-integration.md):
+catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren siete
+días y conservan su estado experimental; los pronósticos actuales requieren
+entradas recientes completas de su receta.
+
 El frontend activo es **Angular en `frontend/`**, integrado desde
 `feature/agricultural-platform-frontend`. Next.js fue retirado. La
 [guía de integración](docs/frontend-migration.md) documenta los flujos conectados,

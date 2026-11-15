@@ -140,3 +140,8 @@ También puede ejecutarse `unittest discover` con `TEST_DATABASE_URL` y
 forma explícita; la prueba del adapter real se omite si no se instala `ml`.
 Los datos y modelos sintéticos de estas pruebas nunca se publican en las bases
 operativas ni se presentan como resultados agrícolas.
+
+Los cinco modelos del equipo ya tienen [integración de inferencia](xgboost-integration.md):
+catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren siete
+días y conservan su estado experimental; los pronósticos actuales requieren
+entradas recientes completas de su receta.
