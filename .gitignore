@@ -222,7 +222,6 @@ __marimo__/
 
 # Ingesta local: credenciales, caché y productos satelitales
 .DS_Store
-data/
 .env.*
 !.env.example
 
@@ -241,3 +240,5 @@ SENTINEL2
 SMAP
 SOILGRIDS
 SRTM
+.venv-data/
+.venv-data/
