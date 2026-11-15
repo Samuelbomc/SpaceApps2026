@@ -4,9 +4,25 @@ Five canonical model names are temperature_mean, temperature_min, temperature_ma
 
 For inference from a fresh checkout, install `python -m pip install '.[ml]'` and run `python -m ml.sample_forecasts --example`. The repository includes the five production weights, runtime metadata, small evaluation reports and a 221 KB input snapshot. Raw downloads, prepared training tables, evaluation-only boosters and holdout prediction arrays stay local. The snapshot is issued November 15, 2026; it is not refreshed automatically.
 
+## Leads and daily outputs
+
+A **lead** is the number of days after the forecast's issue date: `target_date = issue_date + lead_days`. Lead 1 predicts tomorrow; lead 7 predicts the seventh future day. `--days 14` selects every lead from 1 through 14. `--leads 1 7 15 30 60` selects only those five dates. All models support integer leads 1-60.
+
+| Model | Output on the selected target date |
+|---|---|
+| temperature_mean | Daily mean air temperature, C |
+| temperature_min | Daily minimum air temperature, C |
+| temperature_max | Daily maximum air temperature, C |
+| precipitation | Rainfall amount for that day, mm (reported as mm/day in evaluation tables) |
+| moisture | Mean accepted AM/PM soil moisture for that day, m3/m3 |
+
+All five beat persistence on pooled holdout MAE. Moisture is worse than persistence at leads 1-3, and rainfall R2 is about 0.01. See the [results and limitations](docs/model-results.md) before interpreting predictions.
+
 ## Prepare, train and validate
 
 Run from the repository root:
+
+Inference needs the `.[ml]` dependencies (XGBoost, NumPy and pandas). The current training run used XGBoost 3.4.1. Source preparation also needs `rasterio` and `h5py`, the local source downloads and adequate memory for the approximately 15.3 million moisture pairs. The commands below reproduce the full local workflow; a fresh inference-only checkout can run the bundled sample without those local files.
 
 ```powershell
 .\.venv-data\Scripts\python.exe -B -m ml.scripts.prepare_daily_datasets --issue-date 2026-11-15
@@ -31,7 +47,7 @@ The complete local prediction export is `ml/artifacts/forecasts/current_predicti
 import pandas as pd
 from ml.inference.forecast import ForecastPredictor
 
-frame = pd.read_csv("data/prepared/daily/temperature_mean/inference.csv")
+frame = pd.read_csv("ml/examples/inputs/temperature_mean.csv")
 prediction = ForecastPredictor("temperature_mean").predict(frame)
 # frame has lead_days, so this predicts every row's individual target day.
 
@@ -48,6 +64,10 @@ The horizon_days argument supplies a lead when the frame has no lead_days field.
 
 Default inference loads model.json, refitted on all observed pairs. Use evaluation=True to reproduce holdout predictions from the local-only evaluation_model.json. Evaluation validation and retraining require the excluded prepared datasets and evaluation files. Moisture reconstruction adds its observed baseline automatically; do not interpret the raw moisture booster as absolute moisture.
 
+For freshly prepared local inputs, read `data/prepared/daily/<output>/inference.csv` instead of the example. Changing a date in an old feature row does not refresh its weather or moisture measurements. The November 15 snapshot uses weather/rain/SMAP measurement cutoffs of November 13 and radiation through November 8, with bounded input filling. Predictions for later issue dates need a new preparation run from recent observations.
+
+The ordered input contract is in each tracked `<output>/training.json` under `features`. This is available even without the local dataset manifest. Climate models require 53 predictors and moisture requires 75, including the lead and target calendar fields. The loader can derive those calendar fields when issue_date is provided. Other predictors must be supplied as finite numeric values.
+
 ## Folders and results
 
 - data/prepared/daily: normalized historical features, observed daily labels, lead indexes and current inference inputs.
@@ -56,10 +76,17 @@ Default inference loads model.json, refitted on all observed pairs. Use evaluati
 - ml/artifacts/forecasts: only the five current output-named models, test predictions, per-lead metrics and provenance.
 - ml/inference: default model loading and prediction contracts.
 - ml/configs: supported leads, names, units and application catalogs.
+- ml/examples: committed one-location-per-output input snapshot for inference without training data.
 - ml/training, ml/evaluation: shared application lifecycle support and numerical metrics.
 - ml/docs: [daily fields and dates](docs/daily-datasets.md), [training protocol](docs/rolling-origin-results.md), [results and limitations](docs/model-results.md), [architecture](docs/architecture.md).
 
 Raw downloads remain in data/. Training local artifacts does not automatically publish models into the application's separate registry.
+
+## Verification
+
+The trained collection passed source-hash, purged-split, saved-holdout and all-60-lead inference checks. The bundled sample was also tested in an inference-only checkout. To repeat that smoke check, run `python -m ml.sample_forecasts --example --format json`.
+
+The separate application lifecycle suite passed 12 tests after installing Pydantic and PyArrow: `python -m unittest tests.test_model_lifecycle -v`. This tests lifecycle behaviour, not forecast accuracy. These dependencies are not required by the standalone inference example.
 
 ## Previous iterations
 

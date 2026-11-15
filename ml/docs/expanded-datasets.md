@@ -2,6 +2,8 @@
 
 The current training inputs are the direct-daily datasets documented in [daily-datasets.md](daily-datasets.md). The default rolling-origin command fits five daily models from data/prepared/daily; [model-results.md](model-results.md) records their verified scores.
 
+For current model usage, start with [../README.md](../README.md) and the committed `ml/examples` snapshot. Full current and historical prepared datasets are excluded from Git and remain local. Current leads 1-60 select individual target days; the aggregate target meaning described below is historical.
+
 ## Previous iterations
 
 Earlier preparations produced daily issue rows with targets aggregated over the following 7, 15, 30 or 60 days. Their data remain under data/prepared/expanded and data/prepared/horizons for development history, but their trained binaries have been replaced.

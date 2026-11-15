@@ -16,9 +16,15 @@ Quantile matrices reduce training memory; all accepted pairs at all 60 leads are
 
 Each output folder contains evaluation_model.json fitted on all eligible development pairs, model.json refitted on every observed pair, training.json with source hashes and fold metadata, test_predictions.npz and lead_metrics.csv. The default all-data model includes holdout labels and has no independent post-refit score.
 
+Only production weights, metadata and small reports are committed. Evaluation boosters and holdout arrays remain local. An inference-only checkout can run `python -m ml.sample_forecasts --example`; full evaluation commands require the source datasets, pair indexes and local evaluation artifacts. The historical training run used XGBoost 3.4.1. Fold membership is reconstructed from saved source hashes and the issue/target date rules; training.json stores fold summaries rather than every fold row.
+
 `python -m ml.scripts.validate_rolling_origin` verifies source identity, pair membership, purging, selection, every saved holdout prediction, per-lead scores and current inputs for all 60 leads. `python -m ml.scripts.summarize_rolling_origin` produces the model index and [current results](model-results.md).
 
 Daily persistence uses the latest daily temperature or rainfall feature; moisture persistence uses its recent observed mean. Scores apply to individual days, not period aggregates.
+
+Pooled holdout MAE is lower than persistence for all five outputs. Checking by lead changes the picture: moisture is worse at leads 1-3. Rainfall R2 is about 0.01. These are reported outcomes, not promotion guarantees; the local trainer does not automatically reject a model for a weak individual lead or publish it into the separate application registry.
+
+The current best candidate/depth/tree counts are mean temperature 1/3/196, minimum temperature 2/4/163, maximum temperature 1/3/263, precipitation 0/2/109, and moisture 2/4/84. Candidate IDs are zero-based. Exact parameters and scores are saved in each output's training.json.
 
 ## Limitations
 
