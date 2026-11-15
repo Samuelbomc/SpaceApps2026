@@ -3,7 +3,7 @@
 Run from the repository root:
 
 ```powershell
-.\.venv-data\Scripts\python.exe scripts\prepare_temperature_datasets.py
+.\.venv-data\Scripts\python.exe -m ml.scripts.prepare_temperature_datasets
 ```
 
 Dependencies: numpy, pandas, rasterio. Results are written to `data/prepared/temperature/`.
@@ -21,6 +21,8 @@ Outputs:
 - `candidate_inputs_and_targets_NOT_FOR_TRAINING.csv`: intermediate extraction, including missing required inputs for inspection only.
 - `validation_report.json`: counts, rules and exact input file inventory.
 
-The installed GPM `3IMERGDF` collection is Final Run. It is not used instead of the specified Late Run (`3IMERGDL`) predictors. Until the latter is installed, the three strict model CSVs intentionally contain headers only. The current extractor recognizes daily V07 `precipitation_reformatted.tif` files with metadata units `mm/day`; other naming or product formats must be explicitly adapted rather than silently interpreted.
+The extractor supports installed GPM Late Run (`3IMERGDL`) NetCDF4 files as well as daily precipitation GeoTIFFs. NetCDF sampling verifies time coordinates against measurement dates, variable units, dimension order, fill values and native spatial extent. Final Run is never substituted for Late Run inputs. Requires h5py in addition to the dependencies above.
+
+Overlapping SMAP date selections are combined by measurement date; the newer collection path takes precedence for overlapping dates. Static rasters are selected from the newest collection with a passing coverage_validation.json. Earlier collections remain intact and are not mixed with the validated replacement.
 
 The observation cutoff follows the specification, but archive measurement dates alone do not prove when a product became available. Publication-time validation is still necessary before claiming operational forecasting performance.

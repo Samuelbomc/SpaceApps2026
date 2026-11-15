@@ -1,0 +1,47 @@
+{
+  "temperature_mean": {
+    "status": "PASS",
+    "rows": 48105,
+    "raw_labels_recomputed": 3,
+    "finite_values": true,
+    "aligned_times": true,
+    "purged_temporal_partitions": true,
+    "saved_metrics_verified": true
+  },
+  "temperature_min": {
+    "status": "PASS",
+    "rows": 48105,
+    "raw_labels_recomputed": 3,
+    "finite_values": true,
+    "aligned_times": true,
+    "purged_temporal_partitions": true,
+    "saved_metrics_verified": true
+  },
+  "temperature_max": {
+    "status": "PASS",
+    "rows": 48105,
+    "raw_labels_recomputed": 3,
+    "finite_values": true,
+    "aligned_times": true,
+    "purged_temporal_partitions": true,
+    "saved_metrics_verified": true
+  },
+  "precipitation": {
+    "status": "PASS",
+    "rows": 48042,
+    "raw_labels_recomputed": 3,
+    "finite_values": true,
+    "aligned_times": true,
+    "purged_temporal_partitions": true,
+    "saved_metrics_verified": true
+  },
+  "moisture": {
+    "status": "PASS",
+    "rows": 3948,
+    "raw_labels_recomputed": 3,
+    "finite_values": true,
+    "aligned_times": true,
+    "purged_temporal_partitions": true,
+    "saved_metrics_verified": true
+  }
+}

@@ -4,12 +4,17 @@ param(
     [double]$LatitudeMaximum = 6.5866,
     [double]$LongitudeMinimum = -75.5830,
     [double]$LongitudeMaximum = -74.6167,
+    [double]$BufferDegrees = 0.01,
+    [string]$PythonExecutable = "",
+    [string]$PowerDirectory = "",
     [string]$OpenTopographyApiKey = $env:OPENTOPOGRAPHY_API_KEY,
     [string]$WhiteboxToolsExecutable = "whitebox_tools",
     [string]$OutputDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "static_download_helpers.ps1")
+Initialize-StaticDownload
 
 if ($LatitudeMinimum -lt -90 -or $LatitudeMaximum -gt 90 -or $LatitudeMinimum -ge $LatitudeMaximum) {
     throw "LatitudeMinimum and LatitudeMaximum must be ordered values between -90 and 90."
@@ -35,16 +40,16 @@ else {
 
 $timestamp = (Get-Date).ToUniversalTime().ToString("yyyyMMdd_HHmmssZ")
 if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
-    $OutputDirectory = Join-Path $PSScriptRoot "..\SRTM\SRTMGL1_${timestamp}"
+    $OutputDirectory = Join-Path $PSScriptRoot "..\data\SRTM\SRTMGL1_BUFFERED_${timestamp}"
 }
 New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
 $OutputDirectory = (Resolve-Path -LiteralPath $OutputDirectory).Path
 
 $culture = [System.Globalization.CultureInfo]::InvariantCulture
-$south = $LatitudeMinimum.ToString("0.####", $culture)
-$north = $LatitudeMaximum.ToString("0.####", $culture)
-$west = $LongitudeMinimum.ToString("0.####", $culture)
-$east = $LongitudeMaximum.ToString("0.####", $culture)
+$south = ([Math]::Max([double]-90, [double]($LatitudeMinimum - $BufferDegrees))).ToString("0.########", $culture)
+$north = ([Math]::Min([double]90, [double]($LatitudeMaximum + $BufferDegrees))).ToString("0.########", $culture)
+$west = ([Math]::Max([double]-180, [double]($LongitudeMinimum - $BufferDegrees))).ToString("0.########", $culture)
+$east = ([Math]::Min([double]180, [double]($LongitudeMaximum + $BufferDegrees))).ToString("0.########", $culture)
 $demPath = Join-Path $OutputDirectory "srtmgl1_dem_raw.tif"
 
 $query = @{
@@ -105,6 +110,10 @@ $manifest = [ordered]@{
     dem_request_url = $requestUrl.Replace($OpenTopographyApiKey, "REDACTED")
     hydrology_method = "WhiteboxTools FillDepressions with fix_flats, D8Pointer, and D8FlowAccumulation with pntr=true"
     conditioning_applied = $false
+    buffer_degrees = $BufferDegrees
+    downloaded_bounds = @{ south = $south; north = $north; west = $west; east = $east }
+    coverage_validation = "coverage_validation.json"
 }
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $OutputDirectory "manifest.json") -Encoding utf8
+Confirm-StaticDownload -ExpectedCount 5
 Write-Host "Saved SRTM source and derived layers to: $OutputDirectory"
