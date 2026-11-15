@@ -222,6 +222,8 @@ __marimo__/
 
 # Ingesta local: credenciales, caché y productos satelitales
 .DS_Store
+# Los archivos ya versionados en data/ se conservan; no añadir bases o fincas locales.
+data/
 .env.*
 !.env.example
 

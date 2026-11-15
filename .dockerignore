@@ -1,8 +1,11 @@
 .git
 .venv
 data
-apps/web/node_modules
-apps/web/.next
+**/node_modules
+**/.next
+**/.angular
+**/dist
+**/*.tsbuildinfo
 .env
 **/__pycache__
 .cache

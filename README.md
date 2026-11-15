@@ -1,5 +1,10 @@
 # Field Shift — NASA Space Apps 2026
 
+La sustitución del frontend se prepara en `codex/prepare-frontend-migration`.
+El [contexto de integración](docs/frontend-migration.md) documenta contratos,
+sesiones, proxy, pruebas y retirada de Next.js cuando llegue la rama del equipo.
+El cliente reutilizable está en [packages/api-client](packages/api-client/README.md).
+
 La base de integración incluye **PostgreSQL, MongoDB, FastAPI, Next.js y jobs
 independientes de ingesta, reentrenamiento y recomendaciones**. El ciclo de vida ML
 incluye snapshots, candidatos XGBoost, validación temporal y promoción condicional.

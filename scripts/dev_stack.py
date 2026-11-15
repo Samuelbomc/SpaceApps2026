@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from apps.api.app.db.postgres import Database
+from apps.api.app.config import Settings
 from apps.api.app.repositories.operational import OperationalRepository
 from packages.contracts import DateRange, GeoPoint
 from pipelines.ingestion.storage.power import PowerParquetRepository
@@ -51,13 +52,25 @@ def main(argv=None):
     parser.add_argument('--database-directory',type=Path,default=ROOT/'data/local/postgres')
     parser.add_argument('--seed-reference',action='store_true',help='Cargar datos reales Parquet existentes solo si la región no tiene observaciones')
     parser.add_argument('--with-mongo',action='store_true',help='Usar MongoDB local persistente para resultados y registro ML; requiere mongod')
+    parser.add_argument('--api-only',action='store_true',help='Iniciar backend y bases sin depender de ningún frontend')
+    parser.add_argument('--web-directory',type=Path,default=ROOT/'apps/web',help='Carpeta del frontend que se desea probar')
+    parser.add_argument('--web-script',default='dev',help='Script npm del frontend: dev, start, etc.')
+    parser.add_argument('--web-port',type=int,default=3000,help='Puerto configurado por el script npm del frontend')
     args = parser.parse_args(argv)
+    if not 1 <= args.web_port <= 65535 or args.web_port in (8000,27018):
+        parser.error('El puerto web debe ser válido y diferente de los puertos del backend y MongoDB.')
+    args.web_directory = args.web_directory.resolve()
+    if not args.api_only:
+        manifest = args.web_directory/'package.json'
+        if not manifest.is_file() or args.web_script not in json.loads(manifest.read_text()).get('scripts',{}):
+            parser.error('La carpeta del frontend debe contener package.json y el script npm indicado.')
     try:
         import embedded_postgres
     except ImportError:
         raise SystemExit("Instala el extra local: python -m pip install '.[api,storage,geospatial,local]'.")
     os.chdir(ROOT)
-    for port in ((8000,3000,27018) if args.with_mongo else (8000,3000)):
+    ports = [8000] + ([] if args.api_only else [args.web_port]) + ([27018] if args.with_mongo else [])
+    for port in ports:
         with socket.socket() as sock:
             if sock.connect_ex(('127.0.0.1',port))==0:
                 raise SystemExit(f'Puerto {port} ocupado; no se detendrán servicios ajenos.')
@@ -75,14 +88,20 @@ def main(argv=None):
             print(f'Datos reales cargados inicialmente: {count}.',flush=True)
         environment = {**os.environ,'DATABASE_URL':postgres.get_uri(),'NEXT_TELEMETRY_DISABLED':'1','API_INTERNAL_URL':'http://127.0.0.1:8000'}
         environment['RESULTS_BACKEND'] = 'mongodb' if args.with_mongo else 'postgresql'
+        origins = list(Settings.from_env().cors_origins)
+        if not args.api_only:
+            origins += [f'http://localhost:{args.web_port}', f'http://127.0.0.1:{args.web_port}']
+        environment['CORS_ORIGINS'] = ','.join(dict.fromkeys(origins))
         if args.with_mongo:
             from scripts.local_mongo import local_mongo
             environment['MONGODB_URI'] = stack.enter_context(local_mongo(ROOT/'data/local/mongo'))
         processes=[]
         try:
             processes.append(subprocess.Popen([sys.executable,'-m','uvicorn','apps.api.app.main:app','--host','127.0.0.1','--port','8000','--no-proxy-headers','--reload','--reload-dir','apps/api/app','--reload-dir','packages/contracts','--reload-dir','ml'],env=environment,start_new_session=True))
-            processes.append(subprocess.Popen(['npm','run','dev'],cwd=ROOT/'apps/web',env=environment,start_new_session=True))
-            print(f"Field Shift: http://localhost:3000 · PostgreSQL persistente · resultados {environment['RESULTS_BACKEND']} · worker no activado.",flush=True)
+            if not args.api_only:
+                processes.append(subprocess.Popen(['npm','run',args.web_script],cwd=args.web_directory,env=environment,start_new_session=True))
+            address = 'http://localhost:8000/docs' if args.api_only else f'http://localhost:{args.web_port}'
+            print(f"Field Shift: {address} · PostgreSQL persistente · resultados {environment['RESULTS_BACKEND']} · worker no activado.",flush=True)
             while not stop.wait(1):
                 if any(process.poll() is not None for process in processes):
                     raise RuntimeError('Un servicio terminó antes de lo esperado.')
