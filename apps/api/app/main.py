@@ -128,7 +128,7 @@ def create_app(repository=None, analysis_service=None, settings=None, results_re
                 return AnalysisResult(status='pending_run', request=request,
                     messages=['Modelos XGBoost integrados. El job debe generar el resultado con las variables procesadas de esta región y fecha.'])
             return AnalysisResult(status="pending_model", request=request,
-                                  messages=["Este plazo no tiene modelos conectados. Los artefactos actuales solo cubren 7 días." if catalog.models else "Los modelos climático y de suelo aún no están configurados."])
+                                  messages=["Este plazo no tiene modelos conectados. Horizontes disponibles: " + ', '.join(map(str, catalog.supported_horizons)) + ' días.' if catalog.models else "Los modelos climático y de suelo aún no están configurados."])
         return AnalysisResult(status="pending_run", request=request,
                               messages=["El resultado todavía no ha sido generado por el job de análisis."])
 

@@ -69,3 +69,12 @@ Run module commands from the repository root; see `ml/README.md` for the complet
 - `moisture-change-model.md`: residual formula, saved-model contract and comparison results.
 
 Generic lifecycle/catalog tests use synthetic fixtures to test software contracts. They are separate from empirical model evaluations and do not depend on the removed short-dataset experiment.
+
+## Connected application inference
+
+The integration now uses `ml/inference/expanded.py`, with checksum-pinned models
+for 7, 15, 30 and 60 days, and `ml/features/expanded.py` for versioned input
+snapshots. The recommendation job can use this experimental bundle when no
+published champion exists for that slot. It does not register or promote the
+experiment artifacts as validated application models. See
+[the integration contract](../../docs/xgboost-integration.md).

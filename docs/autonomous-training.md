@@ -142,6 +142,6 @@ Los datos y modelos sintéticos de estas pruebas nunca se publican en las bases
 operativas ni se presentan como resultados agrícolas.
 
 Los cinco modelos del equipo ya tienen [integración de inferencia](xgboost-integration.md):
-catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren siete
+catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren 7, 15, 30 y 60
 días y conservan su estado experimental; los pronósticos actuales requieren
 entradas recientes completas de su receta.

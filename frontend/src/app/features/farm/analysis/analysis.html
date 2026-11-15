@@ -56,10 +56,10 @@
       @if (models(); as catalog) {
         @if (catalog.models.length) {
           <p>
-            {{ catalog.models.length }} modelos XGBoost integrados · horizonte disponible:
+            {{ catalog.models.length }} modelos XGBoost integrados · horizontes disponibles:
             {{ catalog.supported_horizons.join(', ') }} días.
           </p>
-          <p>Versión experimental. Los plazos de 15, 30 y 60 días siguen pendientes.</p>
+          <p>Versión experimental. Cada plazo utiliza modelos entrenados para ese periodo.</p>
         }
       }
       @if (modelError()) {
@@ -134,7 +134,7 @@
       @if (models(); as catalog) {
         <details class="card">
           <summary>Modelos XGBoost y validación</summary>
-          @for (model of catalog.models; track model.model_id) {
+          @for (model of currentModels(); track model.model_id) {
             <article>
               <h3>
                 {{
@@ -143,7 +143,10 @@
                   )
                 }}
               </h3>
-              <p>{{ model.features.length }} variables · versión {{ model.version }}</p>
+              <p>
+                {{ model.horizon_days }} días · {{ model.features.length }} variables · versión
+                {{ model.version }}
+              </p>
               <p>
                 MAE de evaluación: {{ model.evaluation_mae | number: '1.1-4' }} {{ model.unit }};
                 baseline: {{ model.baseline_mae | number: '1.1-4' }} {{ model.unit }}.

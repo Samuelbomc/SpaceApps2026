@@ -20,14 +20,15 @@ class CropRecommendationJob:
         if today > datetime.now(ZoneInfo('America/Bogota')).date():
             raise ValueError('No se puede ejecutar para una fecha futura.')
         outcomes = []
+        bundled_horizons = self.bundled_models.catalog().supported_horizons if self.bundled_models else []
         for region in self.observations.regions():
             region_id = region["region_id"]
             reference = self.observations.latest_observation_date(region_id, today)
             for horizon in self.horizons:
                 climate = self.registry.current(f"{region_id}:climate:{horizon}")
                 soil = self.registry.current(f"{region_id}:soil:{horizon}")
-                if climate is None and soil is None and self.bundled_models is not None and horizon == 7:
-                    result = self._bundled(region, today)
+                if climate is None and soil is None and horizon in bundled_horizons:
+                    result = self._bundled(region, today, horizon)
                     if result is not None:
                         outcomes.append({'region_id': region_id, 'horizon_days': horizon, 'status': result.status,
                                          'analysis_id': result.analysis_id, 'messages': result.messages})
@@ -52,15 +53,13 @@ class CropRecommendationJob:
                                  "analysis_id": result.analysis_id})
         return {"status": "ok", "outcomes": outcomes}
 
-    def _bundled(self, region, target_start):
-        if not self.bundled_models.catalog().models:
-            return None
+    def _bundled(self, region, target_start, horizon):
         snapshot = self.feature_store.load(region, target_start - timedelta(days=1))
         if snapshot is not None:
-            result = self.bundled_models.predict(snapshot)
+            result = self.bundled_models.predict(snapshot, horizon_days=horizon)
         else:
             request = AnalysisRequest(region_id=region['region_id'], reference_date=target_start-timedelta(days=3),
-                                      forecast_start_date=target_start, horizon_days=7)
+                                      forecast_start_date=target_start, horizon_days=horizon)
             result = AnalysisResult(status='insufficient_data', request=request,
                 analysis_id=fingerprint({'request': request.model_dump(mode='json'), 'missing': 'expanded-v1'}),
                 messages=['Los cinco modelos XGBoost están integrados. Faltan las variables procesadas expanded-v1 '

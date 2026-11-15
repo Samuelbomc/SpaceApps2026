@@ -1,7 +1,7 @@
 # Field Shift — NASA Space Apps 2026
 
 Los cinco modelos del equipo ya tienen [integración de inferencia](docs/xgboost-integration.md):
-catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren siete
+catálogo HTTP, job, snapshots de variables y visualización Angular. Cubren 7, 15, 30 y 60
 días y conservan su estado experimental; los pronósticos actuales requieren
 entradas recientes completas de su receta.
 

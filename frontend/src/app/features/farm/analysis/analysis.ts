@@ -77,6 +77,9 @@ export class Analysis {
   protected readonly analysis = signal<AnalysisResult | null>(null);
   protected readonly crops = signal<AgronomicCatalog['crops']>([]);
   protected readonly models = signal<ModelCatalog | null>(null);
+  protected readonly currentModels = computed(
+    () => this.models()?.models.filter((model) => model.horizon_days === this.horizon()) || [],
+  );
   protected readonly modelError = signal('');
   protected readonly page = signal(0);
   protected readonly addOne = (value: number) => value + 1;

@@ -56,7 +56,7 @@ de referencia con su estado de revisión, separado de recomendaciones publicadas
 - Seleccionar un municipio o guardar un polígono no crea una ingesta NASA ni un
   pronóstico para esa finca. El análisis identifica la región disponible consultada.
 - Los modelos experimentales de main ahora tienen un adapter y job conectados
-  para siete días. No se publican automáticamente en el registro operativo.
+  para 7, 15, 30 y 60 días. No se publican automáticamente en el registro operativo.
   La UI conserva estados reales y muestra variables faltantes. Ver
   [integración XGBoost](xgboost-integration.md).
 - Guardar observaciones de una finca no constituye consentimiento de entrenamiento

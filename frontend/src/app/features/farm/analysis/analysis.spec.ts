@@ -9,6 +9,7 @@ describe('Analysis with connected XGBoost models', () => {
       {
         model_id: 'temperature_mean',
         model_kind: 'climate',
+        horizon_days: 7,
         features: [],
         version: 'test-only',
         evaluation_mae: 0.5,

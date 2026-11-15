@@ -50,7 +50,7 @@ class ExpandedFeatureStore:
         return snapshot
 
 
-def snapshot_from_csv(path, *, region_id, point_id, issue_date, climate_features, soil_features):
+def snapshot_from_csv(path, *, region_id, point_id, issue_date, climate_features, soil_features, horizon_days=7):
     """Importa una fila exacta; excluye target y cualquier observación futura."""
     path = Path(path)
     found = None
@@ -62,8 +62,8 @@ def snapshot_from_csv(path, *, region_id, point_id, issue_date, climate_features
                 found = row
     if found is None:
         raise ValueError('No hay datos para esa celda y fecha exactas; no se reutiliza otra fecha.')
-    if date.fromisoformat(found['target_start']) != issue_date+timedelta(days=1) or (date.fromisoformat(found['target_end'])-date.fromisoformat(found['target_start'])).days != 6:
-        raise ValueError('La fila no pertenece al horizonte t+1..t+7.')
+    if date.fromisoformat(found['target_start']) != issue_date+timedelta(days=1) or (date.fromisoformat(found['target_end'])-date.fromisoformat(found['target_start'])).days != horizon_days-1:
+        raise ValueError('La fila no pertenece al horizonte t+1..t+H declarado.')
     return ExpandedFeatures(region_id=region_id, longitude=float(found['longitude']), latitude=float(found['latitude']),
         issue_date=issue_date, observation_cutoff=found['observation_cutoff'],
         source_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
