@@ -12,7 +12,7 @@ de aceptación. Los estados pendientes forman parte del comportamiento del siste
 - Preparación por coordenadas con POWER LST, GPM Late, subconjuntos SMAP y capas
   estáticas nativas. Acceso protegido y aprovisionamiento SRTM/SoilGrids condicionan
   su ejecución real; no se considera cerrado DATA-01.
-- Scheduler durable con bloqueos, reintentos y tres jobs independientes.
+- Scheduler durable con bloqueos, reintentos y tres jobs periódicos independientes, más consumidores de actualizaciones manuales y análisis geográficos.
 - Actualización manual autenticada: cola PostgreSQL, coalescencia, progreso, recuperación
   por etapa y uso de las mismas políticas de publicación; límites de extracción DATA-01 vigentes.
 - Constructor diario compacto por ubicación y lead, con tablas de variables, etiquetas e índices separados.

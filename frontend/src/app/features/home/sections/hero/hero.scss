@@ -2,11 +2,11 @@
   position: relative;
   overflow: hidden;
   padding-block: clamp(var(--sp-7), 7vw, var(--sp-9));
-  // Subtle topographic-grid texture, no gradients on content.
-  background-image:
-    linear-gradient(rgb(169 194 171 / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(169 194 171 / 0.06) 1px, transparent 1px);
-  background-size: 48px 48px;
+  // Organic contour lines echo the landscape; the illustration carries the focal weight.
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1000 700%22 preserveAspectRatio=%22xMaxYMid slice%22%3E%3Cg fill=%22none%22 stroke=%22%23a8c686%22 stroke-opacity=%22.11%22 stroke-width=%221.2%22%3E%3Cpath d=%22M791 330C791 342 768 359 755 367C741 374 726 372 710 375C694 379 673 391 659 388C644 384 625 365 622 353C618 340 631 324 638 312C644 299 649 283 662 277C674 271 697 271 712 274C727 277 738 286 751 296C764 305 790 318 791 330Z%22/%3E%3Cpath d=%22M871 330C871 353 827 385 802 398C776 412 748 404 718 411C688 418 649 446 621 439C593 433 558 397 552 373C546 349 573 320 585 297C598 273 605 242 628 230C651 218 694 220 723 225C752 231 777 244 802 262C826 279 871 307 871 330Z%22/%3E%3Cpath d=%22M952 330C953 363 889 411 852 432C815 453 772 448 728 457C684 466 628 498 587 487C546 476 492 428 483 393C473 359 512 315 530 281C549 246 561 200 595 184C628 168 691 173 733 182C774 190 806 209 843 234C879 259 950 297 952 330Z%22/%3E%3Cpath d=%22M1035 330C1037 373 948 436 898 463C848 490 794 479 736 492C677 506 598 557 546 543C494 530 434 458 421 411C409 365 449 309 472 264C496 218 517 160 562 139C607 117 689 124 743 135C797 146 838 172 887 205C935 237 1033 287 1035 330Z%22/%3E%3Cpath d=%22M1113 330C1116 384 1011 464 949 497C888 530 817 511 744 527C670 543 575 610 509 594C444 578 367 489 353 431C338 374 394 307 422 249C450 191 466 111 521 82C577 54 687 63 755 78C824 94 873 132 932 174C992 216 1110 276 1113 330Z%22/%3E%3Cpath d=%22M1191 330C1193 396 1072 490 999 531C927 572 842 557 754 576C666 596 548 669 471 648C393 626 309 519 289 450C270 380 319 296 353 229C387 162 426 78 495 46C563 13 683 20 765 35C847 50 916 88 987 138C1058 187 1189 264 1191 330Z%22/%3E%3Cpath d=%22M1259 330C1261 406 1131 518 1047 563C964 608 861 575 759 598C657 620 526 719 434 698C343 677 231 553 210 473C189 392 267 297 307 216C347 134 373 22 451 -15C529 -53 678 -31 775 -11C872 10 951 50 1032 107C1113 164 1256 254 1259 330Z%22/%3E%3Cpath d=%22M1351 330C1354 417 1195 545 1098 597C1001 650 887 620 770 646C652 672 500 779 395 753C289 728 159 586 136 494C113 402 208 293 255 201C303 108 331 -17 419 -59C507 -101 674 -75 784 -52C894 -30 984 12 1079 76C1173 140 1348 243 1351 330Z%22/%3E%3Cpath d=%22M1433 330C1441 427 1267 577 1158 638C1049 698 912 669 780 695C649 720 483 822 367 791C251 760 114 610 86 509C57 407 143 283 194 183C246 83 296 -42 396 -91C497 -140 678 -134 797 -110C916 -86 1004 -19 1110 55C1216 128 1425 233 1433 330Z%22/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: cover;
 }
 
 .hero__grid {
@@ -55,16 +55,53 @@ h1 {
   margin: 0;
   justify-self: center;
   width: 100%;
-  max-width: 28rem;
+  max-width: 33rem;
 }
 
 .hero__svg {
+  display: block;
   width: 100%;
   height: auto;
+  overflow: visible;
 }
 
-@media (max-width: 760px) {
+.hero__sat {
+  animation: hero-float 7s ease-in-out infinite;
+}
+
+.hero__ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-ring 3.2s ease-out infinite;
+}
+
+@keyframes hero-float {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes hero-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__sat,
+  .hero__ring {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
   .hero__figure {
-    display: none;
+    max-width: 24rem;
+    margin-top: var(--sp-4);
   }
 }

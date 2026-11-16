@@ -21,6 +21,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home').then((m) => m.Home),
   },
 
+  {
+    path: 'referencia-tecnica',
+    title: pageTitle('Referencia técnica'),
+    loadComponent: () =>
+      import('./features/technical-reference/technical-reference').then(
+        (m) => m.TechnicalReference,
+      ),
+  },
+
   // Account
   {
     path: 'acceso',

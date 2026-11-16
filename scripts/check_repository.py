@@ -86,6 +86,10 @@ def check():
         parts = Path(name).parts
         if "node_modules" in parts or "__pycache__" in parts or ".venv" in parts:
             problems.append(f"{name}: artefacto local versionado")
+        if (ROOT / name).exists() and (
+            "__MACOSX" in parts or Path(name).name == ".DS_Store" or name.endswith(".crdownload")
+        ):
+            problems.append(f"{name}: metadatos de archivo o descarga incompleta versionados")
         if Path(name).name == ".env":
             problems.append(f"{name}: configuración privada versionada")
         if name.startswith(("data/farms/", "modulo_rotacion/datos/fincas/")) and not name.endswith(

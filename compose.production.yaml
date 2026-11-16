@@ -1,128 +1,520 @@
-name: agrogeo
-
-x-runtime: &runtime
-  DATABASE_URL: postgresql://fieldshift:${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD}@postgres:5432/fieldshift
-  CORS_ORIGINS: https://agrogeo.app
-  AUTH_COOKIE_SECURE: "true"
-  RESULTS_BACKEND: mongodb
-  MONGODB_URI: mongodb://mongo:27017
-  MONGODB_DATABASE: fieldshift
-  FARM_UPLOAD_DIRECTORY: /app/data/farms
-  DATASET_DIRECTORY: /app/data/datasets
-  MODEL_DIRECTORY: /app/data/models
-  TRAINING_DATA_DIRECTORY: /app/data/prepared/daily
-  TRAINING_CONFIG_PATH: ${TRAINING_CONFIG_PATH:-}
-  PRETRAINED_MODEL_DIRECTORY: /app/ml/artifacts
-  FEATURE_DIRECTORY: /app/data/features/daily-direct-v1
-  MODEL_SOURCE_DIRECTORY: /app/data
-  MODEL_DOWNLOAD_MAX_MB: ${MODEL_DOWNLOAD_MAX_MB:-128}
-  NEAREST_INPUT_MAX_DISTANCE_KM: ${NEAREST_INPUT_MAX_DISTANCE_KM:-200}
-  ROTATION_WATER_RULES_PATH: ${ROTATION_WATER_RULES_PATH:-}
-  GEOCODER_URL: ${GEOCODER_URL:-https://photon.komoot.io/reverse}
-  REGION_ID: ${REGION_ID:-antioquia-reference}
-  REGION_NAME: ${REGION_NAME:-Medellín · referencia técnica}
-  REGION_LATITUDE: ${REGION_LATITUDE:-6.2442}
-  REGION_LONGITUDE: ${REGION_LONGITUDE:--75.5812}
-  RECENT_OBSERVATION_DAYS: ${RECENT_OBSERVATION_DAYS:-90}
-  INGESTION_LAG_DAYS: ${INGESTION_LAG_DAYS:-3}
-  SOURCE_FALLBACK_MAX_LAG_DAYS: ${SOURCE_FALLBACK_MAX_LAG_DAYS:-5}
-
-x-worker: &worker
-  image: agrogeo-worker:local
-  build:
-    context: .
-    dockerfile: infra/docker/api.Dockerfile
-    args:
-      PYTHON_EXTRAS: api,storage,geospatial,mongo,ml,processing,download
-  environment:
-    <<: *runtime
-    EARTHDATA_TOKEN: ${EARTHDATA_TOKEN:-}
-    EARTHDATA_USERNAME: ${EARTHDATA_USERNAME:-}
-    EARTHDATA_PASSWORD: ${EARTHDATA_PASSWORD:-}
-  depends_on:
-    api:
-      condition: service_healthy
-  volumes:
-    - ./data:/app/data
-  restart: unless-stopped
-
-services:
-  postgres:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: fieldshift
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD}
-      POSTGRES_DB: fieldshift
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [CMD-SHELL, "pg_isready -U fieldshift -d fieldshift"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-    restart: unless-stopped
-  mongo:
-    image: mongo:8.0
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: [CMD, mongosh, --quiet, --eval, "db.adminCommand('ping').ok"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-    restart: unless-stopped
-  api:
-    build:
-      context: .
-      dockerfile: infra/docker/api.Dockerfile
-    environment: *runtime
-    volumes:
-      - ./data:/app/data
-    depends_on:
-      postgres:
-        condition: service_healthy
-      mongo:
-        condition: service_healthy
-    healthcheck:
-      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=5).read()"]
-      interval: 10s
-      timeout: 6s
-      retries: 20
-      start_period: 30s
-    restart: unless-stopped
-  worker:
-    <<: *worker
-    command: [python, -m, scripts.worker, --job, ingestion]
-  training-worker:
-    <<: *worker
-    command: [python, -m, scripts.worker, --job, training]
-  recommendation-worker:
-    <<: *worker
-    command: [python, -m, scripts.worker, --job, recommendations]
-  manual-update-worker:
-    <<: *worker
-    command: [python, -m, scripts.worker, --manual-only, --poll-seconds, "5"]
-  geographic-analysis-worker:
-    <<: *worker
-    command: [python, -m, scripts.geographic_worker]
-  web:
-    build:
-      context: .
-      dockerfile: infra/docker/web.Dockerfile
-    environment:
-      API_INTERNAL_URL: http://api:8000
-    ports:
-      - "127.0.0.1:8082:3000"
-    depends_on:
-      api:
-        condition: service_healthy
-    healthcheck:
-      test: [CMD, wget, -q, --spider, "http://127.0.0.1:3000/backend/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-  mongo_data:
+{
+  "name": "agrogeo",
+  "networks": {
+    "default": {
+      "name": "agrogeo_default",
+      "ipam": {}
+    }
+  },
+  "services": {
+    "api": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/docker/api.Dockerfile"
+      },
+      "command": null,
+      "depends_on": {
+        "mongo": {
+          "condition": "service_healthy",
+          "required": true
+        },
+        "postgres": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AUTH_COOKIE_SECURE": "true",
+        "CORS_ORIGINS": "${CORS_ORIGINS:?Set CORS_ORIGINS}",
+        "DATABASE_URL": "postgresql://fieldshift:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/fieldshift",
+        "DATASET_DIRECTORY": "/app/data/datasets",
+        "FARM_UPLOAD_DIRECTORY": "/app/data/farms",
+        "FEATURE_DIRECTORY": "/app/data/features/daily-direct-v1",
+        "GEOCODER_URL": "https://photon.komoot.io/reverse",
+        "INGESTION_LAG_DAYS": "3",
+        "MODEL_DIRECTORY": "/app/data/models",
+        "MODEL_DOWNLOAD_MAX_MB": "128",
+        "MODEL_SOURCE_DIRECTORY": "/app/data",
+        "MONGODB_DATABASE": "fieldshift",
+        "MONGODB_URI": "mongodb://mongo:27017",
+        "NEAREST_INPUT_MAX_DISTANCE_KM": "200",
+        "PRETRAINED_MODEL_DIRECTORY": "/app/ml/artifacts",
+        "RECENT_OBSERVATION_DAYS": "90",
+        "REGION_ID": "antioquia-reference",
+        "REGION_LATITUDE": "6.2442",
+        "REGION_LONGITUDE": "-75.5812",
+        "REGION_NAME": "Medell\u00edn \u00b7 referencia t\u00e9cnica",
+        "RESULTS_BACKEND": "mongodb",
+        "ROTATION_WATER_RULES_PATH": "",
+        "SOURCE_FALLBACK_MAX_LAG_DAYS": "5",
+        "TRAINING_CONFIG_PATH": "",
+        "TRAINING_DATA_DIRECTORY": "/app/data/prepared/daily"
+      },
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "./data",
+          "target": "/app/data",
+          "bind": {}
+        }
+      ],
+      "image": "agrogeo-migration-api:4ea618d",
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=5).read()"
+        ],
+        "interval": "10s",
+        "timeout": "6s",
+        "retries": 20,
+        "start_period": "30s"
+      }
+    },
+    "geographic-analysis-worker": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/docker/api.Dockerfile",
+        "args": {
+          "PYTHON_EXTRAS": "api,storage,geospatial,mongo,ml,processing,download"
+        }
+      },
+      "command": [
+        "python",
+        "-m",
+        "scripts.geographic_worker"
+      ],
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AUTH_COOKIE_SECURE": "true",
+        "CORS_ORIGINS": "${CORS_ORIGINS:?Set CORS_ORIGINS}",
+        "DATABASE_URL": "postgresql://fieldshift:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/fieldshift",
+        "DATASET_DIRECTORY": "/app/data/datasets",
+        "EARTHDATA_PASSWORD": "${EARTHDATA_PASSWORD:-}",
+        "EARTHDATA_TOKEN": "${EARTHDATA_TOKEN:-}",
+        "EARTHDATA_USERNAME": "${EARTHDATA_USERNAME:-}",
+        "FARM_UPLOAD_DIRECTORY": "/app/data/farms",
+        "FEATURE_DIRECTORY": "/app/data/features/daily-direct-v1",
+        "GEOCODER_URL": "https://photon.komoot.io/reverse",
+        "INGESTION_LAG_DAYS": "3",
+        "MODEL_DIRECTORY": "/app/data/models",
+        "MODEL_DOWNLOAD_MAX_MB": "128",
+        "MODEL_SOURCE_DIRECTORY": "/app/data",
+        "MONGODB_DATABASE": "fieldshift",
+        "MONGODB_URI": "mongodb://mongo:27017",
+        "NEAREST_INPUT_MAX_DISTANCE_KM": "200",
+        "PRETRAINED_MODEL_DIRECTORY": "/app/ml/artifacts",
+        "RECENT_OBSERVATION_DAYS": "90",
+        "REGION_ID": "antioquia-reference",
+        "REGION_LATITUDE": "6.2442",
+        "REGION_LONGITUDE": "-75.5812",
+        "REGION_NAME": "Medell\u00edn \u00b7 referencia t\u00e9cnica",
+        "RESULTS_BACKEND": "mongodb",
+        "ROTATION_WATER_RULES_PATH": "",
+        "SOURCE_FALLBACK_MAX_LAG_DAYS": "5",
+        "TRAINING_CONFIG_PATH": "",
+        "TRAINING_DATA_DIRECTORY": "/app/data/prepared/daily"
+      },
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "./data",
+          "target": "/app/data",
+          "bind": {}
+        }
+      ],
+      "image": "agrogeo-migration-worker:4ea618d"
+    },
+    "manual-update-worker": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/docker/api.Dockerfile",
+        "args": {
+          "PYTHON_EXTRAS": "api,storage,geospatial,mongo,ml,processing,download"
+        }
+      },
+      "command": [
+        "python",
+        "-m",
+        "scripts.worker",
+        "--manual-only",
+        "--poll-seconds",
+        "5"
+      ],
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AUTH_COOKIE_SECURE": "true",
+        "CORS_ORIGINS": "${CORS_ORIGINS:?Set CORS_ORIGINS}",
+        "DATABASE_URL": "postgresql://fieldshift:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/fieldshift",
+        "DATASET_DIRECTORY": "/app/data/datasets",
+        "EARTHDATA_PASSWORD": "${EARTHDATA_PASSWORD:-}",
+        "EARTHDATA_TOKEN": "${EARTHDATA_TOKEN:-}",
+        "EARTHDATA_USERNAME": "${EARTHDATA_USERNAME:-}",
+        "FARM_UPLOAD_DIRECTORY": "/app/data/farms",
+        "FEATURE_DIRECTORY": "/app/data/features/daily-direct-v1",
+        "GEOCODER_URL": "https://photon.komoot.io/reverse",
+        "INGESTION_LAG_DAYS": "3",
+        "MODEL_DIRECTORY": "/app/data/models",
+        "MODEL_DOWNLOAD_MAX_MB": "128",
+        "MODEL_SOURCE_DIRECTORY": "/app/data",
+        "MONGODB_DATABASE": "fieldshift",
+        "MONGODB_URI": "mongodb://mongo:27017",
+        "NEAREST_INPUT_MAX_DISTANCE_KM": "200",
+        "PRETRAINED_MODEL_DIRECTORY": "/app/ml/artifacts",
+        "RECENT_OBSERVATION_DAYS": "90",
+        "REGION_ID": "antioquia-reference",
+        "REGION_LATITUDE": "6.2442",
+        "REGION_LONGITUDE": "-75.5812",
+        "REGION_NAME": "Medell\u00edn \u00b7 referencia t\u00e9cnica",
+        "RESULTS_BACKEND": "mongodb",
+        "ROTATION_WATER_RULES_PATH": "",
+        "SOURCE_FALLBACK_MAX_LAG_DAYS": "5",
+        "TRAINING_CONFIG_PATH": "",
+        "TRAINING_DATA_DIRECTORY": "/app/data/prepared/daily"
+      },
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "./data",
+          "target": "/app/data",
+          "bind": {}
+        }
+      ],
+      "image": "agrogeo-migration-worker:4ea618d"
+    },
+    "mongo": {
+      "command": null,
+      "entrypoint": null,
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "--eval",
+          "db.adminCommand('ping').ok"
+        ],
+        "timeout": "5s",
+        "interval": "5s",
+        "retries": 20
+      },
+      "image": "mongo:8.0",
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "mongo_data",
+          "target": "/data/db",
+          "volume": {}
+        }
+      ]
+    },
+    "postgres": {
+      "command": null,
+      "entrypoint": null,
+      "environment": {
+        "POSTGRES_DB": "fieldshift",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}",
+        "POSTGRES_USER": "fieldshift"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""
+        ],
+        "timeout": "3s",
+        "interval": "5s",
+        "retries": 20
+      },
+      "image": "postgres:17-alpine",
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "postgres_data",
+          "target": "/var/lib/postgresql/data",
+          "volume": {}
+        }
+      ]
+    },
+    "recommendation-worker": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/docker/api.Dockerfile",
+        "args": {
+          "PYTHON_EXTRAS": "api,storage,geospatial,mongo,ml,processing,download"
+        }
+      },
+      "command": [
+        "python",
+        "-m",
+        "scripts.worker",
+        "--job",
+        "recommendations"
+      ],
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AUTH_COOKIE_SECURE": "true",
+        "CORS_ORIGINS": "${CORS_ORIGINS:?Set CORS_ORIGINS}",
+        "DATABASE_URL": "postgresql://fieldshift:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/fieldshift",
+        "DATASET_DIRECTORY": "/app/data/datasets",
+        "EARTHDATA_PASSWORD": "${EARTHDATA_PASSWORD:-}",
+        "EARTHDATA_TOKEN": "${EARTHDATA_TOKEN:-}",
+        "EARTHDATA_USERNAME": "${EARTHDATA_USERNAME:-}",
+        "FARM_UPLOAD_DIRECTORY": "/app/data/farms",
+        "FEATURE_DIRECTORY": "/app/data/features/daily-direct-v1",
+        "GEOCODER_URL": "https://photon.komoot.io/reverse",
+        "INGESTION_LAG_DAYS": "3",
+        "MODEL_DIRECTORY": "/app/data/models",
+        "MODEL_DOWNLOAD_MAX_MB": "128",
+        "MODEL_SOURCE_DIRECTORY": "/app/data",
+        "MONGODB_DATABASE": "fieldshift",
+        "MONGODB_URI": "mongodb://mongo:27017",
+        "NEAREST_INPUT_MAX_DISTANCE_KM": "200",
+        "PRETRAINED_MODEL_DIRECTORY": "/app/ml/artifacts",
+        "RECENT_OBSERVATION_DAYS": "90",
+        "REGION_ID": "antioquia-reference",
+        "REGION_LATITUDE": "6.2442",
+        "REGION_LONGITUDE": "-75.5812",
+        "REGION_NAME": "Medell\u00edn \u00b7 referencia t\u00e9cnica",
+        "RESULTS_BACKEND": "mongodb",
+        "ROTATION_WATER_RULES_PATH": "",
+        "SOURCE_FALLBACK_MAX_LAG_DAYS": "5",
+        "TRAINING_CONFIG_PATH": "",
+        "TRAINING_DATA_DIRECTORY": "/app/data/prepared/daily"
+      },
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "./data",
+          "target": "/app/data",
+          "bind": {}
+        }
+      ],
+      "image": "agrogeo-migration-worker:4ea618d"
+    },
+    "training-worker": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/docker/api.Dockerfile",
+        "args": {
+          "PYTHON_EXTRAS": "api,storage,geospatial,mongo,ml,processing,download"
+        }
+      },
+      "command": [
+        "python",
+        "-m",
+        "scripts.worker",
+        "--job",
+        "training"
+      ],
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AUTH_COOKIE_SECURE": "true",
+        "CORS_ORIGINS": "${CORS_ORIGINS:?Set CORS_ORIGINS}",
+        "DATABASE_URL": "postgresql://fieldshift:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/fieldshift",
+        "DATASET_DIRECTORY": "/app/data/datasets",
+        "EARTHDATA_PASSWORD": "${EARTHDATA_PASSWORD:-}",
+        "EARTHDATA_TOKEN": "${EARTHDATA_TOKEN:-}",
+        "EARTHDATA_USERNAME": "${EARTHDATA_USERNAME:-}",
+        "FARM_UPLOAD_DIRECTORY": "/app/data/farms",
+        "FEATURE_DIRECTORY": "/app/data/features/daily-direct-v1",
+        "GEOCODER_URL": "https://photon.komoot.io/reverse",
+        "INGESTION_LAG_DAYS": "3",
+        "MODEL_DIRECTORY": "/app/data/models",
+        "MODEL_DOWNLOAD_MAX_MB": "128",
+        "MODEL_SOURCE_DIRECTORY": "/app/data",
+        "MONGODB_DATABASE": "fieldshift",
+        "MONGODB_URI": "mongodb://mongo:27017",
+        "NEAREST_INPUT_MAX_DISTANCE_KM": "200",
+        "PRETRAINED_MODEL_DIRECTORY": "/app/ml/artifacts",
+        "RECENT_OBSERVATION_DAYS": "90",
+        "REGION_ID": "antioquia-reference",
+        "REGION_LATITUDE": "6.2442",
+        "REGION_LONGITUDE": "-75.5812",
+        "REGION_NAME": "Medell\u00edn \u00b7 referencia t\u00e9cnica",
+        "RESULTS_BACKEND": "mongodb",
+        "ROTATION_WATER_RULES_PATH": "",
+        "SOURCE_FALLBACK_MAX_LAG_DAYS": "5",
+        "TRAINING_CONFIG_PATH": "",
+        "TRAINING_DATA_DIRECTORY": "/app/data/prepared/daily"
+      },
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "./data",
+          "target": "/app/data",
+          "bind": {}
+        }
+      ],
+      "image": "agrogeo-migration-worker:4ea618d"
+    },
+    "web": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/docker/web.Dockerfile"
+      },
+      "command": null,
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "API_INTERNAL_URL": "http://api:8000"
+      },
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "image": "agrogeo-migration-web:4085950-revised-paper-v2",
+      "ports": [
+        {
+          "target": 3000,
+          "published": "8082",
+          "host_ip": "127.0.0.1",
+          "protocol": "tcp"
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://127.0.0.1:3000/backend/health"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 20
+      }
+    },
+    "worker": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/docker/api.Dockerfile",
+        "args": {
+          "PYTHON_EXTRAS": "api,storage,geospatial,mongo,ml,processing,download"
+        }
+      },
+      "command": [
+        "python",
+        "-m",
+        "scripts.worker",
+        "--job",
+        "ingestion"
+      ],
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "environment": {
+        "AUTH_COOKIE_SECURE": "true",
+        "CORS_ORIGINS": "${CORS_ORIGINS:?Set CORS_ORIGINS}",
+        "DATABASE_URL": "postgresql://fieldshift:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/fieldshift",
+        "DATASET_DIRECTORY": "/app/data/datasets",
+        "EARTHDATA_PASSWORD": "${EARTHDATA_PASSWORD:-}",
+        "EARTHDATA_TOKEN": "${EARTHDATA_TOKEN:-}",
+        "EARTHDATA_USERNAME": "${EARTHDATA_USERNAME:-}",
+        "FARM_UPLOAD_DIRECTORY": "/app/data/farms",
+        "FEATURE_DIRECTORY": "/app/data/features/daily-direct-v1",
+        "GEOCODER_URL": "https://photon.komoot.io/reverse",
+        "INGESTION_LAG_DAYS": "3",
+        "MODEL_DIRECTORY": "/app/data/models",
+        "MODEL_DOWNLOAD_MAX_MB": "128",
+        "MODEL_SOURCE_DIRECTORY": "/app/data",
+        "MONGODB_DATABASE": "fieldshift",
+        "MONGODB_URI": "mongodb://mongo:27017",
+        "NEAREST_INPUT_MAX_DISTANCE_KM": "200",
+        "PRETRAINED_MODEL_DIRECTORY": "/app/ml/artifacts",
+        "RECENT_OBSERVATION_DAYS": "90",
+        "REGION_ID": "antioquia-reference",
+        "REGION_LATITUDE": "6.2442",
+        "REGION_LONGITUDE": "-75.5812",
+        "REGION_NAME": "Medell\u00edn \u00b7 referencia t\u00e9cnica",
+        "RESULTS_BACKEND": "mongodb",
+        "ROTATION_WATER_RULES_PATH": "",
+        "SOURCE_FALLBACK_MAX_LAG_DAYS": "5",
+        "TRAINING_CONFIG_PATH": "",
+        "TRAINING_DATA_DIRECTORY": "/app/data/prepared/daily"
+      },
+      "networks": {
+        "default": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "./data",
+          "target": "/app/data",
+          "bind": {}
+        }
+      ],
+      "image": "agrogeo-migration-worker:4ea618d"
+    }
+  },
+  "volumes": {
+    "mongo_data": {
+      "name": "agrogeo_mongo_data"
+    },
+    "postgres_data": {
+      "name": "agrogeo_postgres_data"
+    }
+  }
+}

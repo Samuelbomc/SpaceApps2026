@@ -286,8 +286,8 @@ export class InteractiveMap {
       type: 'geojson',
       data: labelPoints(features) as never,
     });
-    // Insert below department labels so country-scale labels stay on top.
-    municipalityLayers().forEach((l) => map.addLayer(l, LAYER.departmentLabel));
+    // Keep departmental outlines above municipal fills and shared municipal edges.
+    municipalityLayers().forEach((l) => map.addLayer(l, `${LAYER.departmentLine}-casing`));
     municipalityLabelLayers().forEach((l) => map.addLayer(l));
 
     if (pilot.length) {

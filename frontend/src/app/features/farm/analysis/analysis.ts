@@ -1,5 +1,5 @@
 import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
-import { DatePipe, DecimalPipe, JsonPipe, PercentPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalysisSummary } from './analysis-summary';
 import { CropCondition } from './crop-condition';
@@ -30,15 +30,7 @@ const today = () =>
   }).format(new Date());
 @Component({
   selector: 'app-analysis',
-  imports: [
-    FormsModule,
-    DatePipe,
-    DecimalPipe,
-    JsonPipe,
-    PercentPipe,
-    AnalysisSummary,
-    CropCondition,
-  ],
+  imports: [FormsModule, DatePipe, DecimalPipe, JsonPipe, AnalysisSummary, CropCondition],
   templateUrl: './analysis.html',
   styleUrl: './analysis.scss',
 })

@@ -64,3 +64,30 @@ retención, dependencias y métricas bajo el volumen de despliegue elegido.
 
 Ver [configuración](../reference/configuration.md),
 [guía local](../guides/development.md) y [runbook](../operations/runbook.md).
+
+## Producción en agrogeo.app
+
+`compose.production.yaml` conserva el proyecto Compose `agrogeo` y los volúmenes
+existentes. Nginx sirve Angular en `127.0.0.1:8082`, destino del túnel Cloudflare
+existente. API y bases de datos permanecen dentro de la red Docker. Las cookies
+usan Secure y el origen permitido es `https://agrogeo.app`.
+
+La configuración privada está en `.env.production`, con permisos 0600 y las claves
+`POSTGRES_PASSWORD` y `CORS_ORIGINS`. Se conserva el usuario/base PostgreSQL
+`fieldshift` y la base MongoDB `fieldshift` de la instalación anterior. No regenerar
+credenciales ni eliminar volúmenes al actualizar. Los archivos operativos persisten
+en `data/`; el respaldo previo a la migración está en `data/backups/`.
+
+```bash
+bash scripts/deploy_production.sh
+```
+
+El checkout operativo está en `/home/apogeo/projects/agrogeo`. Los contextos de
+build y el montaje `./data` son relativos al archivo Compose, para permitir mover
+el checkout sin conservar rutas obsoletas. Las imágenes identifican el commit de
+aplicación; el API/worker instala `libexpat1` cuando se habilita `processing`, además
+de OpenMP para ML. Herramientas Windows y metadatos locales no entran en el contexto
+Docker. Los secretos y respaldos permanecen fuera de Git.
+
+Las imágenes usan la etiqueta del commit de la rama que se publica. Al publicar
+otro commit, actualizar las etiquetas en `compose.production.yaml` antes del build.

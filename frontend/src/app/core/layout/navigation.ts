@@ -26,11 +26,13 @@ export const HOME_GROUP: NavGroup = {
 export const PUBLIC_NAV: readonly NavEntry[] = [
   { kind: 'link', label: 'Inicio', path: '/' },
   { kind: 'link', label: 'Exploración', path: '/explorar' },
+  { kind: 'link', label: 'Referencia técnica', path: '/referencia-tecnica' },
 ];
 
 /** Shown once the user is signed in. */
 export const APP_NAV: readonly NavEntry[] = [
   { kind: 'link', label: 'Inicio', path: '/' },
   { kind: 'link', label: 'Exploración', path: '/explorar' },
+  { kind: 'link', label: 'Referencia técnica', path: '/referencia-tecnica' },
   { kind: 'link', label: 'Mis fincas', path: '/fincas' },
 ];

@@ -51,13 +51,13 @@ export const ATTRIBUTION = {
 
 /** Map palette (hex literals: WebGL paint cannot read CSS custom properties). */
 export const MAP_COLOR = {
-  ocean: '#0e2a36',
-  boundary: '#f3f1ea',
-  explore: '#9fd3a8',
+  ocean: '#183d32',
+  boundary: '#f5f4ec',
+  explore: '#a8c686',
   exploreOutline: '#e9f7e4',
-  pilot: '#7fd18b',
-  selected: '#ffcf6b',
-  outside: '#f3f1ea',
+  pilot: '#5fae80',
+  selected: '#d5a85b',
+  outside: '#f5f4ec',
 } as const;
 
 export function baseStyle(): MapStyle {
@@ -120,8 +120,35 @@ const isExplore = ['get', 'isPilot'];
 const isPilot = ['==', ['get', 'pilot'], true];
 const layer = (spec: object) => spec as unknown as AddLayerObject;
 
+/** A dark casing keeps pale boundaries readable over clouds, cities and imagery. */
+function outlinedBoundaries(layers: AddLayerObject[]): AddLayerObject[] {
+  return layers.flatMap((spec) => {
+    if (spec.type !== 'line') return [spec];
+    const paint = (spec.paint ?? {}) as Record<string, unknown>;
+    const width = paint['line-width'] ?? 1;
+    // MapLibre requires zoom interpolation at the top level of a paint expression.
+    const casingWidth =
+      Array.isArray(width) && width[0] === 'interpolate'
+        ? width.map((value, index) => (index >= 4 && index % 2 === 0 ? ['+', value, 2.5] : value))
+        : ['+', width, 2.5];
+    return [
+      layer({
+        ...spec,
+        id: `${spec.id}-casing`,
+        paint: {
+          ...paint,
+          'line-color': '#10251d',
+          'line-opacity': 0.85,
+          'line-width': casingWidth,
+        },
+      }),
+      spec,
+    ];
+  });
+}
+
 export function departmentLayers(): AddLayerObject[] {
-  return [
+  return outlinedBoundaries([
     layer({
       id: LAYER.departmentFill,
       type: 'fill',
@@ -180,21 +207,21 @@ export function departmentLayers(): AddLayerObject[] {
           MAP_COLOR.exploreOutline,
           MAP_COLOR.boundary,
         ],
-        'line-opacity': ['case', selected, 1, isExplore, 1, 0.6],
+        'line-opacity': 1,
         'line-width': [
           'interpolate',
           ['linear'],
           ['zoom'],
           2,
-          ['case', selected, 2, isExplore, 1.2, 0.4],
+          ['case', selected, 2, isExplore, 1.8, 1.1],
           6,
-          ['case', selected, 3, isExplore, 2.6, 1],
+          ['case', selected, 3, isExplore, 2.6, 1.6],
           9,
-          ['case', selected, 3.5, isExplore, 3.2, 1.4],
+          ['case', selected, 3.5, isExplore, 3.2, 2],
         ],
       },
     }),
-  ];
+  ]);
 }
 
 export function departmentLabelLayers(): AddLayerObject[] {
@@ -254,11 +281,11 @@ export function municipalityLayers(): AddLayerObject[] {
     ['linear'],
     ['zoom'],
     MUNICIPAL_MIN_ZOOM,
-    0,
+    0.7,
     7,
     value,
   ];
-  return [
+  return outlinedBoundaries([
     layer({
       id: LAYER.municipalityFill,
       type: 'fill',
@@ -299,16 +326,16 @@ export function municipalityLayers(): AddLayerObject[] {
       layout: { 'line-join': 'round' },
       paint: {
         'line-color': ['case', selected, '#ffffff', MAP_COLOR.boundary],
-        'line-opacity': fade(['case', selected, 1, hovered, 1, 0.5]),
+        'line-opacity': fade(['case', selected, 1, hovered, 1, 0.9]),
         'line-dasharray': [3, 2],
         'line-width': [
           'interpolate',
           ['linear'],
           ['zoom'],
           6,
-          ['case', selected, 2.5, hovered, 1.6, 0.4],
+          ['case', selected, 2.5, hovered, 2, 1.1],
           10,
-          ['case', selected, 4, hovered, 2.4, 1],
+          ['case', selected, 4, hovered, 2.6, 1.6],
         ],
       },
     }),
@@ -328,13 +355,13 @@ export function municipalityLayers(): AddLayerObject[] {
           ['linear'],
           ['zoom'],
           6,
-          ['case', selected, 3, hovered, 2, 0.9],
+          ['case', selected, 3, hovered, 2.3, 1.5],
           10,
-          ['case', selected, 4.5, hovered, 3, 1.8],
+          ['case', selected, 4.5, hovered, 3.2, 2.2],
         ],
       },
     }),
-  ];
+  ]);
 }
 
 /** Pilot municipalities are named earlier (and bolder) than the rest. */

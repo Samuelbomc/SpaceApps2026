@@ -32,7 +32,9 @@ export function loadMapLibre(): Promise<MapLibreModule> {
   ensureStylesheet();
   return (loading ??= import('maplibre-gl')
     .then((m) => {
-      m.setWorkerUrl(new URL(WORKER_PATH, document.baseURI).href);
+      const workerUrl = new URL(WORKER_PATH, document.baseURI);
+      workerUrl.searchParams.set('v', m.getVersion());
+      m.setWorkerUrl(workerUrl.href);
       return m;
     })
     .catch((err) => {

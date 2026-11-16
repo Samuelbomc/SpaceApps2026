@@ -53,3 +53,8 @@ No constituyen una validación agronómica de las recomendaciones.
 - [Límites de ejecución y publicación](architecture/decisions/0001-runtime-boundaries.md).
 - [Organización y mantenimiento documental](quality/documentation.md): aplicación
   de Diátaxis, vistas C4 y cobertura de arquitectura basada en arc42.
+
+## Calidad de funciones
+
+Ver la [matriz de funciones implementadas y verificación](quality/current-features.md)
+para comportamiento, límites de pruebas e higiene del repositorio.

@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import type { Analysis, ProbabilityEstimate } from '@agrogeo/api-client';
+import type { Analysis } from '@agrogeo/api-client';
 import { CropCondition } from './crop-condition';
 
 @Component({
@@ -88,11 +88,6 @@ import { CropCondition } from './crop-condition';
                   <th>Temperatura</th>
                   <th>Lluvia del periodo</th>
                   <th>Humedad del suelo</th>
-                  <th
-                    title="Los modelos actuales no calculan una probabilidad de éxito del cultivo."
-                  >
-                    Probabilidad
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -123,15 +118,11 @@ import { CropCondition } from './crop-condition';
                     <td>
                       <app-crop-condition [check]="condition(crop, 'surface_soil_moisture')" />
                     </td>
-                    <td>{{ probability(crop.probability) }}</td>
                   </tr>
                 }
               </tbody>
             </table>
           </div>
-          @if (uncalibrated()) {
-            <small class="muted">Probabilidad no calculada por los modelos actuales.</small>
-          }
         } @else {
           <p>No hay cultivos compatibles con la evaluación disponible.</p>
         }
@@ -144,14 +135,12 @@ import { CropCondition } from './crop-condition';
             <thead>
               <tr>
                 <th>Secuencia</th>
-                <th>Probabilidad</th>
               </tr>
             </thead>
             <tbody>
               @for (rotation of rotations(); track $index) {
                 <tr>
                   <td>{{ rotation.names.join(' → ') }}</td>
-                  <td>{{ probability(rotation.probability) }}</td>
                 </tr>
               }
             </tbody>
@@ -179,8 +168,7 @@ import { CropCondition } from './crop-condition';
       gap: var(--sp-3);
       flex-wrap: wrap;
     }
-    .title-row small,
-    .muted {
+    .title-row small {
       color: var(--c-ink-muted);
     }
     .prediction-grid {
@@ -259,16 +247,11 @@ export class AnalysisSummary {
     if (result.recommendations)
       return result.recommendations.alternatives.map((rotation) => ({
         names: rotation.crops,
-        probability: rotation.probability,
       }));
     return (result.rotation_assessment?.scenarios ?? []).map((rotation) => ({
       names: rotation.stages.map((stage) => stage.crop_name),
-      probability: rotation.probability,
     }));
   });
-  protected readonly uncalibrated = computed(() =>
-    this.crops().some((crop) => crop.probability?.status !== 'calibrated'),
-  );
   protected readonly start = computed(() => {
     const explicit =
       this.forecasts()[0]?.forecast_start_date ?? this.result().request.forecast_start_date;
@@ -322,12 +305,6 @@ export class AnalysisSummary {
       )[variable] ?? this.label(variable)
     );
   }
-  protected probability(estimate?: ProbabilityEstimate) {
-    return estimate?.status === 'calibrated' && estimate.value != null
-      ? (estimate.value * 100).toLocaleString('es-CO', { maximumFractionDigits: 1 }) + ' %'
-      : 'No disponible';
-  }
-
   protected condition(
     crop: NonNullable<NonNullable<Analysis['rotation_assessment']>['candidates']>[number],
     variable: 'precipitation' | 'surface_soil_moisture',

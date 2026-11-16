@@ -1,9 +1,15 @@
 <header class="header" [class.header--open]="menuOpen()">
   <div class="container header__bar">
     <a class="brand" routerLink="/" (click)="closeMenu()">
-      <app-brand-mark />
+      <img
+        class="brand-logo brand__logo"
+        src="branding/logo/logo-vegetacion-grafito.svg"
+        alt=""
+        width="1598"
+        height="377"
+      />
       <span class="brand__text">
-        <span class="brand__name">{{ identity.name }}</span>
+        <span class="brand__name sr-only">{{ identity.name }}</span>
         <span class="brand__tag">NASA Space Apps · Colombia</span>
       </span>
     </a>

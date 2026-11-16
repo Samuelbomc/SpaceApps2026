@@ -300,17 +300,6 @@
                         <app-crop-condition [check]="check" />
                       }
                     }
-                    <span
-                      >Probabilidad:
-                      @if (
-                        crop.probability?.status === 'calibrated' &&
-                        crop.probability?.value !== null
-                      ) {
-                        {{ crop.probability?.value | percent: '1.0-1' }}
-                      } @else {
-                        No disponible
-                      }
-                    </span>
                     @if (technical()) {
                       @if (annualRainfallByCrop().get(crop.crop_id); as rainfall) {
                         <span

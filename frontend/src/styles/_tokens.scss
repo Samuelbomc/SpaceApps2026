@@ -3,40 +3,48 @@
 // inside component stylesheets. Text/background pairs were chosen for WCAG AA contrast.
 
 :root {
-  // Forest greens (brand, primary actions, dark surfaces)
-  --c-forest-950: #0f231a;
-  --c-forest-900: #163126;
-  --c-forest-800: #1e4233;
-  --c-forest-700: #2a5a45;
-  --c-green-600: #3f7559;
-  --c-green-500: #5a8f6f;
-  --c-sage-300: #a9c2ab;
-  --c-sage-100: #e3ebe1;
-  --c-sage-50: #f0f4ee;
+  // Brand palette (official AgroGeo identity)
+  --brand-bosque: #183d32;
+  --brand-vegetacion: #397b57;
+  --brand-cultivo: #a8c686;
+  --brand-tierra: #d5a85b;
+  --brand-marfil: #f5f4ec;
+  --brand-grafito: #25343a;
 
-  // Neutrals (warm off-white canvas)
-  --c-canvas: #f7f5ef;
-  --c-surface: #ffffff;
-  --c-surface-sunken: #efece3;
-  --c-ink: #1b231f;
-  --c-ink-muted: #4f5b54;
-  --c-ink-subtle: #66706a;
-  --c-ink-inverse: #f3f1ea;
-  --c-ink-inverse-muted: #c3cdc5;
-  --c-border: #dedad0;
-  --c-border-strong: #c7c2b4;
+  // Greens: Bosque (institutional/dark surfaces) and Vegetación (accent, actions)
+  --c-forest-950: #102a21;
+  --c-forest-900: var(--brand-bosque);
+  --c-forest-800: #1f4a3b;
+  --c-forest-700: #2d6648;
+  --c-green-600: var(--brand-vegetacion);
+  --c-green-500: #5b9a77;
+  --c-sage-300: var(--brand-cultivo);
+  --c-sage-100: #e4ecd6;
+  --c-sage-50: #eff3e4;
+
+  // Neutrals: Marfil canvas, Grafito ink
+  --c-canvas: var(--brand-marfil);
+  --c-surface: #fbfaf5;
+  --c-surface-sunken: #eceadf;
+  --c-ink: var(--brand-grafito);
+  --c-ink-muted: #42535a;
+  --c-ink-subtle: #596a71;
+  --c-ink-inverse: var(--brand-marfil);
+  --c-ink-inverse-muted: #c9d2cb;
+  --c-border: #dad8ca;
+  --c-border-strong: #c0bdac;
 
   // Semantic accents (each has a text-safe 600/700 and a tint 100)
-  --c-earth-600: #874b26;
-  --c-earth-400: #b57a52;
-  --c-earth-100: #f3e6da;
+  --c-earth-600: #7c5a1e;
+  --c-earth-400: var(--brand-tierra);
+  --c-earth-100: #f7ecd5;
   --c-ochre-600: #735710;
   --c-ochre-100: #f6edd2;
   --c-water-600: #2c6680;
   --c-water-400: #3d7d99;
   --c-water-100: #e0edf2;
-  --c-slate-600: #556069;
-  --c-slate-100: #e8ebed;
+  --c-slate-600: #4a5b62;
+  --c-slate-100: #e6e9e8;
 
   // Demonstration-data warning (deliberately loud and distinct)
   --c-demo-bg: #fff3d6;
@@ -74,8 +82,8 @@
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgb(22 49 38 / 0.06), 0 1px 3px rgb(22 49 38 / 0.08);
-  --shadow-md: 0 4px 12px rgb(22 49 38 / 0.08), 0 2px 4px rgb(22 49 38 / 0.06);
+  --shadow-sm: 0 1px 2px rgb(37 52 58 / 0.06), 0 1px 3px rgb(37 52 58 / 0.08);
+  --shadow-md: 0 4px 12px rgb(37 52 58 / 0.08), 0 2px 4px rgb(37 52 58 / 0.06);
 
   // Layout
   --container-max: 1200px;

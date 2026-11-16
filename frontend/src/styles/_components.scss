@@ -22,11 +22,11 @@
     color var(--transition-fast);
 
   &--primary {
-    background: var(--c-forest-700);
+    background: var(--c-green-600);
     color: var(--c-ink-inverse);
 
     &:hover {
-      background: var(--c-forest-800);
+      background: var(--c-forest-700);
       color: var(--c-ink-inverse);
     }
   }
@@ -316,4 +316,17 @@
 .btn[disabled] {
   opacity: 0.6;
   cursor: progress;
+}
+
+// ---------- Official logo ----------
+// The SVG artboards carry transparent padding; object-view-box crops the view to the
+// drawn mark so alignment and height are predictable (the files are not modified).
+.brand-logo {
+  display: block;
+  flex: none;
+  width: auto;
+  max-width: none;
+  aspect-ratio: 1598 / 377;
+  object-fit: contain;
+  object-view-box: inset(9.9% 13% 18% 12.5%);
 }
