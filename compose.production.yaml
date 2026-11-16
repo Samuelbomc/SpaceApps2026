@@ -1,0 +1,128 @@
+name: agrogeo
+
+x-runtime: &runtime
+  DATABASE_URL: postgresql://fieldshift:${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD}@postgres:5432/fieldshift
+  CORS_ORIGINS: https://agrogeo.app
+  AUTH_COOKIE_SECURE: "true"
+  RESULTS_BACKEND: mongodb
+  MONGODB_URI: mongodb://mongo:27017
+  MONGODB_DATABASE: fieldshift
+  FARM_UPLOAD_DIRECTORY: /app/data/farms
+  DATASET_DIRECTORY: /app/data/datasets
+  MODEL_DIRECTORY: /app/data/models
+  TRAINING_DATA_DIRECTORY: /app/data/prepared/daily
+  TRAINING_CONFIG_PATH: ${TRAINING_CONFIG_PATH:-}
+  PRETRAINED_MODEL_DIRECTORY: /app/ml/artifacts
+  FEATURE_DIRECTORY: /app/data/features/daily-direct-v1
+  MODEL_SOURCE_DIRECTORY: /app/data
+  MODEL_DOWNLOAD_MAX_MB: ${MODEL_DOWNLOAD_MAX_MB:-128}
+  NEAREST_INPUT_MAX_DISTANCE_KM: ${NEAREST_INPUT_MAX_DISTANCE_KM:-200}
+  ROTATION_WATER_RULES_PATH: ${ROTATION_WATER_RULES_PATH:-}
+  GEOCODER_URL: ${GEOCODER_URL:-https://photon.komoot.io/reverse}
+  REGION_ID: ${REGION_ID:-antioquia-reference}
+  REGION_NAME: ${REGION_NAME:-Medellín · referencia técnica}
+  REGION_LATITUDE: ${REGION_LATITUDE:-6.2442}
+  REGION_LONGITUDE: ${REGION_LONGITUDE:--75.5812}
+  RECENT_OBSERVATION_DAYS: ${RECENT_OBSERVATION_DAYS:-90}
+  INGESTION_LAG_DAYS: ${INGESTION_LAG_DAYS:-3}
+  SOURCE_FALLBACK_MAX_LAG_DAYS: ${SOURCE_FALLBACK_MAX_LAG_DAYS:-5}
+
+x-worker: &worker
+  image: agrogeo-worker:local
+  build:
+    context: .
+    dockerfile: infra/docker/api.Dockerfile
+    args:
+      PYTHON_EXTRAS: api,storage,geospatial,mongo,ml,processing,download
+  environment:
+    <<: *runtime
+    EARTHDATA_TOKEN: ${EARTHDATA_TOKEN:-}
+    EARTHDATA_USERNAME: ${EARTHDATA_USERNAME:-}
+    EARTHDATA_PASSWORD: ${EARTHDATA_PASSWORD:-}
+  depends_on:
+    api:
+      condition: service_healthy
+  volumes:
+    - ./data:/app/data
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: fieldshift
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura POSTGRES_PASSWORD}
+      POSTGRES_DB: fieldshift
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U fieldshift -d fieldshift"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  mongo:
+    image: mongo:8.0
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    environment: *runtime
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=5).read()"]
+      interval: 10s
+      timeout: 6s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+  worker:
+    <<: *worker
+    command: [python, -m, scripts.worker, --job, ingestion]
+  training-worker:
+    <<: *worker
+    command: [python, -m, scripts.worker, --job, training]
+  recommendation-worker:
+    <<: *worker
+    command: [python, -m, scripts.worker, --job, recommendations]
+  manual-update-worker:
+    <<: *worker
+    command: [python, -m, scripts.worker, --manual-only, --poll-seconds, "5"]
+  geographic-analysis-worker:
+    <<: *worker
+    command: [python, -m, scripts.geographic_worker]
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "127.0.0.1:8082:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, --spider, "http://127.0.0.1:3000/backend/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  mongo_data:

@@ -9,3 +9,5 @@ data
 .env
 **/__pycache__
 .cache
+
+.env.*

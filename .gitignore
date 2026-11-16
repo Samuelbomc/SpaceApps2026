@@ -250,3 +250,4 @@ prepared/
 /ml/artifacts/forecasts/current_predictions.csv
 /ml/artifacts/*_pending/
 /ml/artifacts/*_pending_removal/
+cache
