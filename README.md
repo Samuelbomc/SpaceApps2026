@@ -18,7 +18,7 @@ Python 3.14 y Node 26. El lockfile npm del frontend está versionado.
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install '.[api,storage,geospatial,local,mongo,ml,test,dev]'
+python -m pip install '.[api,storage,geospatial,local,mongo,ml,processing,download,test,dev]'
 npm ci --prefix frontend
 python -m scripts.dev_stack --seed-reference --with-mongo --with-workers
 ```
@@ -36,8 +36,8 @@ sobrescribir una configuración existente y ejecutar:
 docker compose up --build -d
 ```
 
-Compose levanta las bases, API, web, tres workers periódicos y un consumidor manual. El motor Docker debe estar
-activo. Ver [desarrollo y operación](docs/guides/development.md).
+Compose levanta las bases, API, web, tres workers periódicos, un consumidor manual
+y un consumidor de análisis geográficos. El motor Docker debe estar activo. Ver [desarrollo y operación](docs/guides/development.md).
 
 ## Flujo y organización
 

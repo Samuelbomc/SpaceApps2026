@@ -40,8 +40,16 @@ describe('App shell', () => {
     const header = (fixture.nativeElement as HTMLElement).querySelector('header')!;
     expect(header.querySelectorAll('app-nav-dropdown').length).toBe(0);
     const links = [...header.querySelectorAll('.nav__list a')];
-    expect(links.map((link) => link.textContent?.trim())).toEqual(['Inicio', 'Exploración']);
-    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/', '/explorar']);
+    expect(links.map((link) => link.textContent?.trim())).toEqual([
+      'Inicio',
+      'Exploración',
+      'Referencia técnica',
+    ]);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      '/',
+      '/explorar',
+      '/referencia-tecnica',
+    ]);
   });
 
   it('switches to the personal navigation after signing in', async () => {
@@ -59,6 +67,7 @@ describe('App shell', () => {
     expect(links.map((link) => link.textContent?.trim())).toEqual([
       'Inicio',
       'Exploración',
+      'Referencia técnica',
       'Mis fincas',
     ]);
     expect(links[0].getAttribute('href')).toBe('/');

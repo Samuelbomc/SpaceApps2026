@@ -178,7 +178,7 @@ describe('Compact prediction and crop results', () => {
     expect(text).not.toContain('daily-direct');
     expect(text).not.toContain('Por confirmar:');
   });
-  it('lists distinct crops and rotations directly without inventing probabilities', async () => {
+  it('lists crops and rotation sequences without probability columns', async () => {
     const fixture = TestBed.createComponent(AnalysisSummary);
     fixture.componentRef.setInput('result', result());
     await fixture.whenStable();
@@ -188,11 +188,16 @@ describe('Compact prediction and crop results', () => {
     expect(text).toContain('Frijol voluble');
     expect(text).toContain('Frijol arbustivo → Maíz');
     expect(text).not.toContain('Cultivo excluido');
-    expect(text).toContain('Probabilidad no calculada');
+    expect(text).not.toMatch(/probabilidad/i);
+    const tables = fixture.nativeElement.querySelectorAll('table');
+    expect(tables[1].querySelectorAll('thead th')).toHaveLength(4);
+    expect(tables[1].querySelector('tbody tr').querySelectorAll('td')).toHaveLength(4);
+    expect(tables[2].querySelectorAll('thead th')).toHaveLength(1);
+    expect(tables[2].querySelector('tbody tr').querySelectorAll('td')).toHaveLength(1);
     expect(text).not.toContain('100 %');
     expect(fixture.nativeElement.querySelectorAll('.crop-list tbody tr')).toHaveLength(2);
   });
-  it('formats a supplied calibrated probability including zero and keeps missing daily data empty', async () => {
+  it('omits even calibrated probabilities and keeps missing daily data empty', async () => {
     const analysis = result();
     analysis.rotation_assessment!.candidates![0].probability = {
       status: 'calibrated',
@@ -208,13 +213,19 @@ describe('Compact prediction and crop results', () => {
       model_version: 'test-only',
       calibration_version: 'test-only',
     };
+    analysis.rotation_assessment!.scenarios![0].probability = {
+      status: 'calibrated',
+      value: 0.43,
+      event: 'SYNTHETIC TEST EVENT',
+      model_version: 'test-only',
+      calibration_version: 'test-only',
+    };
     analysis.soil!.daily = analysis.soil!.daily!.slice(1);
     const fixture = TestBed.createComponent(AnalysisSummary);
     fixture.componentRef.setInput('result', analysis);
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('0 %');
-    expect(fixture.nativeElement.textContent).toContain('72 %');
+    expect(fixture.nativeElement.textContent).not.toMatch(/probabilidad|0 %|72 %|43 %/i);
     expect(
       fixture.nativeElement
         .querySelectorAll('details tbody tr')[0]
@@ -258,7 +269,7 @@ describe('Compact prediction and crop results', () => {
     expect(water[1].textContent).toContain('0.25 m³/m³');
     expect(water[1].textContent).toContain('Sin umbral definido');
     expect(water[1].textContent).not.toContain('Óptima');
-    expect(row.textContent).toContain('No disponible');
+    expect(row.querySelectorAll('td')).toHaveLength(4);
     crop.checks[0] = { ...crop.checks[0], status: 'outside_range' };
     fixture.componentRef.setInput('result', { ...analysis });
     await fixture.whenStable();

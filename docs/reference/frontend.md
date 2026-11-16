@@ -16,6 +16,24 @@ Angular escucha en `http://localhost:3000`. El proxy de desarrollo transforma
 mismo proxy. Los componentes usan `packages/api-client` y los tipos generados;
 no deben construir conexiones directas a las bases de datos.
 
+MapLibre carga su worker como módulo desde
+`/vendor/maplibre/maplibre-gl-worker.mjs`. Nginx debe servir `.mjs` con
+`application/javascript`; `application/octet-stream` bloquea el worker y deja
+los límites sin procesar. Los GeoJSON de `/geo/` usan `application/geo+json`.
+Los archivos de estas rutas que no existen devuelven 404, sin fallback al HTML
+SPA. El worker se solicita con una versión en la URL y sus headers se revalidan
+para no reutilizar una respuesta antigua con MIME incorrecto. El mapa mantiene
+las capas DANE aunque falle el proveedor de imágenes.
+Los límites departamentales y municipales tienen línea clara y contorno oscuro
+sobre la imagen satelital. La línea municipal mantiene opacidad visible desde
+su zoom mínimo, sin empezar completamente transparente. El fondo no cubre las
+capas de límites. Los contornos departamentales permanecen por encima de las
+capas municipales, para conservar la jerarquía en los tramos compartidos.
+El mapa de dibujo usa también borde municipal blanco con contorno oscuro.
+La comprobación de hosting verifica el tipo MIME del worker, GeoJSON válidos,
+404 para archivos ausentes y la ruta SPA `/explorar`. La comprobación en Chromium
+confirma la carga del worker y los límites y etiquetas municipales al enfocar Oriente.
+
 ## Flujos y responsabilidades
 
 | Flujo | Contrato y comportamiento |
@@ -23,10 +41,14 @@ no deben construir conexiones directas a las bases de datos.
 | Cuenta | Registro, login, restauración y logout mediante HTTP y cookie HttpOnly; controles CSRF para mutaciones. Los guards esperan restaurar la sesión. |
 | Fincas | Recursos privados autorizados por usuario; catálogo editable y CSV con validación de formato, unidades, revisión y procedencia. |
 | Mapa | MapLibre, límites municipales, polígonos y cuadrados por superficie en m², km² o ha. Se persisten GeoJSON y bbox. |
-| Análisis | Región compatible y horizonte 7/15/30/60. Consume resultados persistidos y pagina observaciones disponibles sin pedir fechas históricas al agricultor. |
+| Análisis | Ubicación o polígono y horizonte 7/15/30/60. Crea una solicitud pública en cola, consulta su progreso y presenta resultados persistidos y observaciones disponibles. |
 | Presentación | Vista simple de resultados y vista técnica con procedencia, calidad, unidades y versiones. Respeta estados pendientes y alcance regional. |
 
-Rutas públicas: `/`, `/explorar`, `/acceso` y `/registro`.
+Rutas públicas: `/`, `/explorar`, `/referencia-tecnica`, `/acceso` y `/registro`.
+La referencia técnica presenta el paper de Field Shift (15 páginas, inglés),
+con visor PDF, apertura en otra pestaña y descarga. Es accesible desde la
+navegación principal y el pie de página, con y sin sesión. El documento se sirve
+en `/documents/paper.pdf` desde `frontend/public/documents/`.
 Rutas de cuenta/finca: `/perfil`, `/fincas` y
 `/finca/caracterizacion`. `/login` redirige a `/acceso`. Los enlaces antiguos
 `/panel`, `/finca/lote` y `/finca/analisis` abren el explorador público y conservan
@@ -83,7 +105,7 @@ el municipio o polígono seleccionado. Esta coincidencia no acredita cobertura n
 personalización de parcela. Sin referencias coincidentes se muestra la ausencia;
 consultar otras ubicaciones exige una acción explícita y se identifica su alcance.
 Cambiar el área limpia resultados incompatibles e invalida consultas anteriores.
-La API no recibe el polígono para ejecutar inferencias o recortes en tiempo real.
+La API valida y conserva el polígono en una solicitud pública; el worker prepara entradas y calcula inferencias fuera de HTTP. La selección geométrica no equivale a un recorte científico ni cambia la resolución nativa.
 
 El globo permite acercarse hasta zoom 14, el máximo nivel de las teselas de
 Sentinel-2 cloudless, con píxeles originales de 10 m. El mapa de delimitación
@@ -92,6 +114,12 @@ Las superposiciones de
 color se atenúan al acercarse y la imagen local conserva sus colores y opacidad
 completa para facilitar la orientación. El acercamiento no cambia la resolución
 de los datos analíticos ni permite interpretar el fondo como un lindero catastral.
+
+Las tablas de cultivos compatibles y rotaciones orientativas no muestran columna
+ni valores de probabilidad. La vista técnica tampoco presenta la probabilidad en
+las fichas de cultivos. Se conservan las condiciones de temperatura, lluvia y
+humedad, las secuencias y los estados provisionales; los contratos de la API no
+cambian por esta decisión de presentación.
 
 Resultados abre en nivel **Simple**, con el periodo, la última actualización,
 las predicciones disponibles y los últimos valores válidos de todas las variables
@@ -113,8 +141,7 @@ los catálogos de modelos y cultivos se solicitan al abrirlo, sin bloquear la
 consulta principal si fallan.
 
 El mapa de un lote no activa automáticamente una ingesta privada ni demuestra
-precisión a escala de parcela. Consultar resultados no descarga NASA, reentrena
-ni ejecuta inferencias. Recuperación de contraseña y edición del nombre aún no
+precisión a escala de parcela. Los GET de resultados no descargan NASA, reentrenan ni ejecutan inferencias; crear una solicitud geográfica encola la preparación y el análisis en el worker. Recuperación de contraseña y edición del nombre aún no
 tienen backend; sus controles informan esa limitación.
 
 ## Contratos y pruebas

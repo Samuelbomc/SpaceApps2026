@@ -63,7 +63,7 @@ class FarmerAccountTests(unittest.TestCase):
         with self.db.connect() as conn:
             conn.execute("TRUNCATE farmer_users CASCADE")
             conn.execute("TRUNCATE auth_rate_limits")
-        self.folder = tempfile.TemporaryDirectory(prefix="farm-files-", dir="/private/tmp")
+        self.folder = tempfile.TemporaryDirectory(prefix="farm-files-")
         self.addCleanup(self.folder.cleanup)
         self.settings = Settings(
             database_url=self.db.url, farm_upload_directory=Path(self.folder.name)
