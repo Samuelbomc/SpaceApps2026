@@ -67,9 +67,8 @@ PostgreSQL gestiona cuentas, fincas, observaciones y calendarios; MongoDB conser
 resultados y registro ML. El modo de resultados PostgreSQL es una alternativa
 explícita de desarrollo. [Detalle de almacenamiento](docs/architecture/persistence.md).
 
-El entrenamiento usa la receta de los veinte modelos: cinco objetivos por cada
-horizonte de 7, 15, 30 y 60 días. Los candidatos se evalúan con separación temporal
-y purga. Superar una métrica no sustituye la revisión científica de publicación.
+Actualmente se entrenan cinco modelos XGBoost de pronóstico diario: temperatura media, mínima y máxima, precipitación y humedad del suelo. 
+Cada modelo predice días individuales para horizontes de 1 a 60 días. Sus salidas alimentan el modelo de elección de cultivos.
 [Contrato del entrenamiento](docs/reference/model-training.md).
 
 ## Documentación y verificación
