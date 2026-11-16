@@ -25,6 +25,15 @@ a {
 a:hover {
   text-decoration: underline;
 }
+.footer__bar p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.footer__logo {
+  height: 1.5rem;
+}
 .footer__note {
   margin-top: var(--sp-3);
   font-size: var(--fs-xs);

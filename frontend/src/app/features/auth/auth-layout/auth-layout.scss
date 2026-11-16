@@ -15,6 +15,11 @@
   }
 }
 
+.auth__logo {
+  height: 2.25rem;
+  margin-bottom: var(--sp-4);
+}
+
 .auth__brand {
   padding: var(--sp-7) var(--sp-6);
   border-radius: var(--radius-lg);

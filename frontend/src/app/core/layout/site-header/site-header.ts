@@ -4,7 +4,6 @@ import { APP_IDENTITY } from '../../config/app-identity';
 import { APP_NAV, PUBLIC_NAV } from '../navigation';
 import { AuthService } from '../../auth/auth.service';
 import { AnalysisJourneyStore } from '../../journey/analysis-journey.store';
-import { BrandMark } from '../../../shared/ui/brand-mark/brand-mark';
 import { NavDropdown } from '../nav-dropdown/nav-dropdown';
 
 /**
@@ -15,7 +14,7 @@ import { NavDropdown } from '../nav-dropdown/nav-dropdown';
  */
 @Component({
   selector: 'app-site-header',
-  imports: [RouterLink, RouterLinkActive, BrandMark, NavDropdown],
+  imports: [RouterLink, RouterLinkActive, NavDropdown],
   templateUrl: './site-header.html',
   styleUrl: './site-header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

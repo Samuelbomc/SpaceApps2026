@@ -17,7 +17,7 @@ const L = {
   vertex: 'plot-vertices',
 } as const;
 
-const COLOR = { stroke: '#ffcf6b', fill: '#ffcf6b', vertex: '#ffffff', selected: '#ff8a3d' };
+const COLOR = { stroke: '#d5a85b', fill: '#d5a85b', vertex: '#ffffff', selected: '#ff8a3d' };
 /** Clicking within this many pixels of the first vertex closes the outline. */
 const CLOSE_TOLERANCE_PX = 12;
 

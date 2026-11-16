@@ -10,7 +10,7 @@
   min-height: 300px;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: #1e3a2f;
+  background: #183d32;
   color: var(--c-ink-inverse);
 }
 
@@ -34,7 +34,7 @@
   padding: 0 var(--sp-4);
   border: 1px solid rgb(255 255 255 / 0.35);
   border-radius: var(--radius-pill);
-  background: rgb(11 29 23 / 0.85);
+  background: rgb(24 61 50 / 0.85);
   color: #fff;
   font-size: var(--fs-sm);
   font-weight: 600;
@@ -46,16 +46,16 @@
     cursor: default;
   }
   &--primary {
-    background: #ffcf6b;
-    border-color: #ffcf6b;
-    color: #1b231f;
+    background: #d5a85b;
+    border-color: #d5a85b;
+    color: #25343a;
   }
   &--danger {
     border-color: #f0a08a;
     color: #ffd6cc;
   }
   &--ghost {
-    background: rgb(11 29 23 / 0.6);
+    background: rgb(24 61 50 / 0.6);
   }
 }
 
@@ -67,7 +67,7 @@
   max-width: 34rem;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius-md);
-  background: rgb(11 29 23 / 0.88);
+  background: rgb(24 61 50 / 0.88);
   font-size: var(--fs-sm);
 }
 
@@ -84,8 +84,8 @@
   &::after {
     content: '';
     position: absolute;
-    background: #ffcf6b;
-    box-shadow: 0 0 0 1px #1b231f;
+    background: #d5a85b;
+    box-shadow: 0 0 0 1px #25343a;
   }
   &::before {
     top: 50%;
@@ -111,7 +111,7 @@
   gap: 4px;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius-md);
-  background: rgb(11 29 23 / 0.82);
+  background: rgb(24 61 50 / 0.82);
   font-size: var(--fs-xs);
 
   span {
@@ -127,11 +127,11 @@
 
 .legend__plot {
   height: 0.75rem;
-  background: rgb(255 207 107 / 0.4);
-  border: 2px solid #ffcf6b;
+  background: rgb(213 168 91 / 0.4);
+  border: 2px solid #d5a85b;
 }
 .legend__boundary {
-  border-top: 2px dashed #f3f1ea;
+  border-top: 2px dashed #f5f4ec;
 }
 
 .notes {
@@ -148,7 +148,7 @@
   max-width: 26rem;
   padding: var(--sp-1) var(--sp-3);
   border-radius: var(--radius-md);
-  background: rgb(11 29 23 / 0.85);
+  background: rgb(24 61 50 / 0.85);
   font-size: var(--fs-xs);
 
   &--warn {
@@ -165,7 +165,7 @@
   gap: var(--sp-4);
   padding: var(--sp-6);
   text-align: center;
-  background: #1e3a2f;
+  background: #183d32;
 }
 
 .spinner {

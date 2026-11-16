@@ -51,13 +51,13 @@ export const ATTRIBUTION = {
 
 /** Map palette (hex literals: WebGL paint cannot read CSS custom properties). */
 export const MAP_COLOR = {
-  ocean: '#0e2a36',
-  boundary: '#f3f1ea',
-  explore: '#9fd3a8',
+  ocean: '#183d32',
+  boundary: '#f5f4ec',
+  explore: '#a8c686',
   exploreOutline: '#e9f7e4',
-  pilot: '#7fd18b',
-  selected: '#ffcf6b',
-  outside: '#f3f1ea',
+  pilot: '#5fae80',
+  selected: '#d5a85b',
+  outside: '#f5f4ec',
 } as const;
 
 export function baseStyle(): MapStyle {
