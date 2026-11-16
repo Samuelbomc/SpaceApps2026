@@ -258,3 +258,4 @@ __MACOSX/
 # Local editable paper source and packaged archive.
 /paper-source/
 /paper-source.zip
+cache
