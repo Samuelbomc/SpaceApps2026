@@ -17,28 +17,28 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
         <article class="card paper" aria-labelledby="paper-title">
           <div>
             <h2 id="paper-title" lang="en">
-              Field Shift: An Earth-Observation-Informed Decision Support System for Crop Rotation
-              Planning in Antioquia, Colombia
+              AgroGeo: An Earth-Observation-Informed Decision Support System for Crop Rotation
+              Planning in Eastern Antioquia, Colombia
             </h2>
-            <p class="metadata">PDF · 15 páginas · Inglés</p>
+            <p class="metadata">PDF · 10 páginas · Inglés</p>
           </div>
           <div class="paper-actions">
             <a
               class="btn btn--primary"
-              href="/documents/paper.pdf"
+              href="/documents/paper.pdf?v=124a80220e27"
               target="_blank"
               rel="noopener noreferrer"
               >Abrir paper <span class="sr-only">en una pestaña nueva</span></a
             >
-            <a class="btn btn--secondary" href="/documents/paper.pdf" download="AgroGeo-paper.pdf">
+            <a class="btn btn--secondary" href="/documents/paper.pdf?v=124a80220e27" download="AgroGeo-paper.pdf">
               Descargar PDF
             </a>
           </div>
         </article>
         <iframe
           class="paper-viewer"
-          src="/documents/paper.pdf"
-          title="Visor del paper técnico de Field Shift"
+          src="/documents/paper.pdf?v=124a80220e27"
+          title="Visor del paper técnico de AgroGeo"
           loading="lazy"
         ></iframe>
         <p class="viewer-help">

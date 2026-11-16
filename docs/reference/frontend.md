@@ -45,10 +45,12 @@ confirma la carga del worker y los límites y etiquetas municipales al enfocar O
 | Presentación | Vista simple de resultados y vista técnica con procedencia, calidad, unidades y versiones. Respeta estados pendientes y alcance regional. |
 
 Rutas públicas: `/`, `/explorar`, `/referencia-tecnica`, `/acceso` y `/registro`.
-La referencia técnica presenta el paper de Field Shift (15 páginas, inglés),
+La referencia técnica presenta el paper de AgroGeo (10 páginas, inglés),
 con visor PDF, apertura en otra pestaña y descarga. Es accesible desde la
 navegación principal y el pie de página, con y sin sesión. El documento se sirve
-en `/documents/paper.pdf` desde `frontend/public/documents/`.
+en `/documents/paper.pdf` desde `frontend/public/documents/`. Los enlaces del
+visor y descarga incluyen una revisión del hash para evitar versiones antiguas
+en cachés del navegador o CDN; las respuestas de documentos se revalidan.
 Rutas de cuenta/finca: `/perfil`, `/fincas` y
 `/finca/caracterizacion`. `/login` redirige a `/acceso`. Los enlaces antiguos
 `/panel`, `/finca/lote` y `/finca/analisis` abren el explorador público y conservan

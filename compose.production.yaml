@@ -420,7 +420,7 @@
         "default": null
       },
       "restart": "unless-stopped",
-      "image": "agrogeo-migration-web:4ea618d-paper",
+      "image": "agrogeo-migration-web:4085950-revised-paper-v2",
       "ports": [
         {
           "target": 3000,
